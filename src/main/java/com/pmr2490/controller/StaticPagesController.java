@@ -13,7 +13,7 @@ public class StaticPagesController {
 	@RequestMapping(value="/")
 	public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
 	{
-		return new ModelAndView("index");
+		return new ModelAndView("static-pages/home");
 	}
 	
 }
