@@ -16,7 +16,7 @@
         <h1>Eventos Poli USP</h1>
         <p>Esta é a página inicial do projeto de SI PMR2490.</p>
         <p>Gerenciador de eventos da Escola Politécnica da Universidade de São Paulo</p>
-        <p><a href="user/index" class="btn btn-primary btn-lg" role="button">User</a></p>
+        <p><a href="users" class="btn btn-primary btn-lg" role="button">User</a></p>
       </div>
     </div>
     

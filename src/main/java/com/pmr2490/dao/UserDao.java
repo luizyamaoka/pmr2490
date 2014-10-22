@@ -34,4 +34,37 @@ public class UserDao {
 		return users;
 	}
 	
+	public User findById(int id) {
+		Session session = this.sessionFactory.getCurrentSession();
+		Transaction tx = session.beginTransaction();
+		
+		User user = (User)session.get(User.class, id);
+		
+		tx.commit();
+		return user;
+	}
+	
+	public void destroy(User user) {
+		Session session = this.sessionFactory.getCurrentSession();
+		Transaction tx = session.beginTransaction();
+		session.delete(user);
+		tx.commit();
+	}
+	
+	public void edit(User user) {
+		Session session = this.sessionFactory.getCurrentSession();
+		Transaction tx = session.beginTransaction();
+		session.update(user);
+		tx.commit();
+	}
+	
+	public void create(User user) {
+		Session session = this.sessionFactory.getCurrentSession();
+		Transaction tx = session.beginTransaction();
+		session.save(user);
+		tx.commit();
+	}
+	
+	
+	
 }
