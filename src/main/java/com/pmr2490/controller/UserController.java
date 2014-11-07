@@ -1,6 +1,8 @@
 package com.pmr2490.controller;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,8 +14,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.pmr2490.model.College;
+import com.pmr2490.model.Profession;
 import com.pmr2490.service.UserService;
 
 @Controller
@@ -41,11 +46,26 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
-	public void create(HttpServletRequest request, HttpServletResponse response) {
+	public void create(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam("first_name") String firstName,
+			@RequestParam("last_name") String lastName,
+			@RequestParam("birth_day") Integer birthDay,
+			@RequestParam("birth_month") Integer birthMonth,
+			@RequestParam("birth_year") Integer birthYear,
+			@RequestParam("genre") String genre,
+			@RequestParam("phone_ddd") Integer phoneDdd,
+			@RequestParam("phone_number") String phoneNumber,
+			@RequestParam("email") String email,
+			@RequestParam("password") String password,
+			@RequestParam("password_confirmation") String passwordConfirmation,
+			@RequestParam("college") College college,
+			@RequestParam("profession") Profession profession) {
+	
+		Calendar cal = Calendar.getInstance();
+		cal.set(birthYear, birthMonth, birthDay);
+		Date birthDate = cal.getTime();
 		
-		String name = request.getParameter("name");
-		
-		this.userService.create(name);
+		this.userService.create(firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, password, false, college, profession);
 		
 		try {
 			response.sendRedirect("/pmr2490/users");
@@ -80,11 +100,27 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="/{id}/update", method=RequestMethod.POST)
-	public void update(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
+	public void update(HttpServletRequest request, HttpServletResponse response, 
+			@PathVariable int id,
+			@RequestParam("first_name") String firstName,
+			@RequestParam("last_name") String lastName,
+			@RequestParam("birth_day") Integer birthDay,
+			@RequestParam("birth_month") Integer birthMonth,
+			@RequestParam("birth_year") Integer birthYear,
+			@RequestParam("genre") String genre,
+			@RequestParam("phone_ddd") Integer phoneDdd,
+			@RequestParam("phone_number") String phoneNumber,
+			@RequestParam("email") String email,
+			@RequestParam("password") String password,
+			@RequestParam("password_confirmation") String passwordConfirmation,
+			@RequestParam("college") College college,
+			@RequestParam("profession") Profession profession) {
 		
-		String name = request.getParameter("name");
+		Calendar cal = Calendar.getInstance();
+		cal.set(birthYear, birthMonth, birthDay);
+		Date birthDate = cal.getTime();
 		
-		this.userService.update(id, name);
+		this.userService.update(id, firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, password, false, college, profession);
 		
 		try {
 			response.sendRedirect("/pmr2490/users");

@@ -17,6 +17,22 @@ import javax.persistence.Table;
 @Table(name=DomainConstants.TB_USER)
 public class User {
 
+	public User(Integer id, String firstName, String lastName, Date birthDate, String genre, Integer phoneDdd, 
+			String phoneNumber, String email, String password, boolean isPromoter, College college, Profession profession){
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.birthDate = birthDate;
+		this.genre = genre;
+		this.phoneDdd = phoneDdd;
+		this.phoneNumber = phoneNumber;
+		this.email = email;
+		this.password = password;
+		this.isPromoter = isPromoter;
+		this.college = college;
+		this.profession = profession;
+	}
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id")
@@ -35,7 +51,7 @@ public class User {
 	private String genre;
 	
 	@Column(name="ddd")
-	private byte phoneDdd;
+	private Integer phoneDdd;
 	
 	@Column(name="telefone")
 	private String phoneNumber;
@@ -103,11 +119,11 @@ public class User {
 		this.genre = genre;
 	}
 
-	public byte getPhoneDdd() {
+	public Integer getPhoneDdd() {
 		return phoneDdd;
 	}
 
-	public void setPhoneDdd(byte phoneDdd) {
+	public void setPhoneDdd(Integer phoneDdd) {
 		this.phoneDdd = phoneDdd;
 	}
 
