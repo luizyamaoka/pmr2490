@@ -6,13 +6,13 @@ import com.pmr2490.model.User;
 
 public interface UserService {
 
-	public List<User> index();
+	public List<User> getAll();
 	
-	public User findById(int id);
+	public User get(int id);
 	
-	public void destroy(int id);
+	public void delete(int id);
 	
 	public void create(String name);
 	
-	public void edit(int id, String name);
+	public void update(int id, String name);
 }

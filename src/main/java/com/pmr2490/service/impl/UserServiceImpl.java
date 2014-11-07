@@ -20,36 +20,36 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	@Override
-	public List<User> index() {
-		return this.userDao.index();
+	public List<User> getAll() {
+		return this.userDao.getAll();
 	}
 
 	@Override
-	public User findById(int id) {
-		return this.userDao.findById(id);
+	public User get(int id) {
+		return this.userDao.get(id);
 	}
 
 	@Override
-	public void destroy(int id) {
-		User user = this.userDao.findById(id);
-		this.userDao.destroy(user);
+	public void delete(int id) {
+		User user = this.userDao.get(id);
+		this.userDao.delete(user);
 	}
 
 	@Override
 	public void create(String name) {
 		User user = new User();
-		user.setName(name);
+		user.setFirstName(name);
 		
 		this.userDao.create(user);
 	}
 
 	@Override
-	public void edit(int id, String name) {
+	public void update(int id, String name) {
 		User user = new User();
 		user.setId(id);
-		user.setName(name);
+		user.setFirstName(name);
 		
-		this.userDao.edit(user);
+		this.userDao.update(user);
 	}
 
 }

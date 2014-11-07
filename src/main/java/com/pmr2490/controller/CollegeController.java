@@ -12,43 +12,37 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.pmr2490.service.UserService;
+import com.pmr2490.service.CollegeService;
 
 @Controller
-@RequestMapping(value="/users")
-public class UserController {
+@RequestMapping("/colleges")
+public class CollegeController {
 
-	private UserService userService;
+	private CollegeService collegeService;
 	
 	@Autowired
-	public UserController(UserService userService) {
-		this.userService = userService;
+	public CollegeController(CollegeService collegeService) {
+		this.collegeService = collegeService;
 	}
 	
-	@RequestMapping(value="")
-	public ModelAndView index() {
-		Map<String, Object> map = new HashMap<>();
-		map.put("users", userService.getAll());
-		return new ModelAndView("user/index", map);
-	}
-	
-	@RequestMapping(value="/new", method=RequestMethod.GET)
-	public ModelAndView insert(HttpServletRequest request, HttpServletResponse response) {
-		ModelAndView modelAndView = new ModelAndView("user/new");
+	@RequestMapping("")
+	public ModelAndView getAll() {
+		ModelAndView modelAndView = new ModelAndView("college/index");
+		modelAndView.addObject("colleges", this.collegeService.getAll());
 		return modelAndView;
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
-	public void create(HttpServletRequest request, HttpServletResponse response) {
+	public void create(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam("name") String name) {
 		
-		String name = request.getParameter("name");
-		
-		this.userService.create(name);
+		this.collegeService.create(name);
 		
 		try {
-			response.sendRedirect("/pmr2490/users");
+			response.sendRedirect("/pmr2490/colleges");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -58,15 +52,15 @@ public class UserController {
 	@RequestMapping(value="/{id}")
 	public ModelAndView show(@PathVariable int id) {
 		Map<String, Object> map = new HashMap<>();
-		map.put("user", this.userService.get(id));
-		return new ModelAndView("user/show", map);
+		map.put("college", this.collegeService.get(id));
+		return new ModelAndView("college/show", map);
 	}
 	
 	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
 	public void destroy(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
-		this.userService.delete(id);
+		this.collegeService.delete(id);
 		try {
-			response.sendRedirect("/pmr2490/users");
+			response.sendRedirect("/pmr2490/colleges");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -74,23 +68,23 @@ public class UserController {
 	
 	@RequestMapping(value="/{id}/edit")
 	public ModelAndView edit(@PathVariable int id) {
-		Map<String, Object> map = new HashMap<>();
-		map.put("user", this.userService.get(id));
-		return new ModelAndView("user/edit", map);
+		ModelAndView modelAndView = new ModelAndView("college/edit");
+		modelAndView.addObject("college", this.collegeService.get(id));
+		return modelAndView;
 	}
 	
 	@RequestMapping(value="/{id}/update", method=RequestMethod.POST)
-	public void update(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
+	public void update(HttpServletRequest request, HttpServletResponse response, 
+			@PathVariable int id, @RequestParam("name") String name) {
 		
-		String name = request.getParameter("name");
-		
-		this.userService.update(id, name);
+		this.collegeService.update(id, name);
 		
 		try {
-			response.sendRedirect("/pmr2490/users");
+			response.sendRedirect("/pmr2490/colleges");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+	
 	
 }

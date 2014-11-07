@@ -4,14 +4,14 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.pmr2490.model.User;
+import com.pmr2490.model.College;
 
 @Repository
-public class UserDao extends GenericDao<User, Integer>  {
+public class CollegeDao extends GenericDao<College, Integer> {
 
 	@Autowired
-	public UserDao(SessionFactory sessionFactory) {
-		super(sessionFactory, User.class);
+	public CollegeDao(SessionFactory sessionFactory) {
+		super(sessionFactory, College.class);
 	}
 	
 }
