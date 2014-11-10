@@ -17,6 +17,20 @@ import javax.persistence.Table;
 @Table(name=DomainConstants.TB_EVENT)
 public class Event {
 
+	public Event(Integer id, String name, Date dateStart, Date dateEnd,
+			byte phoneDdd, String phoneNumber, String description, User creator,
+			Local local) {
+		this.id = id;
+		this.name = name;
+		this.dateStart = dateStart;
+		this.dateEnd = dateEnd;
+		this.phoneDdd = phoneDdd;
+		this.phoneNumber = phoneNumber;
+		this.description = description;
+		this.creator = creator;
+		this.local = local;
+	}
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id")
