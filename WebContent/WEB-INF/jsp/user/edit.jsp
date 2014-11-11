@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>${user.name}</title>
+    <title>${user.firstName}</title>
     <c:import url="/WEB-INF/jsp/shared/css.jsp" />
     <style>
     .form-signin {
@@ -27,7 +27,7 @@
 
 	  <form class="form-signin" role="form" action="update" method="post">
         <h2 class="form-signin-heading">Editar usuário</h2>
-        <input class="form-control" name="name" type="text" value="${user.name}" placeholder="Nome" required autofocus>
+        <input class="form-control" name="name" type="text" value="${user.firstName}" placeholder="Nome" required autofocus>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Atualizar</button>
       </form>
 

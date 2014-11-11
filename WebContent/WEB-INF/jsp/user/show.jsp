@@ -1,9 +1,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <html>
   <head>
     <meta charset="utf-8">
-    <title>${user.name}</title>
+    <title>${user.firstName}</title>
     <c:import url="/WEB-INF/jsp/shared/css.jsp" />
   </head>
   <body>
@@ -24,8 +25,33 @@
               </tr>
               <tr>
                 <td style="font-weight: bold;">Nome</td>
-                <td>${user.name}</td>
+                <td>${user.firstName} ${user.lastName}</td>
               </tr>
+              <tr>
+                <td style="font-weight: bold;">Data de nascimento</td>
+                <td><fmt:formatDate value="${user.birthDate}" pattern="dd/MM/yyyy" /></td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold;">Sexo</td>
+                <td>${user.genre}</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold;">Telefone</td>
+                <td>(${user.phoneDdd}) ${user.phoneNumber}</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold;">Email</td>
+                <td>${user.email}</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold;">Faculdade</td>
+                <td>${user.college.name}</td>
+              </tr>
+              <tr>
+                <td style="font-weight: bold;">Ocupação</td>
+                <td>${user.profession.name}</td>
+              </tr>
+              
             </tbody>
           </table>
         </div>

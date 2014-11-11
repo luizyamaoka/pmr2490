@@ -25,7 +25,7 @@
     
     <div class="container theme-showcase" role="main">
     
-      <form class="form-signin" role="form" action="users/create" method="post">
+      <form class="form-signin" role="form" action="create" method="post">
         <h2 class="form-signin-heading">Adicionar usuário</h2>
         <input class="form-control" name="first_name" placeholder="Nome" required autofocus type="text">
         <input class="form-control" name="last_name" placeholder="Sobrenome" required type="text">
@@ -42,8 +42,18 @@
         <input class="form-control" name="email" placeholder="Email" required type="email">
         <input class="form-control" name="password" placeholder="Senha" required type="password">
         <input class="form-control" name="password_confirmation" placeholder="Confirmação" required type="password">
-        <input class="form-control" name="profession" placeholder="Ocupação" required type="text">
-        <input class="form-control" name="college" placeholder="Faculdade" type="text">
+        <select class="form-control" name="profession_id" required >
+          <option selected>Ocupação</option>
+          <c:forEach var="profession" items="${professions}">
+            <option value="${profession.id}">${profession.name}</option>
+          </c:forEach>
+		</select> 
+		<select class="form-control" name="college_id">
+          <option selected>Faculdade</option>
+          <c:forEach var="college" items="${colleges}">
+            <option value="${college.id}">${college.name}</option>
+          </c:forEach>
+		</select> 
         <button class="btn btn-lg btn-primary btn-block" type="submit">Adicionar</button>
       </form>
 

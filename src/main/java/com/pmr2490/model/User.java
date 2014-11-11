@@ -17,9 +17,11 @@ import javax.persistence.Table;
 @Table(name=DomainConstants.TB_USER)
 public class User {
 
+	public User() { }
+	
 	public User(Integer id, String firstName, String lastName, Date birthDate, String genre, Integer phoneDdd, 
 			String phoneNumber, String email, String password, boolean isPromoter, College college, Profession profession){
-		this.id = id;
+		if(id != null) this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.birthDate = birthDate;

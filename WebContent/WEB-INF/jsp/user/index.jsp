@@ -32,7 +32,7 @@
               <c:forEach var="user" items="${users}">
               <tr>
                 <td>${user.id}</td>
-                <td>${user.name}</td>
+                <td>${user.firstName} ${user.lastName}</td>
                 <td>
                   <form class="crud-buttons" action="users/${user.id}/destroy" method="post"><input type="submit" value="Deletar" class="btn btn-danger btn-xs" /></form>
                   <a href="users/${user.id}/edit" class="btn btn-warning btn-xs crud-buttons" role="button">Editar</a>

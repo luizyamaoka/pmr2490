@@ -20,7 +20,7 @@ public class Event {
 	public Event(Integer id, String name, Date dateStart, Date dateEnd,
 			byte phoneDdd, String phoneNumber, String description, User creator,
 			Local local) {
-		this.id = id;
+		if(id != null) this.id = id;
 		this.name = name;
 		this.dateStart = dateStart;
 		this.dateEnd = dateEnd;

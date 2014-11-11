@@ -12,6 +12,11 @@
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li><a href="/pmr2490/">Home</a></li>
+            <li><a href="/pmr2490/users">Usuários</a></li>
+            <li><a href="/pmr2490/tags">Tags</a></li>
+            <li><a href="/pmr2490/locals">Locais</a></li>
+            <li><a href="/pmr2490/professions">Ocupações</a></li>
+            <li><a href="/pmr2490/colleges">Faculdades</a></li>
             <!-- li><a href="#about">About</a></li> -->
             <!--li><a href="#contact">Contact</a></li> -->
             <!--li class="dropdown">

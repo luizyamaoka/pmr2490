@@ -1,8 +1,8 @@
 package com.pmr2490.controller;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +19,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.pmr2490.model.College;
 import com.pmr2490.model.Profession;
+import com.pmr2490.service.CollegeService;
+import com.pmr2490.service.ProfessionService;
 import com.pmr2490.service.UserService;
 
 @Controller
@@ -26,10 +28,15 @@ import com.pmr2490.service.UserService;
 public class UserController {
 
 	private UserService userService;
+	private ProfessionService professionService;
+	private CollegeService collegeService;
 	
 	@Autowired
-	public UserController(UserService userService) {
+	public UserController(UserService userService, ProfessionService professionService, 
+			CollegeService collegeService) {
 		this.userService = userService;
+		this.professionService = professionService;
+		this.collegeService = collegeService;
 	}
 	
 	@RequestMapping(value="")
@@ -42,6 +49,8 @@ public class UserController {
 	@RequestMapping(value="/new", method=RequestMethod.GET)
 	public ModelAndView insert(HttpServletRequest request, HttpServletResponse response) {
 		ModelAndView modelAndView = new ModelAndView("user/new");
+		modelAndView.addObject("colleges", this.collegeService.getAll());
+		modelAndView.addObject("professions", this.professionService.getAll());
 		return modelAndView;
 	}
 	
@@ -58,12 +67,15 @@ public class UserController {
 			@RequestParam("email") String email,
 			@RequestParam("password") String password,
 			@RequestParam("password_confirmation") String passwordConfirmation,
-			@RequestParam("college") College college,
-			@RequestParam("profession") Profession profession) {
+			@RequestParam("college_id") Integer collegeId,
+			@RequestParam("profession_id") Integer professionId) {
 	
 		Calendar cal = Calendar.getInstance();
-		cal.set(birthYear, birthMonth, birthDay);
+		cal.set(birthYear, birthMonth-1, birthDay);
 		Date birthDate = cal.getTime();
+		
+		College college = this.collegeService.get(collegeId);
+		Profession profession = this.professionService.get(professionId);
 		
 		this.userService.create(firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, password, false, college, profession);
 		
