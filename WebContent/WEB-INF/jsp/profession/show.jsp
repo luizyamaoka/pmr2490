@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>${tag.name}</title>
+    <title>${profession.name}</title>
     <c:import url="/WEB-INF/jsp/shared/css.jsp" />
   </head>
   <body>
@@ -18,11 +18,11 @@
             <tbody>
               <tr>
                 <td style="font-weight: bold;">Id</td>
-                <td>${tag.id}</td>
+                <td>${profession.id}</td>
               </tr>
               <tr>
                 <td style="font-weight: bold;">Nome</td>
-                <td>${tag.name}</td>
+                <td>${profession.name}</td>
               </tr>
             </tbody>
           </table>

@@ -19,7 +19,7 @@ public class Tag {
 	@Column(name="id")
 	private int id;
 	
-	@Column(name="nome")
+	@Column(name="name")
 	private String name;
 	
 	@OneToMany(mappedBy="tag")
