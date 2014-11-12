@@ -11,7 +11,7 @@ import org.hibernate.Transaction;
 public class GenericDao<T, PK extends Serializable> {
 
 	private Class<T> type;
-	private SessionFactory sessionFactory;
+	protected SessionFactory sessionFactory;
 	
 	public GenericDao(SessionFactory sessionFactory, Class<T> type) {
 		this.sessionFactory = sessionFactory;
