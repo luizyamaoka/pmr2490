@@ -15,10 +15,10 @@ public interface EventService {
 	
 	public void delete(int id);
 	
-	public int create(String name, Date startDate, Date endDate, int phoneDDD, 
+	public int create(String name, Date startDate, Date endDate, String email, int phoneDDD, 
 			String phoneNumber, String description, User creator, Local local);
 	
-	public void update(int id, String name, Date startDate, Date endDate, int phoneDDD, 
-			String phoneNumber, String description, User creator, Local local);
+	public void update(int id, String name, Date startDate, Date endDate, String email, int phoneDDD, 
+			String phoneNumber, String description, Local local);
 	
 }

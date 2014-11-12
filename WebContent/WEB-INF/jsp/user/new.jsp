@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Usuários</title>
+    <title>Novo usuário</title>
     <c:import url="/WEB-INF/jsp/shared/css.jsp" />
     <style>
     .form-signin {

@@ -20,6 +20,7 @@
         <li><a href="/pmr2490/locals">Locais</a></li>
         <li><a href="/pmr2490/professions">Ocupações</a></li>
         <li><a href="/pmr2490/colleges">Faculdades</a></li>
+        <li><a href="/pmr2490/events">Eventos</a></li>
             <!-- li><a href="#about">About</a></li> -->
             <!--li><a href="#contact">Contact</a></li> -->
             <!--li class="dropdown">

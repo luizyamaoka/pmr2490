@@ -39,19 +39,25 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
-	public int create(String name, Date dateStart, Date dateEnd, int phoneDdd,
+	public int create(String name, Date dateStart, Date dateEnd, String email, int phoneDdd,
 			String phoneNumber, String description, User creator, Local local) {
-		Event event = new Event(null, name, dateStart, dateEnd, (byte) phoneDdd, 
+		Event event = new Event(null, name, dateStart, dateEnd,  email, phoneDdd, 
 				phoneNumber, description, creator, local);
 		return this.eventDao.create(event);
 	}
 
 	@Override
-	public void update(int id, String name, Date dateStart, Date dateEnd,
-			int phoneDdd, String phoneNumber, String description, User creator,
-			Local local) {
-		Event event = new Event(id, name, dateStart, dateEnd, (byte) phoneDdd, 
-				phoneNumber, description, creator, local);
+	public void update(int id, String name, Date dateStart, Date dateEnd, String email, 
+			int phoneDdd, String phoneNumber, String description, Local local) {
+		Event event = this.eventDao.get(id);
+		event.setName(name);
+		event.setDateStart(dateStart);
+		event.setDateEnd(dateEnd);
+		event.setEmail(email);
+		event.setPhoneDdd(phoneDdd);
+		event.setPhoneNumber(phoneNumber);
+		event.setDescription(description);
+		event.setLocal(local);
 		this.eventDao.update(event);
 
 	}

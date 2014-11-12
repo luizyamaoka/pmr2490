@@ -17,17 +17,33 @@ import javax.persistence.Table;
 @Table(name=DomainConstants.TB_EVENT)
 public class Event {
 
-	public Event(Integer id, String name, Date dateStart, Date dateEnd,
-			byte phoneDdd, String phoneNumber, String description, User creator,
+	public Event() { }
+	
+	public Event(Integer id, String name, Date dateStart, Date dateEnd, String email,
+			Integer phoneDdd, String phoneNumber, String description, User creator,
 			Local local) {
 		if(id != null) this.id = id;
 		this.name = name;
 		this.dateStart = dateStart;
 		this.dateEnd = dateEnd;
+		this.setEmail(email);
 		this.phoneDdd = phoneDdd;
 		this.phoneNumber = phoneNumber;
 		this.description = description;
 		this.creator = creator;
+		this.local = local;
+	}
+	
+	public Event(Integer id, String name, Date dateStart, Date dateEnd, String email,
+			Integer phoneDdd, String phoneNumber, String description, Local local) {
+		if(id != null) this.id = id;
+		this.name = name;
+		this.dateStart = dateStart;
+		this.dateEnd = dateEnd;
+		this.setEmail(email);
+		this.phoneDdd = phoneDdd;
+		this.phoneNumber = phoneNumber;
+		this.description = description;
 		this.local = local;
 	}
 	
@@ -45,8 +61,11 @@ public class Event {
 	@Column(name="final")
 	private Date dateEnd;
 	
+	@Column(name="email")
+	private String email;
+	
 	@Column(name="ddd")
-	private byte phoneDdd;
+	private Integer phoneDdd;
 	
 	@Column(name="telefone")
 	private String phoneNumber;
@@ -100,11 +119,11 @@ public class Event {
 		this.dateEnd = dateEnd;
 	}
 
-	public byte getPhoneDdd() {
+	public Integer getPhoneDdd() {
 		return phoneDdd;
 	}
 
-	public void setPhoneDdd(byte phoneDdd) {
+	public void setPhoneDdd(Integer phoneDdd) {
 		this.phoneDdd = phoneDdd;
 	}
 
@@ -154,5 +173,13 @@ public class Event {
 
 	public void setTaggings(List<Tagging> taggings) {
 		this.taggings = taggings;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 }
