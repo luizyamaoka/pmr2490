@@ -27,7 +27,51 @@
 
 	  <form class="form-signin" role="form" action="update" method="post">
         <h2 class="form-signin-heading">Editar usuário</h2>
-        <input class="form-control" name="name" type="text" value="${user.firstName}" placeholder="Nome" required autofocus>
+        <input class="form-control" name="first_name" placeholder="Nome" value="${user.firstName}" required autofocus type="text">
+        <input class="form-control" name="last_name" placeholder="Sobrenome" value="${user.lastName}" required type="text">
+        <input class="form-control" name="birth_day" placeholder="Dia" type="number" value="${user.birthDate.date}" min="1" max="31">
+        <input class="form-control" name="birth_month" placeholder="Mês" type="number" value="${user.birthDate.month+1}" min="1" max="12">
+        <input class="form-control" name="birth_year" placeholder="Ano" type="number" value="${1900+user.birthDate.year}" min="1900" max="2100">
+        <select class="form-control" name="genre">
+          <option>Sexo</option>
+          <c:if test="${user.genre == 'm'}">
+		  	<option value="m" selected>Masculino</option>
+		  	<option value="f">Feminino</option>
+		  </c:if>
+		  <c:if test="${user.genre == 'f'}">
+		  	<option value="m">Masculino</option>
+		  	<option value="f" selected>Feminino</option>
+		  </c:if>
+		</select> 
+        <input class="form-control" name="phone_ddd" placeholder="DDD" type="number" value="${user.phoneDdd}" min="1" max="99">
+        <input class="form-control" name="phone_number" placeholder="Telefone" value="${user.phoneNumber}" type="number">
+        <input class="form-control" name="email" placeholder="Email" value="${user.email}" required type="email">
+        <select class="form-control" name="profession_id" required >
+          <option>Ocupação</option>
+          <c:forEach var="profession" items="${professions}">
+            <c:choose>
+              <c:when test="${user.profession.id == profession.id}">
+                <option selected value="${profession.id}">${profession.name}</option>
+              </c:when>
+              <c:otherwise>
+                <option value="${profession.id}">${profession.name}</option>
+              </c:otherwise>
+            </c:choose>
+          </c:forEach>
+		</select> 
+		<select class="form-control" name="college_id">
+          <option selected>Faculdade</option>
+          <c:forEach var="college" items="${colleges}">
+            <c:choose>
+              <c:when test="${user.college.id == college.id}">
+                <option selected value="${college.id}">${college.name}</option>
+              </c:when>
+              <c:otherwise>
+                <option value="${college.id}">${college.name}</option>
+              </c:otherwise>
+            </c:choose>
+          </c:forEach>
+		</select> 
         <button class="btn btn-lg btn-primary btn-block" type="submit">Atualizar</button>
       </form>
 

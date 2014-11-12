@@ -35,6 +35,21 @@ public class User {
 		this.profession = profession;
 	}
 	
+	public User(Integer id, String firstName, String lastName, Date birthDate, String genre, Integer phoneDdd, 
+			String phoneNumber, String email, boolean isPromoter, College college, Profession profession){
+		if(id != null) this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.birthDate = birthDate;
+		this.genre = genre;
+		this.phoneDdd = phoneDdd;
+		this.phoneNumber = phoneNumber;
+		this.email = email;
+		this.isPromoter = isPromoter;
+		this.college = college;
+		this.profession = profession;
+	}
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id")

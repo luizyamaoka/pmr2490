@@ -19,5 +19,5 @@ public interface UserService {
 			String phoneNumber, String email, String password, boolean isPromoter, College college, Profession profession);
 	
 	public void update(int id, String firstName, String lastName, Date birthDate, String genre, Integer phoneDdd, 
-			String phoneNumber, String email, String password, boolean isPromoter, College college, Profession profession);
+			String phoneNumber, String email, boolean isPromoter, College college, Profession profession);
 }

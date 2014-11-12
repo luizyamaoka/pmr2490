@@ -52,9 +52,9 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void update(int id, String firstName, String lastName,
 			Date birthDate, String genre, Integer phoneDdd, String phoneNumber,
-			String email, String password, boolean isPromoter, College college,
+			String email, boolean isPromoter, College college,
 			Profession profession) {
-		User user = new User(id, firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, password, isPromoter, college, profession);
+		User user = new User(id, firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, isPromoter, college, profession);
 		this.userDao.update(user);
 		
 	}

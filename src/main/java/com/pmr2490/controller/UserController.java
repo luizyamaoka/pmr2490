@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -69,18 +70,25 @@ public class UserController {
 			@RequestParam("password_confirmation") String passwordConfirmation,
 			@RequestParam("college_id") Integer collegeId,
 			@RequestParam("profession_id") Integer professionId) {
-	
-		Calendar cal = Calendar.getInstance();
-		cal.set(birthYear, birthMonth-1, birthDay);
-		Date birthDate = cal.getTime();
-		
-		College college = this.collegeService.get(collegeId);
-		Profession profession = this.professionService.get(professionId);
-		
-		this.userService.create(firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, password, false, college, profession);
 		
 		try {
+		
+			if (!password.equals(passwordConfirmation))
+				response.sendRedirect("/pmr2490/user/new?password");
+		
+			Calendar cal = Calendar.getInstance();
+			cal.set(birthYear, birthMonth-1, birthDay);
+			Date birthDate = cal.getTime();
+			
+			College college = this.collegeService.get(collegeId);
+			Profession profession = this.professionService.get(professionId);
+			
+			String passwordHashed = BCrypt.hashpw(password, BCrypt.gensalt());
+			
+			this.userService.create(firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, passwordHashed, false, college, profession);
+		
 			response.sendRedirect("/pmr2490/users");
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -106,9 +114,11 @@ public class UserController {
 	
 	@RequestMapping(value="/{id}/edit")
 	public ModelAndView edit(@PathVariable int id) {
-		Map<String, Object> map = new HashMap<>();
-		map.put("user", this.userService.get(id));
-		return new ModelAndView("user/edit", map);
+		ModelAndView modelAndView = new ModelAndView("user/edit");
+		modelAndView.addObject("user", this.userService.get(id));
+		modelAndView.addObject("colleges", this.collegeService.getAll());
+		modelAndView.addObject("professions", this.professionService.getAll());
+		return modelAndView;
 	}
 	
 	@RequestMapping(value="/{id}/update", method=RequestMethod.POST)
@@ -123,16 +133,17 @@ public class UserController {
 			@RequestParam("phone_ddd") Integer phoneDdd,
 			@RequestParam("phone_number") String phoneNumber,
 			@RequestParam("email") String email,
-			@RequestParam("password") String password,
-			@RequestParam("password_confirmation") String passwordConfirmation,
-			@RequestParam("college") College college,
-			@RequestParam("profession") Profession profession) {
+			@RequestParam("college_id") Integer collegeId,
+			@RequestParam("profession_id") Integer professionId) {
 		
 		Calendar cal = Calendar.getInstance();
 		cal.set(birthYear, birthMonth, birthDay);
 		Date birthDate = cal.getTime();
 		
-		this.userService.update(id, firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, password, false, college, profession);
+		College college = this.collegeService.get(collegeId);
+		Profession profession = this.professionService.get(professionId);
+		
+		this.userService.update(id, firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, false, college, profession);
 		
 		try {
 			response.sendRedirect("/pmr2490/users");
