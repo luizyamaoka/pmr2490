@@ -11,9 +11,23 @@ import org.springframework.web.servlet.ModelAndView;
 public class StaticPagesController {
 
 	@RequestMapping(value="/")
-	public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
-	{
-		return new ModelAndView("static-pages/home");
+	public ModelAndView home(HttpServletRequest request, HttpServletResponse response) {
+		ModelAndView modelAndView = new ModelAndView("static-pages/home");
+		
+		if(request.getParameter("logout") != null)
+			modelAndView.addObject("info_message", "<strong>Tchau!</strong> Logout efetuado com sucesso.");
+		
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="/login")
+	public ModelAndView login(HttpServletRequest request, HttpServletResponse response) {
+		ModelAndView modelAndView = new ModelAndView("static-pages/login");
+		
+		if(request.getParameter("error") != null)
+			modelAndView.addObject("error_message", "<strong>Erro!</strong> Usuário e/ou senha incorretos.");
+		
+		return modelAndView;
 	}
 	
 }
