@@ -13,11 +13,13 @@ public interface UserService {
 	
 	public User get(int id);
 	
+	public User getByEmail(String email);
+	
 	public void delete(int id);
 	
 	public void create(String firstName, String lastName, Date birthDate, String genre, Integer phoneDdd, 
 			String phoneNumber, String email, String password, boolean isPromoter, College college, Profession profession);
 	
 	public void update(int id, String firstName, String lastName, Date birthDate, String genre, Integer phoneDdd, 
-			String phoneNumber, String email, boolean isPromoter, College college, Profession profession);
+			String phoneNumber, String email, Boolean isPromoter, College college, Profession profession, String password);
 }

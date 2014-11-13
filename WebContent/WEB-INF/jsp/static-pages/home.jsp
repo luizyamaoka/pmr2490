@@ -10,6 +10,8 @@
     <c:import url="/WEB-INF/jsp/shared/header.jsp" />
     
     <div class="container theme-showcase" role="main">
+    
+    <c:import url="/WEB-INF/jsp/shared/alert.jsp" />
 
       <!-- Main jumbotron for a primary marketing message or call to action -->
       <div class="jumbotron">

@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.pmr2490.model.College;
 import com.pmr2490.model.Profession;
+import com.pmr2490.model.User;
 import com.pmr2490.service.CollegeService;
 import com.pmr2490.service.ProfessionService;
 import com.pmr2490.service.UserService;
@@ -74,7 +75,7 @@ public class UserController {
 		try {
 		
 			if (!password.equals(passwordConfirmation))
-				response.sendRedirect("/pmr2490/user/new?password");
+				response.sendRedirect("/pmr2490/user/new?passwords_not_matching");
 		
 			Calendar cal = Calendar.getInstance();
 			cal.set(birthYear, birthMonth-1, birthDay);
@@ -83,9 +84,7 @@ public class UserController {
 			College college = this.collegeService.get(collegeId);
 			Profession profession = this.professionService.get(professionId);
 			
-			String passwordHashed = BCrypt.hashpw(password, BCrypt.gensalt());
-			
-			this.userService.create(firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, passwordHashed, false, college, profession);
+			this.userService.create(firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, password, false, college, profession);
 		
 			response.sendRedirect("/pmr2490/users");
 			
@@ -113,12 +112,32 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="/{id}/edit")
-	public ModelAndView edit(@PathVariable int id) {
-		ModelAndView modelAndView = new ModelAndView("user/edit");
-		modelAndView.addObject("user", this.userService.get(id));
-		modelAndView.addObject("colleges", this.collegeService.getAll());
-		modelAndView.addObject("professions", this.professionService.getAll());
-		return modelAndView;
+	public ModelAndView edit(HttpServletRequest request, HttpServletResponse response,
+			@PathVariable int id) {
+		
+		try {
+			String email = SecurityContextHolder.getContext().getAuthentication().getName();
+			User user = this.userService.getByEmail(email);
+			
+			// if user is trying to access the edit page from another user
+			if (user.getId() != id) 
+				response.sendRedirect("/pmr2490/403");
+			else {
+				ModelAndView modelAndView = new ModelAndView("user/edit");
+				modelAndView.addObject("user", this.userService.get(id));
+				modelAndView.addObject("colleges", this.collegeService.getAll());
+				modelAndView.addObject("professions", this.professionService.getAll());
+				
+				if(request.getParameter("passwords_not_matching") != null)
+					modelAndView.addObject("error_message", "<strong>Erro!</strong> A senha e sua confirmação devem ser iguais.");
+				return modelAndView;
+			}
+		
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return new ModelAndView("error/403");
 	}
 	
 	@RequestMapping(value="/{id}/update", method=RequestMethod.POST)
@@ -136,17 +155,82 @@ public class UserController {
 			@RequestParam("college_id") Integer collegeId,
 			@RequestParam("profession_id") Integer professionId) {
 		
-		Calendar cal = Calendar.getInstance();
-		cal.set(birthYear, birthMonth, birthDay);
-		Date birthDate = cal.getTime();
+		try {
+			String accessEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+			User user = this.userService.getByEmail(accessEmail);
 		
-		College college = this.collegeService.get(collegeId);
-		Profession profession = this.professionService.get(professionId);
-		
-		this.userService.update(id, firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, false, college, profession);
+			// if user is trying to access the edit page from another user
+			if (user.getId() != id) 
+				response.sendRedirect("/pmr2490/403");
+			else {
+
+				Calendar cal = Calendar.getInstance();
+				cal.set(birthYear, birthMonth, birthDay);
+				Date birthDate = cal.getTime();
+				
+				College college = this.collegeService.get(collegeId);
+				Profession profession = this.professionService.get(professionId);
+				
+				this.userService.update(id, firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, false, college, profession, null);
+			
+				response.sendRedirect("/pmr2490/users");
+			}
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@RequestMapping(value="/{id}/edit-password")
+	public ModelAndView editPassword(HttpServletRequest request, HttpServletResponse response,
+			@PathVariable int id) {
 		
 		try {
-			response.sendRedirect("/pmr2490/users");
+			String email = SecurityContextHolder.getContext().getAuthentication().getName();
+			User user = this.userService.getByEmail(email);
+		
+			// if user is trying to access the edit page from another user
+			if (user.getId() != id) 
+				response.sendRedirect("/pmr2490/403");
+			else {
+				ModelAndView modelAndView = new ModelAndView("user/edit-password");
+				if(request.getParameter("wrong_password") != null)
+					modelAndView.addObject("error_message", "<strong>Senha incorreta!</strong> Tente novamente.");
+				else if(request.getParameter("passwords_not_matching") != null)
+					modelAndView.addObject("error_message", "<strong>Erro!</strong> A nova senha e sua confirmação devem ser iguais.");
+				else if(request.getParameter("success") != null)
+					modelAndView.addObject("success_message", "<strong>Sucesso!</strong> Senha alterada.");
+				return modelAndView;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return new ModelAndView("error/403");
+	}
+	
+	@RequestMapping(value="/{id}/update-password")
+	public void updatePassword(HttpServletRequest request, HttpServletResponse response,
+			@PathVariable int id, 
+			@RequestParam("password") String password,
+			@RequestParam("new_password") String newPassword,
+			@RequestParam("new_password_confirmation") String newPasswordConfirmation) {
+		
+		try {
+			String email = SecurityContextHolder.getContext().getAuthentication().getName();
+			User user = this.userService.getByEmail(email);
+			
+			// if user is trying to access the edit page from another user
+			if (user.getId() != id) 
+				response.sendRedirect("/pmr2490/403");
+			else if (!user.isPasswordCorrect(password))
+				response.sendRedirect("/pmr2490/users/"+id+"/edit-password?wrong_password");
+			else if (!newPassword.equals(newPasswordConfirmation))
+				response.sendRedirect("/pmr2490/users/"+id+"/edit-password?passwords_not_matching");
+			else {
+				this.userService.update(id, null, null, null, null, null, null, null, null, null, null, newPassword);
+				response.sendRedirect("/pmr2490/users/"+id+"/edit-password?success");
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

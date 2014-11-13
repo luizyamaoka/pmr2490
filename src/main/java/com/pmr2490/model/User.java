@@ -13,6 +13,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.springframework.security.crypto.bcrypt.BCrypt;
+
 @Entity
 @Table(name=DomainConstants.TB_USER)
 public class User {
@@ -29,22 +31,7 @@ public class User {
 		this.phoneDdd = phoneDdd;
 		this.phoneNumber = phoneNumber;
 		this.email = email;
-		this.password = password;
-		this.isPromoter = isPromoter;
-		this.college = college;
-		this.profession = profession;
-	}
-	
-	public User(Integer id, String firstName, String lastName, Date birthDate, String genre, Integer phoneDdd, 
-			String phoneNumber, String email, boolean isPromoter, College college, Profession profession){
-		if(id != null) this.id = id;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.birthDate = birthDate;
-		this.genre = genre;
-		this.phoneDdd = phoneDdd;
-		this.phoneNumber = phoneNumber;
-		this.email = email;
+		this.password = BCrypt.hashpw(password, BCrypt.gensalt());
 		this.isPromoter = isPromoter;
 		this.college = college;
 		this.profession = profession;
@@ -201,7 +188,11 @@ public class User {
 	}
 
 	public void setPassword(String password) {
-		this.password = password;
+		this.password = BCrypt.hashpw(password, BCrypt.gensalt());
+	}
+	
+	public boolean isPasswordCorrect(String password) {
+		return BCrypt.checkpw(password, this.password);
 	}
 	
 }

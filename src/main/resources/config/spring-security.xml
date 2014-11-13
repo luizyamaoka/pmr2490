@@ -9,7 +9,14 @@
 	<http auto-config="true" use-expressions="true">
 	    <intercept-url pattern="/colleges**" access="hasRole('ADMIN')" />
 	    
-		
+		<access-denied-handler error-page="/403" />
+		<form-login 
+		    login-page="/login" 
+		    default-target-url="/"
+			authentication-failure-url="/login?error" 
+			username-parameter="username"
+			password-parameter="password" />
+		<logout logout-success-url="/?logout" />
 
 		
 	</http>

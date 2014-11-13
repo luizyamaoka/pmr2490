@@ -25,6 +25,8 @@
     
     <div class="container theme-showcase" role="main">
     
+      <c:import url="/WEB-INF/jsp/shared/alert.jsp" />
+    
       <form class="form-signin" role="form" action="create" method="post">
         <h2 class="form-signin-heading">Adicionar usuário</h2>
         <input class="form-control" name="first_name" placeholder="Nome" required autofocus type="text">

@@ -38,7 +38,7 @@
       </ul>
       <security:authorize access="isAuthenticated()">
         <ul class="nav navbar-nav navbar-right">
-          <li><a href="<c:url value='j_spring_security_logout' />">Sair</a></li>
+          <li><a href="/pmr2490/<c:url value='j_spring_security_logout' />">Sair</a></li>
         </ul>
       </security:authorize>
     </div><!--/.nav-collapse -->
