@@ -13,6 +13,11 @@ import javax.persistence.Table;
 @Table(name=DomainConstants.TB_TAGGING)
 public class Tagging {
 
+	public Tagging(Tag tag, Event event) {
+		this.event = event;
+		this.tag = tag;
+	}
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id")

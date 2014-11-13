@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,10 +20,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.pmr2490.model.Event;
 import com.pmr2490.model.Local;
+import com.pmr2490.model.Tag;
 import com.pmr2490.model.User;
 import com.pmr2490.service.EventService;
 import com.pmr2490.service.LocalService;
+import com.pmr2490.service.TagService;
+import com.pmr2490.service.TaggingService;
 import com.pmr2490.service.UserService;
 
 @Controller
@@ -32,12 +37,17 @@ public class EventController {
 	private EventService eventService;
 	private LocalService localService;
 	private UserService userService;
+	private TaggingService taggingService;
+	private TagService tagService;
 	
 	@Autowired
-	public EventController(EventService eventService, LocalService localService, UserService userService) {
+	public EventController(EventService eventService, LocalService localService, 
+			UserService userService, TaggingService taggingService, TagService tagService) {
 		this.eventService = eventService;
 		this.localService = localService;
 		this.userService = userService;
+		this.taggingService = taggingService;
+		this.tagService = tagService;
 	}
 	
 	@RequestMapping(value="")
@@ -51,6 +61,7 @@ public class EventController {
 	public ModelAndView insert(HttpServletRequest request, HttpServletResponse response) {
 		ModelAndView modelAndView = new ModelAndView("event/new");
 		modelAndView.addObject("locals", this.localService.getAll());
+		modelAndView.addObject("tags", this.tagService.getAll());
 		return modelAndView;
 	}
 	
@@ -67,7 +78,8 @@ public class EventController {
 			@RequestParam("phone_ddd") Integer phoneDdd,
 			@RequestParam("phone_number") String phoneNumber,
 			@RequestParam("description") String description,
-			@RequestParam("local_id") Integer localId) {
+			@RequestParam("local_id") Integer localId,
+			@RequestParam("tag_ids[]") Integer[] tagIds) {
 		
 		try {
 		
@@ -77,9 +89,19 @@ public class EventController {
 			Date endDate = df.parse(dateEndString + " " + hourEnd + ":" + minuteEnd);
 			
 			Local local = this.localService.get(localId);
-			User creator = this.userService.get(1);
 			
-			this.eventService.create(name, startDate, endDate, email, phoneDdd, phoneNumber, description, creator, local);
+			String accessEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+			User creator = this.userService.getByEmail(accessEmail);
+			
+			int eventId = this.eventService.create(name, startDate, endDate, email, phoneDdd, phoneNumber, 
+					description, creator, local);
+			
+			Event event = this.eventService.get(eventId);
+			
+			for(int tagId : tagIds) {
+				Tag tag = this.tagService.get(tagId);
+				this.taggingService.create(event, tag);
+			}
 			
 			response.sendRedirect("/pmr2490/events");
 			

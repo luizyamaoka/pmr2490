@@ -44,6 +44,11 @@
             <option value="${local.id}">${local.name}</option>
           </c:forEach>
 		</select> 
+		<c:forEach var="tag" items="${tags}">
+		  <label class="checkbox">
+			<input type="checkbox" name="tag_ids[]" value="${tag.id}"> ${tag.name}
+	      </label>
+		</c:forEach>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Adicionar</button>
       </form>
 
