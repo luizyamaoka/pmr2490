@@ -34,19 +34,6 @@ public class Event {
 		this.local = local;
 	}
 	
-	public Event(Integer id, String name, Date dateStart, Date dateEnd, String email,
-			Integer phoneDdd, String phoneNumber, String description, Local local) {
-		if(id != null) this.id = id;
-		this.name = name;
-		this.dateStart = dateStart;
-		this.dateEnd = dateEnd;
-		this.setEmail(email);
-		this.phoneDdd = phoneDdd;
-		this.phoneNumber = phoneNumber;
-		this.description = description;
-		this.local = local;
-	}
-	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id")
