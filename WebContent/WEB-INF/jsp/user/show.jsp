@@ -6,6 +6,7 @@
     <meta charset="utf-8">
     <title>${user.firstName}</title>
     <c:import url="/WEB-INF/jsp/shared/css.jsp" />
+    <c:import url="/WEB-INF/jsp/shared/js.jsp" />
   </head>
   <body>
     <c:import url="/WEB-INF/jsp/shared/header.jsp" />
@@ -54,6 +55,9 @@
               
             </tbody>
           </table>
+          <div>
+            <a href="/pmr2490/users/${user.id}/edit" class="btn btn-large btn-warning center-block">Editar perfil</a>
+          </div>
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <title>Acesso negado</title>
     <c:import url="/WEB-INF/jsp/shared/css.jsp" />
+    <c:import url="/WEB-INF/jsp/shared/js.jsp" />
   </head>
   <body>
     <c:import url="/WEB-INF/jsp/shared/header.jsp" />

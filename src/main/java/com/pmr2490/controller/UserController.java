@@ -53,6 +53,12 @@ public class UserController {
 		ModelAndView modelAndView = new ModelAndView("user/new");
 		modelAndView.addObject("colleges", this.collegeService.getAll());
 		modelAndView.addObject("professions", this.professionService.getAll());
+		
+		if(request.getParameter("passwords_not_matching") != null)
+			modelAndView.addObject("error_message", "<strong>Erro!</strong> A senha e sua confirmação devem ser iguais.");
+		if(request.getParameter("existant_email") != null)
+			modelAndView.addObject("error_message", "<strong>Erro!</strong> Este e-mail já está cadastrado.");
+		
 		return modelAndView;
 	}
 	
@@ -75,19 +81,22 @@ public class UserController {
 		try {
 		
 			if (!password.equals(passwordConfirmation))
-				response.sendRedirect("/pmr2490/user/new?passwords_not_matching");
+				response.sendRedirect("/pmr2490/users/new?passwords_not_matching");
+			else if (this.userService.getByEmail(email) != null)
+				response.sendRedirect("/pmr2490/users/new?existant_email");
+			else {
 		
-			Calendar cal = Calendar.getInstance();
-			cal.set(birthYear, birthMonth-1, birthDay);
-			Date birthDate = cal.getTime();
+				Calendar cal = Calendar.getInstance();
+				cal.set(birthYear, birthMonth-1, birthDay);
+				Date birthDate = cal.getTime();
+				
+				College college = this.collegeService.get(collegeId);
+				Profession profession = this.professionService.get(professionId);
+				
+				this.userService.create(firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, password, false, college, profession);
 			
-			College college = this.collegeService.get(collegeId);
-			Profession profession = this.professionService.get(professionId);
-			
-			this.userService.create(firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, password, false, college, profession);
-		
-			response.sendRedirect("/pmr2490/users");
-			
+				response.sendRedirect("/pmr2490/users");
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -96,9 +105,17 @@ public class UserController {
 	
 	@RequestMapping(value="/{id}")
 	public ModelAndView show(@PathVariable int id) {
-		Map<String, Object> map = new HashMap<>();
-		map.put("user", this.userService.get(id));
-		return new ModelAndView("user/show", map);
+		ModelAndView modelAndView = new ModelAndView("user/show");
+		modelAndView.addObject("user", this.userService.get(id));
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="/profile")
+	public ModelAndView profile() {
+		ModelAndView modelAndView = new ModelAndView("user/show");
+		String email = SecurityContextHolder.getContext().getAuthentication().getName();
+		modelAndView.addObject("user", this.userService.getByEmail(email));
+		return modelAndView;
 	}
 	
 	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
@@ -181,37 +198,22 @@ public class UserController {
 		}
 	}
 	
-	@RequestMapping(value="/{id}/edit-password")
-	public ModelAndView editPassword(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable int id) {
-		
-		try {
-			String email = SecurityContextHolder.getContext().getAuthentication().getName();
-			User user = this.userService.getByEmail(email);
-		
-			// if user is trying to access the edit page from another user
-			if (user.getId() != id) 
-				response.sendRedirect("/pmr2490/403");
-			else {
-				ModelAndView modelAndView = new ModelAndView("user/edit-password");
-				if(request.getParameter("wrong_password") != null)
-					modelAndView.addObject("error_message", "<strong>Senha incorreta!</strong> Tente novamente.");
-				else if(request.getParameter("passwords_not_matching") != null)
-					modelAndView.addObject("error_message", "<strong>Erro!</strong> A nova senha e sua confirmação devem ser iguais.");
-				else if(request.getParameter("success") != null)
-					modelAndView.addObject("success_message", "<strong>Sucesso!</strong> Senha alterada.");
-				return modelAndView;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return new ModelAndView("error/403");
+	@RequestMapping(value="/edit-password")
+	public ModelAndView editPassword(HttpServletRequest request, HttpServletResponse response) {
+	
+		ModelAndView modelAndView = new ModelAndView("user/edit-password");
+		if(request.getParameter("wrong_password") != null)
+			modelAndView.addObject("error_message", "<strong>Senha incorreta!</strong> Tente novamente.");
+		else if(request.getParameter("passwords_not_matching") != null)
+			modelAndView.addObject("error_message", "<strong>Erro!</strong> A nova senha e sua confirmação devem ser iguais.");
+		else if(request.getParameter("success") != null)
+			modelAndView.addObject("success_message", "<strong>Sucesso!</strong> Senha alterada.");
+		return modelAndView;
+
 	}
 	
-	@RequestMapping(value="/{id}/update-password")
+	@RequestMapping(value="/update-password")
 	public void updatePassword(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable int id, 
 			@RequestParam("password") String password,
 			@RequestParam("new_password") String newPassword,
 			@RequestParam("new_password_confirmation") String newPasswordConfirmation) {
@@ -220,16 +222,13 @@ public class UserController {
 			String email = SecurityContextHolder.getContext().getAuthentication().getName();
 			User user = this.userService.getByEmail(email);
 			
-			// if user is trying to access the edit page from another user
-			if (user.getId() != id) 
-				response.sendRedirect("/pmr2490/403");
-			else if (!user.isPasswordCorrect(password))
-				response.sendRedirect("/pmr2490/users/"+id+"/edit-password?wrong_password");
+			if (!user.isPasswordCorrect(password))
+				response.sendRedirect("/pmr2490/users/edit-password?wrong_password");
 			else if (!newPassword.equals(newPasswordConfirmation))
-				response.sendRedirect("/pmr2490/users/"+id+"/edit-password?passwords_not_matching");
+				response.sendRedirect("/pmr2490/users/edit-password?passwords_not_matching");
 			else {
-				this.userService.update(id, null, null, null, null, null, null, null, null, null, null, newPassword);
-				response.sendRedirect("/pmr2490/users/"+id+"/edit-password?success");
+				this.userService.update(user.getId(), null, null, null, null, null, null, null, null, null, null, newPassword);
+				response.sendRedirect("/pmr2490/users/edit-password?success");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

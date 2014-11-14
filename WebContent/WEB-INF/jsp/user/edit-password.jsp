@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <title>Alterar senha</title>
     <c:import url="/WEB-INF/jsp/shared/css.jsp" />
+    <c:import url="/WEB-INF/jsp/shared/js.jsp" />
     <style>
     .form-signin {
       max-width: 330px;
