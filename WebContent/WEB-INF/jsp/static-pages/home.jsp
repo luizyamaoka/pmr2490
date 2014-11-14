@@ -22,7 +22,7 @@
         <security:authorize access="isAuthenticated()">
           <p>Esta é a página inicial do projeto de SI PMR2490.</p>
           <p>Gerenciador de eventos da Escola Politécnica da Universidade de São Paulo</p>
-          <p><a href="users" class="btn btn-primary btn-lg" role="button">User</a></p>
+          <p><a href="events/new" class="btn btn-success btn-lg" role="button">Novo evento</a></p>
         </security:authorize>
         
         <security:authorize access="!isAuthenticated()">
