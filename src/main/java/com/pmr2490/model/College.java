@@ -14,6 +14,11 @@ import javax.persistence.Table;
 @Table(name=DomainConstants.TB_COLLEGE)
 public class College {
 
+	/** 
+	 * Default Constructor
+	 */
+	public College() { }
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id")

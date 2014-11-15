@@ -13,6 +13,11 @@ import javax.persistence.Table;
 @Table(name=DomainConstants.TB_PARTICIPANT)
 public class Participant {
 
+	/** 
+	 * Default Constructor
+	 */
+	public Participant() { }
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id")

@@ -13,12 +13,17 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 @Entity
 @Table(name=DomainConstants.TB_USER)
 public class User {
 
+	/** 
+	 * Default Constructor
+	 */
 	public User() { }
 	
 	public User(Integer id, String firstName, String lastName, Date birthDate, String genre, Integer phoneDdd, 
@@ -81,6 +86,7 @@ public class User {
 	private List<Event> events;
 	
 	@OneToMany(mappedBy="user")
+	@Cascade(CascadeType.DELETE)
 	private List<Participant> participations;
 
 	public int getId() {

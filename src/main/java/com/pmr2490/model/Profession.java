@@ -14,6 +14,11 @@ import javax.persistence.Table;
 @Table(name=DomainConstants.TB_PROFESSION)
 public class Profession {
 
+	/** 
+	 * Default Constructor
+	 */
+	public Profession() { }
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id")

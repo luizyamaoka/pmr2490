@@ -13,10 +13,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 @Entity
 @Table(name=DomainConstants.TB_EVENT)
 public class Event {
 
+	/** 
+	 * Default Constructor
+	 */
 	public Event() { }
 	
 	public Event(Integer id, String name, Date dateStart, Date dateEnd, String email,
@@ -69,9 +75,11 @@ public class Event {
 	private Local local;
 	
 	@OneToMany(mappedBy="event")
+	@Cascade(CascadeType.DELETE)
 	private List<Participant> participants;
 	
 	@OneToMany(mappedBy="event")
+	@Cascade({CascadeType.SAVE_UPDATE, CascadeType.DELETE})
 	private List<Tagging> taggings;
 
 	public int getId() {

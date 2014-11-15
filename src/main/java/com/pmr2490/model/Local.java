@@ -14,6 +14,11 @@ import javax.persistence.Table;
 @Table(name=DomainConstants.TB_LOCAL)
 public class Local {
 
+	/** 
+	 * Default Constructor
+	 */
+	public Local() { }
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id")

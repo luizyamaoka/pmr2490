@@ -13,6 +13,11 @@ import javax.persistence.Table;
 @Table(name=DomainConstants.TB_TAGGING)
 public class Tagging {
 
+	/** 
+	 * Default Constructor
+	 */
+	public Tagging() { }
+	
 	public Tagging(Tag tag, Event event) {
 		this.event = event;
 		this.tag = tag;

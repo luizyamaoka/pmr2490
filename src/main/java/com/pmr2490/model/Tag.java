@@ -10,10 +10,18 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
 @Entity
 @Table(name=DomainConstants.TB_TAG)
 public class Tag {
 
+	/** 
+	 * Default Constructor
+	 */
+	public Tag() { }
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name="id")
@@ -23,6 +31,7 @@ public class Tag {
 	private String name;
 	
 	@OneToMany(mappedBy="tag")
+	@Cascade(CascadeType.DELETE)
 	private List<Tagging> taggings;
 
 	public int getId() {
