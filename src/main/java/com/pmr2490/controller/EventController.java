@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,14 +22,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.pmr2490.model.Event;
 import com.pmr2490.model.Local;
 import com.pmr2490.model.Tag;
 import com.pmr2490.model.User;
 import com.pmr2490.service.EventService;
 import com.pmr2490.service.LocalService;
 import com.pmr2490.service.TagService;
-import com.pmr2490.service.TaggingService;
 import com.pmr2490.service.UserService;
 
 @Controller
@@ -37,16 +37,14 @@ public class EventController {
 	private EventService eventService;
 	private LocalService localService;
 	private UserService userService;
-	private TaggingService taggingService;
 	private TagService tagService;
 	
 	@Autowired
 	public EventController(EventService eventService, LocalService localService, 
-			UserService userService, TaggingService taggingService, TagService tagService) {
+			UserService userService, TagService tagService) {
 		this.eventService = eventService;
 		this.localService = localService;
 		this.userService = userService;
-		this.taggingService = taggingService;
 		this.tagService = tagService;
 	}
 	
@@ -67,43 +65,50 @@ public class EventController {
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
 	public void create(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam("name") String name,
-			@RequestParam("date_start") String dateStartString,
-			@RequestParam("hour_start") Integer hourStart,
-			@RequestParam("minute_start") Integer minuteStart,
-			@RequestParam("date_end") String dateEndString,
-			@RequestParam("hour_end") Integer hourEnd,
-			@RequestParam("minute_end") Integer minuteEnd,
-			@RequestParam("email") String email,
-			@RequestParam("phone_ddd") Integer phoneDdd,
-			@RequestParam("phone_number") String phoneNumber,
-			@RequestParam("description") String description,
-			@RequestParam("local_id") Integer localId,
-			@RequestParam("tag_ids[]") Integer[] tagIds) {
+			@RequestParam(value="name") String name,
+			@RequestParam(value="date_start") String dateStartString,
+			@RequestParam(value="hour_start") Integer hourStart,
+			@RequestParam(value="minute_start") Integer minuteStart,
+			@RequestParam(value="date_end", required=false) String dateEndString,
+			@RequestParam(value="hour_end", required=false) Integer hourEnd,
+			@RequestParam(value="minute_end", required=false) Integer minuteEnd,
+			@RequestParam(value="email") String email,
+			@RequestParam(value="phone_ddd", required=false) Integer phoneDdd,
+			@RequestParam(value="phone_number", required=false) String phoneNumber,
+			@RequestParam(value="description", required=false) String description,
+			@RequestParam(value="local_id") Integer localId,
+			@RequestParam(value="tag_ids[]", required=false) Integer[] tagIds) {
 		
 		try {
 		
-			DateFormat df = new SimpleDateFormat("yyyyMMdd hh:mm");
-			
-			Date startDate = df.parse(dateStartString + " " + hourStart + ":" + minuteStart);
-			Date endDate = df.parse(dateEndString + " " + hourEnd + ":" + minuteEnd);
-			
-			Local local = this.localService.get(localId);
-			
-			String accessEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-			User creator = this.userService.getByEmail(accessEmail);
-			
-			int eventId = this.eventService.create(name, startDate, endDate, email, phoneDdd, phoneNumber, 
-					description, creator, local);
-			
-			Event event = this.eventService.get(eventId);
-			
-			for(int tagId : tagIds) {
-				Tag tag = this.tagService.get(tagId);
-				this.taggingService.create(event, tag);
+			if (localId == 0)
+				response.sendRedirect("/pmr2490/events/new?local_missing");
+			else {
+				DateFormat df = new SimpleDateFormat("yyyyMMdd hh:mm");
+				
+				Date startDate = df.parse(dateStartString + " " + hourStart + ":" + minuteStart);
+				
+				Date endDate = null;
+				if (!dateEndString.equals("") && hourEnd != null && minuteEnd != null)
+					endDate = df.parse(dateEndString + " " + hourEnd + ":" + minuteEnd);
+				
+				phoneNumber = phoneNumber.equals("") ? null : phoneNumber;
+				
+				Local local = this.localService.get(localId);
+				
+				String accessEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+				User creator = this.userService.getByEmail(accessEmail);
+				
+				List<Tag> tags = new ArrayList<Tag>();
+				if (tagIds != null)
+					for(int tagId : tagIds)
+						tags.add(this.tagService.get(tagId));
+				
+				this.eventService.create(name, startDate, endDate, email, phoneDdd, phoneNumber, 
+						description, creator, local, tags);
+				
+				response.sendRedirect("/pmr2490/events");
 			}
-			
-			response.sendRedirect("/pmr2490/events");
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -141,31 +146,46 @@ public class EventController {
 	@RequestMapping(value="/{id}/update", method=RequestMethod.POST)
 	public void update(HttpServletRequest request, HttpServletResponse response, 
 			@PathVariable int id,
-			@RequestParam("name") String name,
-			@RequestParam("date_start") String dateStartString,
-			@RequestParam("hour_start") Integer hourStart,
-			@RequestParam("minute_start") Integer minuteStart,
-			@RequestParam("date_end") String dateEndString,
-			@RequestParam("hour_end") Integer hourEnd,
-			@RequestParam("minute_end") Integer minuteEnd,
-			@RequestParam("email") String email,
-			@RequestParam("phone_ddd") Integer phoneDdd,
-			@RequestParam("phone_number") String phoneNumber,
-			@RequestParam("description") String description,
-			@RequestParam("local_id") Integer localId) {
+			@RequestParam(value="name") String name,
+			@RequestParam(value="date_start") String dateStartString,
+			@RequestParam(value="hour_start") Integer hourStart,
+			@RequestParam(value="minute_start") Integer minuteStart,
+			@RequestParam(value="date_end", required=false) String dateEndString,
+			@RequestParam(value="hour_end", required=false) Integer hourEnd,
+			@RequestParam(value="minute_end", required=false) Integer minuteEnd,
+			@RequestParam(value="email") String email,
+			@RequestParam(value="phone_ddd", required=false) Integer phoneDdd,
+			@RequestParam(value="phone_number", required=false) String phoneNumber,
+			@RequestParam(value="description", required=false) String description,
+			@RequestParam(value="local_id") Integer localId,
+			@RequestParam(value="tag_ids[]", required=false) Integer[] tagIds) {
 		
 		try {
 			
-			DateFormat df = new SimpleDateFormat("yyyyMMdd hh:mm");
+			if (localId == 0)
+				response.sendRedirect("/pmr2490/events/" + id + "/edit?local_missing");
+			else {
 			
-			Date startDate = df.parse(dateStartString + " " + hourStart + ":" + minuteStart);
-			Date endDate = df.parse(dateEndString + " " + hourEnd + ":" + minuteEnd);
-			
-			Local local = this.localService.get(localId);
-			
-			this.eventService.update(id, name, startDate, endDate, email, phoneDdd, phoneNumber, description, local);
-			
-			response.sendRedirect("/pmr2490/events");
+				DateFormat df = new SimpleDateFormat("yyyyMMdd hh:mm");
+				
+				Date startDate = df.parse(dateStartString + " " + hourStart + ":" + minuteStart);
+				
+				Date endDate = null;
+				if (!dateEndString.equals("") && hourEnd != null && minuteEnd != null)
+					endDate = df.parse(dateEndString + " " + hourEnd + ":" + minuteEnd);
+				
+				phoneNumber = phoneNumber.equals("") ? null : phoneNumber;
+				
+				Local local = this.localService.get(localId);
+				
+				List<Tag> tags = new ArrayList<Tag>();
+				for(int tagId : tagIds)
+					tags.add(this.tagService.get(tagId));
+				
+				this.eventService.update(id, name, startDate, endDate, email, phoneDdd, phoneNumber, description, local, tags);
+				
+				response.sendRedirect("/pmr2490/events");
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ParseException e) {

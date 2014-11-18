@@ -64,38 +64,47 @@ public class UserController {
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
 	public void create(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam("first_name") String firstName,
-			@RequestParam("last_name") String lastName,
-			@RequestParam("birth_day") Integer birthDay,
-			@RequestParam("birth_month") Integer birthMonth,
-			@RequestParam("birth_year") Integer birthYear,
-			@RequestParam("genre") String genre,
-			@RequestParam("phone_ddd") Integer phoneDdd,
-			@RequestParam("phone_number") String phoneNumber,
-			@RequestParam("email") String email,
-			@RequestParam("password") String password,
-			@RequestParam("password_confirmation") String passwordConfirmation,
-			@RequestParam("college_id") Integer collegeId,
-			@RequestParam("profession_id") Integer professionId) {
+			@RequestParam(value="first_name") String firstName,
+			@RequestParam(value="last_name") String lastName,
+			@RequestParam(value="birth_day", required=false) Integer birthDay,
+			@RequestParam(value="birth_month", required=false) Integer birthMonth,
+			@RequestParam(value="birth_year", required=false) Integer birthYear,
+			@RequestParam(value="genre", required=false) String genre,
+			@RequestParam(value="phone_ddd", required=false) Integer phoneDdd,
+			@RequestParam(value="phone_number", required=false) String phoneNumber,
+			@RequestParam(value="email") String email,
+			@RequestParam(value="password") String password,
+			@RequestParam(value="password_confirmation") String passwordConfirmation,
+			@RequestParam(value="college_id", required=false) Integer collegeId,
+			@RequestParam(value="profession_id") Integer professionId) {	
 		
 		try {
 		
 			if (!password.equals(passwordConfirmation))
 				response.sendRedirect("/pmr2490/users/new?passwords_not_matching");
+			else if (professionId == 0) {
+				response.sendRedirect("/pmr2490/users/new?profession_missing");
+			}
 			else if (this.userService.getByEmail(email) != null)
 				response.sendRedirect("/pmr2490/users/new?existant_email");
 			else {
 		
-				Calendar cal = Calendar.getInstance();
-				cal.set(birthYear, birthMonth-1, birthDay);
-				Date birthDate = cal.getTime();
+				Date birthDate = null;
+				if (birthDay != null && birthMonth != null && birthYear != null) {
+					Calendar cal = Calendar.getInstance();
+					cal.set(birthYear, birthMonth-1, birthDay);
+					birthDate = cal.getTime();
+				}
 				
-				College college = this.collegeService.get(collegeId);
+				phoneNumber = phoneNumber.equals("") ? null : phoneNumber;
+				genre = genre.equals("0") ? null : genre;
+				
+				College college = collegeId == 0 ? null : this.collegeService.get(collegeId);
 				Profession profession = this.professionService.get(professionId);
 				
 				this.userService.create(firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, password, false, college, profession);
 			
-				response.sendRedirect("/pmr2490/users");
+				response.sendRedirect("/pmr2490/login");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -120,9 +129,17 @@ public class UserController {
 	
 	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
 	public void destroy(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
-		this.userService.delete(id);
 		try {
-			response.sendRedirect("/pmr2490/users");
+		
+			String email = SecurityContextHolder.getContext().getAuthentication().getName();
+			User user = this.userService.getByEmail(email);
+			
+			if (user.getId() != id) 
+				response.sendRedirect("/pmr2490/403");
+			else {
+				this.userService.delete(id);
+				response.sendRedirect("/pmr2490/users");
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -160,17 +177,17 @@ public class UserController {
 	@RequestMapping(value="/{id}/update", method=RequestMethod.POST)
 	public void update(HttpServletRequest request, HttpServletResponse response, 
 			@PathVariable int id,
-			@RequestParam("first_name") String firstName,
-			@RequestParam("last_name") String lastName,
-			@RequestParam("birth_day") Integer birthDay,
-			@RequestParam("birth_month") Integer birthMonth,
-			@RequestParam("birth_year") Integer birthYear,
-			@RequestParam("genre") String genre,
-			@RequestParam("phone_ddd") Integer phoneDdd,
-			@RequestParam("phone_number") String phoneNumber,
-			@RequestParam("email") String email,
-			@RequestParam("college_id") Integer collegeId,
-			@RequestParam("profession_id") Integer professionId) {
+			@RequestParam(value="first_name") String firstName,
+			@RequestParam(value="last_name") String lastName,
+			@RequestParam(value="birth_day", required=false) Integer birthDay,
+			@RequestParam(value="birth_month", required=false) Integer birthMonth,
+			@RequestParam(value="birth_year", required=false) Integer birthYear,
+			@RequestParam(value="genre", required=false) String genre,
+			@RequestParam(value="phone_ddd", required=false) Integer phoneDdd,
+			@RequestParam(value="phone_number", required=false) String phoneNumber,
+			@RequestParam(value="email") String email,
+			@RequestParam(value="college_id", required=false) Integer collegeId,
+			@RequestParam(value="profession_id") Integer professionId) {
 		
 		try {
 			String accessEmail = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -181,11 +198,17 @@ public class UserController {
 				response.sendRedirect("/pmr2490/403");
 			else {
 
-				Calendar cal = Calendar.getInstance();
-				cal.set(birthYear, birthMonth, birthDay);
-				Date birthDate = cal.getTime();
+				Date birthDate = null;
+				if (birthDay != null && birthMonth != null && birthYear != null) {
+					Calendar cal = Calendar.getInstance();
+					cal.set(birthYear, birthMonth-1, birthDay);
+					birthDate = cal.getTime();
+				}
 				
-				College college = this.collegeService.get(collegeId);
+				phoneNumber = phoneNumber.equals("") ? null : phoneNumber;
+				genre = genre.equals("0") ? null : genre;
+				
+				College college = collegeId == null ? null : this.collegeService.get(collegeId);
 				Profession profession = this.professionService.get(professionId);
 				
 				this.userService.update(id, firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, false, college, profession, null);

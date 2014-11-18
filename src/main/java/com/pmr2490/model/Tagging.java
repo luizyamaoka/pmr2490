@@ -18,6 +18,10 @@ public class Tagging {
 	 */
 	public Tagging() { }
 	
+	public Tagging(Tag tag) {
+		this.tag = tag;
+	}
+	
 	public Tagging(Tag tag, Event event) {
 		this.event = event;
 		this.tag = tag;

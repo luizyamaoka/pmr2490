@@ -36,7 +36,7 @@
         <input class="form-control" name="birth_month" placeholder="Mês" type="number" min="1" max="12">
         <input class="form-control" name="birth_year" placeholder="Ano" type="number" min="1900" max="2100">
         <select class="form-control" name="genre">
-          <option selected>Sexo</option>
+          <option value="0" selected>Sexo</option>
 		  <option value="m">Masculino</option>
 		  <option value="f">Feminino</option>
 		</select> 
@@ -46,13 +46,13 @@
         <input class="form-control" name="password" placeholder="Senha" required type="password">
         <input class="form-control" name="password_confirmation" placeholder="Confirmação" required type="password">
         <select class="form-control" name="profession_id" required >
-          <option selected>Ocupação</option>
+          <option value="0" selected>Ocupação</option>
           <c:forEach var="profession" items="${professions}">
             <option value="${profession.id}">${profession.name}</option>
           </c:forEach>
 		</select> 
 		<select class="form-control" name="college_id">
-          <option selected>Faculdade</option>
+          <option value="0" selected>Faculdade</option>
           <c:forEach var="college" items="${colleges}">
             <option value="${college.id}">${college.name}</option>
           </c:forEach>

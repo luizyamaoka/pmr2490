@@ -40,7 +40,7 @@
         <input class="form-control" name="email" placeholder="Email" required type="email">
 		<textarea class="form-control" name="description" placeholder="Descrição" rows="3"></textarea>
         <select class="form-control" name="local_id" required >
-          <option selected>Local</option>
+          <option value="0" selected>Local</option>
           <c:forEach var="local" items="${locals}">
             <option value="${local.id}">${local.name}</option>
           </c:forEach>

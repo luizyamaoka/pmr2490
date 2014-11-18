@@ -1,5 +1,6 @@
 package com.pmr2490.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -38,6 +39,7 @@ public class Event {
 		this.description = description;
 		this.creator = creator;
 		this.local = local;
+		this.taggings = new ArrayList<Tagging>();
 	}
 	
 	@Id
@@ -177,4 +179,5 @@ public class Event {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	
 }

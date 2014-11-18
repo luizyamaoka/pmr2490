@@ -41,7 +41,15 @@
         <input class="form-control" name="email" placeholder="Email" value="${event.email}" required type="email">
 		<textarea class="form-control" name="description" placeholder="Descrição" rows="3">${event.description}</textarea>
         <select class="form-control" name="local_id" required >
-          <option>Local</option>
+          <c:choose>
+            <c:when test="${event.local == null}">
+              <option selected value="0">Local</option>
+            </c:when>
+            <c:otherwise>
+              <option value="0">Local</option>
+            </c:otherwise>
+          </c:choose>
+          <option value="0">Local</option>
           <c:forEach var="local" items="${locals}">
             <c:choose>
               <c:when test="${event.local.id == local.id}">
