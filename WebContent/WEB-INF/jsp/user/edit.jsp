@@ -30,11 +30,22 @@
         <h2 class="form-signin-heading">Editar usuário</h2>
         <input class="form-control" name="first_name" placeholder="Nome" value="${user.firstName}" required autofocus type="text">
         <input class="form-control" name="last_name" placeholder="Sobrenome" value="${user.lastName}" required type="text">
-        <input class="form-control" name="birth_day" placeholder="Dia" type="number" value="${user.birthDate.date}" min="1" max="31">
-        <input class="form-control" name="birth_month" placeholder="Mês" type="number" value="${user.birthDate.month+1}" min="1" max="12">
-        <input class="form-control" name="birth_year" placeholder="Ano" type="number" value="${1900+user.birthDate.year}" min="1900" max="2100">
+        
+        <c:choose>
+          <c:when test="${user.birthDate == null}">
+            <input class="form-control" name="birth_day" placeholder="Dia" type="number" min="1" max="31">
+            <input class="form-control" name="birth_month" placeholder="Mês" type="number" min="1" max="12">
+            <input class="form-control" name="birth_year" placeholder="Ano" type="number" min="1900" max="2100">
+          </c:when>
+          <c:otherwise>
+            <input class="form-control" name="birth_day" placeholder="Dia" type="number" value="${user.birthDate.date}" min="1" max="31">
+            <input class="form-control" name="birth_month" placeholder="Mês" type="number" value="${user.birthDate.month+1}" min="1" max="12">
+            <input class="form-control" name="birth_year" placeholder="Ano" type="number" value="${1900+user.birthDate.year}" min="1900" max="2100">
+          </c:otherwise>
+        </c:choose>
+        
         <select class="form-control" name="genre">
-          <option>Sexo</option>
+          <option value="0">Sexo</option>
           <c:if test="${user.genre == 'm'}">
 		  	<option value="m" selected>Masculino</option>
 		  	<option value="f">Feminino</option>
@@ -48,7 +59,7 @@
         <input class="form-control" name="phone_number" placeholder="Telefone" value="${user.phoneNumber}" type="number">
         <input class="form-control" name="email" placeholder="Email" value="${user.email}" required type="email">
         <select class="form-control" name="profession_id" required >
-          <option>Ocupação</option>
+          <option value="0" selected>Ocupação</option>
           <c:forEach var="profession" items="${professions}">
             <c:choose>
               <c:when test="${user.profession.id == profession.id}">
@@ -61,7 +72,7 @@
           </c:forEach>
 		</select> 
 		<select class="form-control" name="college_id">
-          <option selected>Faculdade</option>
+          <option value="0" selected>Faculdade</option>
           <c:forEach var="college" items="${colleges}">
             <c:choose>
               <c:when test="${user.college.id == college.id}">
