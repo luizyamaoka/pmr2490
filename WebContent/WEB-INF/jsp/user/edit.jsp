@@ -46,14 +46,20 @@
         
         <select class="form-control" name="genre">
           <option value="0">Sexo</option>
-          <c:if test="${user.genre == 'm'}">
-		  	<option value="m" selected>Masculino</option>
-		  	<option value="f">Feminino</option>
-		  </c:if>
-		  <c:if test="${user.genre == 'f'}">
-		  	<option value="m">Masculino</option>
-		  	<option value="f" selected>Feminino</option>
-		  </c:if>
+          <c:choose>
+            <c:when test="${user.genre == 'm'}">
+              <option value="m" selected>Masculino</option>
+		  	  <option value="f">Feminino</option>
+            </c:when>
+            <c:when test="${user.genre == 'f'}">
+              <option value="m">Masculino</option>
+		  	  <option value="f" selected>Feminino</option>
+            </c:when>
+            <c:otherwise>
+              <option value="m">Masculino</option>
+		  	  <option value="f">Feminino</option>
+            </c:otherwise>
+          </c:choose>
 		</select> 
         <input class="form-control" name="phone_ddd" placeholder="DDD" type="number" value="${user.phoneDdd}" min="1" max="99">
         <input class="form-control" name="phone_number" placeholder="Telefone" value="${user.phoneNumber}" type="number">
