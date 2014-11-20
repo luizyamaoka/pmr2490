@@ -10,18 +10,24 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="/pmr2490/">Eventos USP</a>
+      <a class="navbar-brand" href="/pmr2490/">PoliCultural</a>
     </div>
     <div class="navbar-collapse collapse">
       <security:authorize access="isAuthenticated()">
         <!-- left side of the header -->
         <ul class="nav navbar-nav">
-          <li><a href="/pmr2490/users">Usuários</a></li>
-          <li><a href="/pmr2490/tags">Tags</a></li>
-          <li><a href="/pmr2490/locals">Locais</a></li>
-          <li><a href="/pmr2490/professions">Ocupações</a></li>
-          <li><a href="/pmr2490/colleges">Faculdades</a></li>
-          <li><a href="/pmr2490/events">Eventos</a></li>
+        
+          <li><a href="/pmr2490/events/search">Procurar evento</a></li>
+          <li><a href="/pmr2490/events/new">Criar evento</a></li>
+        
+          <security:authorize access="hasRole('ADMIN')">
+            <li><a href="/pmr2490/users">Usuários</a></li>
+            <li><a href="/pmr2490/tags">Tags</a></li>
+            <li><a href="/pmr2490/locals">Locais</a></li>
+            <li><a href="/pmr2490/professions">Ocupações</a></li>
+            <li><a href="/pmr2490/colleges">Faculdades</a></li>
+            <li><a href="/pmr2490/events">Eventos</a></li>
+          </security:authorize>
         </ul>
       
         <!-- right side of the header -->
