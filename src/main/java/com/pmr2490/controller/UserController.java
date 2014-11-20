@@ -87,82 +87,6 @@ public class UserController {
 		}
 	}
 	
-	@RequestMapping(value="/{id}/edit")
-	public ModelAndView edit(HttpServletRequest request, HttpServletResponse response,
-			@PathVariable int id) {
-		
-		try {
-			String email = SecurityContextHolder.getContext().getAuthentication().getName();
-			User user = this.userService.getByEmail(email);
-			
-			// if user is trying to access the edit page from another user
-			if (user.getId() != id) 
-				response.sendRedirect("/pmr2490/403");
-			else {
-				ModelAndView modelAndView = new ModelAndView("user/edit");
-				modelAndView.addObject("user", this.userService.get(id));
-				modelAndView.addObject("colleges", this.collegeService.getAll());
-				modelAndView.addObject("professions", this.professionService.getAll());
-				
-				if(request.getParameter("passwords_not_matching") != null)
-					modelAndView.addObject("error_message", "<strong>Erro!</strong> A senha e sua confirmação devem ser iguais.");
-				return modelAndView;
-			}
-		
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return new ModelAndView("error/403");
-	}
-	
-	@RequestMapping(value="/{id}/update", method=RequestMethod.POST)
-	public void update(HttpServletRequest request, HttpServletResponse response, 
-			@PathVariable int id,
-			@RequestParam(value="first_name") String firstName,
-			@RequestParam(value="last_name") String lastName,
-			@RequestParam(value="birth_day", required=false) Integer birthDay,
-			@RequestParam(value="birth_month", required=false) Integer birthMonth,
-			@RequestParam(value="birth_year", required=false) Integer birthYear,
-			@RequestParam(value="genre", required=false) String genre,
-			@RequestParam(value="phone_ddd", required=false) Integer phoneDdd,
-			@RequestParam(value="phone_number", required=false) String phoneNumber,
-			@RequestParam(value="email") String email,
-			@RequestParam(value="college_id", required=false) Integer collegeId,
-			@RequestParam(value="profession_id") Integer professionId) {
-		
-		try {
-			String accessEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-			User user = this.userService.getByEmail(accessEmail);
-		
-			// if user is trying to access the edit page from another user
-			if (user.getId() != id) 
-				response.sendRedirect("/pmr2490/403");
-			else {
-
-				Date birthDate = null;
-				if (birthDay != null && birthMonth != null && birthYear != null) {
-					Calendar cal = Calendar.getInstance();
-					cal.set(birthYear, birthMonth-1, birthDay);
-					birthDate = cal.getTime();
-				}
-				
-				phoneNumber = phoneNumber.equals("") ? null : phoneNumber;
-				genre = genre.equals("0") ? null : genre;
-				
-				College college = collegeId == null ? null : this.collegeService.get(collegeId);
-				Profession profession = this.professionService.get(professionId);
-				
-				this.userService.update(id, firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, false, college, profession, null);
-			
-				response.sendRedirect("/pmr2490/users");
-			}
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	@RequestMapping(value="/edit-password")
 	public ModelAndView editPassword(HttpServletRequest request, HttpServletResponse response) {
 	
@@ -201,7 +125,7 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="/new", method=RequestMethod.POST)
-    public String submitForm(@Valid UserDto userDto, BindingResult result, Model m, HttpServletResponse response) {
+    public String insert(@Valid UserDto userDto, BindingResult result, Model m, HttpServletResponse response) {
 		
 		List<String> errors = new ArrayList<String>();
 		
@@ -215,7 +139,7 @@ public class UserController {
 			errors.add("A senha precisa ser preenchido.");
 		if(userDto.getPasswordConfirmation().isEmpty())
 			errors.add("A confirmação da senha precisa ser preenchido.");
-		if (userDto.getProfessionId().toString().isEmpty())
+		if (userDto.getProfessionId() == null)
 			errors.add("O campo ocupação precisa ser preenchido.");
 		if (!userDto.isPasswordConfirmed())
 			errors.add("A senha e a confirmação precisam ser iguais.");
@@ -224,10 +148,6 @@ public class UserController {
 			errors.add("O numero de telefone deve ter 8 ou 9 caracteres");
 		if(this.userService.getByEmail(userDto.getEmail()) != null)
 			errors.add("Este e-mail já possui um cadastro");
-		
-		userDto.setProfessionService(this.professionService);
-		userDto.setCollegeService(this.collegeService);
-		User user = userDto.toUser();
 		
 		if (errors.isEmpty()) {
 			try {
@@ -256,7 +176,7 @@ public class UserController {
         	m.addAttribute("errors", errors);
         	m.addAttribute("professions", this.professionService.getAll());
      		m.addAttribute("colleges", this.collegeService.getAll());
-            return "user/form";
+            return "user/new";
         }
          
         m.addAttribute("success_message", "Usuário cadastrado com sucesso");
@@ -264,9 +184,85 @@ public class UserController {
     }
 	
 	@RequestMapping(value="/new", method=RequestMethod.GET)
-    public ModelAndView form(Model m) {
-		ModelAndView modelAndView = new ModelAndView("user/form");
+    public ModelAndView newUser(Model m) {
+		ModelAndView modelAndView = new ModelAndView("user/new");
 		modelAndView.addObject("userDto", new UserDto());
+		modelAndView.addObject("professions", this.professionService.getAll());
+		modelAndView.addObject("colleges", this.collegeService.getAll());
+        return modelAndView;
+    }
+	
+	@RequestMapping(value="/{id}/edit", method=RequestMethod.POST)
+    public String update(@PathVariable int id, @Valid UserDto userDto, BindingResult result, Model m, HttpServletResponse response) {
+		
+		String email = SecurityContextHolder.getContext().getAuthentication().getName();
+		User user = this.userService.getByEmail(email);
+		
+		// if user is trying to access the edit page from another user
+		if (user.getId() != id) 
+			return "error/403";
+		
+		List<String> errors = new ArrayList<String>();
+		
+		if(userDto.getFirstName().isEmpty())
+			errors.add("O nome precisa ser preenchido.");
+		if(userDto.getLastName().isEmpty())
+			errors.add("O sobrenome precisa ser preenchido.");
+		if(userDto.getEmail().isEmpty())
+			errors.add("O email precisa ser preenchido.");
+		if (userDto.getProfessionId() == null)
+			errors.add("O campo ocupação precisa ser preenchido.");
+		int phoneNumberLength = userDto.getPhoneNumber().length();
+		if (phoneNumberLength != 0 && (phoneNumberLength < 8 || phoneNumberLength > 9))
+			errors.add("O numero de telefone deve ter 8 ou 9 caracteres");
+		
+		if (errors.isEmpty()) {
+			try {
+				
+				if (phoneNumberLength == 0)
+					userDto.setPhoneNumber(null);
+				
+				Date birthDate = null;
+				if (userDto.getBirthDay() != null && userDto.getBirthMonth() != null && userDto.getBirthYear() != null) {
+					Calendar cal = Calendar.getInstance();
+					cal.set(userDto.getBirthYear(), userDto.getBirthMonth()-1, userDto.getBirthDay());
+					birthDate = cal.getTime();
+				}
+				College college = userDto.getCollegeId() == null ? null : this.collegeService.get(userDto.getCollegeId());
+				Profession profession = userDto.getProfessionId() == null ? null : this.professionService.get(userDto.getProfessionId());
+				this.userService.update(id, userDto.getFirstName(), userDto.getLastName(), birthDate, 
+						userDto.getGender(), userDto.getPhoneDdd(), userDto.getPhoneNumber(), 
+						userDto.getEmail(), false, college, profession, null);
+			}
+			catch(Exception e) {
+				errors.add("Um erro inesperado ocorreu ao efetuar o cadastro. Por favor tente novamente ou contacte o responsavel.");
+			}
+		}
+		
+        if(!errors.isEmpty()) {
+        	m.addAttribute("errors", errors);
+        	m.addAttribute("professions", this.professionService.getAll());
+     		m.addAttribute("colleges", this.collegeService.getAll());
+            return "user/form";
+        }
+         
+        m.addAttribute("success_message", "Usuário salvo com sucesso");
+        m.addAttribute("user", this.userService.get(id));
+        return "user/show";
+    }
+	
+	@RequestMapping(value="{id}/edit", method=RequestMethod.GET)
+    public ModelAndView edit(@PathVariable int id, Model m) {
+		
+		String email = SecurityContextHolder.getContext().getAuthentication().getName();
+		User user = this.userService.getByEmail(email);
+		
+		// if user is trying to access the edit page from another user
+		if (user.getId() != id) 
+			return new ModelAndView("error/403");
+		
+		ModelAndView modelAndView = new ModelAndView("user/form");
+		modelAndView.addObject("userDto", user.toDto());
 		modelAndView.addObject("professions", this.professionService.getAll());
 		modelAndView.addObject("colleges", this.collegeService.getAll());
         return modelAndView;

@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Novo usuário</title>
+    <title>Editar usuário</title>
     <c:import url="/WEB-INF/jsp/shared/css.jsp" />
     <c:import url="/WEB-INF/jsp/shared/js.jsp" />
     <style>
@@ -21,7 +21,7 @@
     
       <c:import url="/WEB-INF/jsp/shared/alert.jsp" />
       <div class="center-form">
-        <form:form class="form-horizontal" action="new" modelAttribute="userDto">
+        <form:form class="form-horizontal" action="edit" modelAttribute="userDto">
           <div class="form-group">
             <label for="firstNameInput" class="control-label col-xs-4">Nome * </label>
             <div class="col-xs-8">
@@ -78,20 +78,6 @@
 		    <form:errors path="email" cssClass="error" />
 		  </div>
 		  <div class="form-group">
-            <label for="passwordInput" class="control-label col-xs-4">Senha * </label>
-            <div class="col-xs-8">
-			  <form:input path="password" class="form-control" id="passwordInput" placeholder="Senha" type="password" required="true" />
-			</div>
-		    <form:errors path="password" cssClass="error" />
-		  </div>
-		  <div class="form-group">
-            <label for="passwordConfirmationInput" class="control-label col-xs-4">Confirmação da senha * </label>
-            <div class="col-xs-8">
-			  <form:input path="passwordConfirmation" class="form-control" id="passwordConfirmationInput" placeholder="Confirmação da senha" type="password" required="true" />
-			</div>
-		    <form:errors path="passwordConfirmation" cssClass="error" />
-		  </div>
-		  <div class="form-group">
             <label for="professionOptions" class="control-label col-xs-4">Ocupação * </label>
             <div class="col-xs-8">
 			  <form:select path="professionId" class="form-control" id="professionOptions">
@@ -113,7 +99,7 @@
 		  </div>
 		  <div class="form-group">
 		    <div class="col-xs-offset-4">
-              <input class="form-control btn btn-primary" type="submit" value="Cadastrar" />
+              <input class="form-control btn btn-primary" type="submit" value="Salvar" />
             </div>
 		  </div>
 		

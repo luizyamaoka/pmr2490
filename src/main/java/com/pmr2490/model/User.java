@@ -1,5 +1,6 @@
 package com.pmr2490.model;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +17,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+
+import com.pmr2490.dto.UserDto;
 
 @Entity
 @Table(name=DomainConstants.TB_USER)
@@ -199,6 +202,29 @@ public class User {
 	
 	public boolean isPasswordCorrect(String password) {
 		return BCrypt.checkpw(password, this.password);
+	}
+	
+	public UserDto toDto() {
+		UserDto userDto = new UserDto();
+		
+		userDto.setFirstName(this.firstName);
+		userDto.setLastName(this.lastName);
+		
+		if (this.birthDate != null) {
+			Calendar cal = Calendar.getInstance();
+		    cal.setTime(this.birthDate);
+			userDto.setBirthDay(cal.get(Calendar.DAY_OF_MONTH));
+			userDto.setBirthMonth(cal.get(Calendar.MONTH) + 1);
+			userDto.setBirthYear(cal.get(Calendar.YEAR));
+		}
+		userDto.setGender(this.genre);
+		userDto.setPhoneDdd(this.phoneDdd);
+		userDto.setPhoneNumber(this.phoneNumber);
+		userDto.setEmail(this.email);
+		if (this.profession != null) userDto.setProfessionId(this.profession.getId());
+		if (this.college != null) userDto.setCollegeId(this.college.getId());
+		
+		return userDto;
 	}
 	
 }

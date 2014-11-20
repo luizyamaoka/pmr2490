@@ -1,97 +1,110 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <html>
   <head>
     <meta charset="utf-8">
-    <title>${user.firstName}</title>
+    <title>Editar usuário</title>
     <c:import url="/WEB-INF/jsp/shared/css.jsp" />
     <c:import url="/WEB-INF/jsp/shared/js.jsp" />
     <style>
-    .form-signin {
-      max-width: 330px;
-      padding: 15px;
-      margin: 0px auto;
-    }
-    .form-signin .form-control {
-      position: relative;
-      height: auto;
-      box-sizing: border-box;
-      padding: 10px;
-      font-size: 16px;
-    }
+      .center-form {
+        max-width: 600px;
+        margin: 0 auto;
+      }
     </style>
   </head>
   <body>
     <c:import url="/WEB-INF/jsp/shared/header.jsp" />
     
     <div class="container theme-showcase" role="main">
-
-	  <form class="form-signin" role="form" action="update" method="post">
-        <h2 class="form-signin-heading">Editar usuário</h2>
-        <input class="form-control" name="first_name" placeholder="Nome" value="${user.firstName}" required autofocus type="text">
-        <input class="form-control" name="last_name" placeholder="Sobrenome" value="${user.lastName}" required type="text">
-        
-        <c:choose>
-          <c:when test="${user.birthDate == null}">
-            <input class="form-control" name="birth_day" placeholder="Dia" type="number" min="1" max="31">
-            <input class="form-control" name="birth_month" placeholder="Mês" type="number" min="1" max="12">
-            <input class="form-control" name="birth_year" placeholder="Ano" type="number" min="1900" max="2100">
-          </c:when>
-          <c:otherwise>
-            <input class="form-control" name="birth_day" placeholder="Dia" type="number" value="${user.birthDate.date}" min="1" max="31">
-            <input class="form-control" name="birth_month" placeholder="Mês" type="number" value="${user.birthDate.month+1}" min="1" max="12">
-            <input class="form-control" name="birth_year" placeholder="Ano" type="number" value="${1900+user.birthDate.year}" min="1900" max="2100">
-          </c:otherwise>
-        </c:choose>
-        
-        <select class="form-control" name="genre">
-          <option value="0">Sexo</option>
-          <c:choose>
-            <c:when test="${user.genre == 'm'}">
-              <option value="m" selected>Masculino</option>
-		  	  <option value="f">Feminino</option>
-            </c:when>
-            <c:when test="${user.genre == 'f'}">
-              <option value="m">Masculino</option>
-		  	  <option value="f" selected>Feminino</option>
-            </c:when>
-            <c:otherwise>
-              <option value="m">Masculino</option>
-		  	  <option value="f">Feminino</option>
-            </c:otherwise>
-          </c:choose>
-		</select> 
-        <input class="form-control" name="phone_ddd" placeholder="DDD" type="number" value="${user.phoneDdd}" min="1" max="99">
-        <input class="form-control" name="phone_number" placeholder="Telefone" value="${user.phoneNumber}" type="number">
-        <input class="form-control" name="email" placeholder="Email" value="${user.email}" required type="email">
-        <select class="form-control" name="profession_id" required >
-          <option value="0" selected>Ocupação</option>
-          <c:forEach var="profession" items="${professions}">
-            <c:choose>
-              <c:when test="${user.profession.id == profession.id}">
-                <option selected value="${profession.id}">${profession.name}</option>
-              </c:when>
-              <c:otherwise>
-                <option value="${profession.id}">${profession.name}</option>
-              </c:otherwise>
-            </c:choose>
-          </c:forEach>
-		</select> 
-		<select class="form-control" name="college_id">
-          <option value="0" selected>Faculdade</option>
-          <c:forEach var="college" items="${colleges}">
-            <c:choose>
-              <c:when test="${user.college.id == college.id}">
-                <option selected value="${college.id}">${college.name}</option>
-              </c:when>
-              <c:otherwise>
-                <option value="${college.id}">${college.name}</option>
-              </c:otherwise>
-            </c:choose>
-          </c:forEach>
-		</select> 
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Atualizar</button>
-      </form>
+    
+      <c:import url="/WEB-INF/jsp/shared/alert.jsp" />
+      <div class="center-form">
+        <form:form class="form-horizontal" action="edit" modelAttribute="userDto">
+          <div class="form-group">
+            <label for="firstNameInput" class="control-label col-xs-4">Nome * </label>
+            <div class="col-xs-8">
+			  <form:input path="firstName" class="form-control" id="firstNameInput" placeholder="Nome" required="true" autofocus="true" />
+			</div>
+		    <form:errors path="firstName" cssClass="error" />
+		  </div>
+		  <div class="form-group">
+            <label for="lastNameInput" class="control-label col-xs-4">Sobrenome * </label>
+            <div class="col-xs-8">
+			  <form:input path="lastName" class="form-control" id="lastNameInput" placeholder="Sobrenome" required="true" />
+			</div>
+		    <form:errors path="lastName" cssClass="error" />
+		  </div>
+		  <div class="form-group">
+            <label for="birthDayInput" class="control-label col-xs-4">Data de nascimento </label>
+            <div class="col-xs-8">
+              <div class="input-group">
+			  <form:input path="birthDay" class="form-control" id="birthDayInput" placeholder="DD" />
+			  <span class="input-group-addon">/</span>
+			  <form:input path="birthMonth" class="form-control" id="birthMonthInput" placeholder="MM" />
+			  <span class="input-group-addon">/</span>
+			  <form:input path="birthYear" class="form-control" id="birthYearInput" placeholder="YYYY" />
+			  </div>
+			</div>
+		    <form:errors path="birthDay" cssClass="error" />
+		  </div>
+		  <div class="form-group">
+            <label for="genderOptions" class="control-label col-xs-4">Sexo </label>
+            <div class="col-xs-8">
+			  <form:select path="gender" class="form-control" id="genderOptions">
+			    <form:option value="">Selecione seu sexo</form:option>
+			    <form:option value="m">Masculino</form:option>
+			    <form:option value="f">Feminino</form:option>
+		      </form:select>
+			</div>
+		    <form:errors path="gender" cssClass="error" />
+		  </div>
+		  <div class="form-group">
+            <label for="phoneDddInput" class="control-label col-xs-4">Telefone </label>
+            <div class="col-xs-2">
+			  <form:input path="phoneDdd" class="form-control" id="phoneDddInput" placeholder="DDD" />
+			</div>
+			<div class="col-xs-6">
+			  <form:input path="phoneNumber" class="form-control" id="phoneNumberInput" placeholder="Telefone" />
+			</div>
+		    <form:errors path="phoneNumber" cssClass="error" />
+		  </div>
+		  <div class="form-group">
+            <label for="emailInput" class="control-label col-xs-4">E-mail * </label>
+            <div class="col-xs-8">
+			  <form:input path="email" class="form-control" id="emailInput" placeholder="E-mail" required="true" />
+			</div>
+		    <form:errors path="email" cssClass="error" />
+		  </div>
+		  <div class="form-group">
+            <label for="professionOptions" class="control-label col-xs-4">Ocupação * </label>
+            <div class="col-xs-8">
+			  <form:select path="professionId" class="form-control" id="professionOptions">
+			    <form:option value="">Selecione sua ocupação</form:option>
+          		<form:options items="${professions}" itemValue="id" itemLabel="name" required="true" />
+		      </form:select>
+			</div>
+		    <form:errors path="professionId" cssClass="error" />
+		  </div>
+		  <div class="form-group">
+            <label for="collegeOptions" class="control-label col-xs-4">Faculdade</label>
+            <div class="col-xs-8">
+			  <form:select path="collegeId" class="form-control" id="collegeOptions"> 
+			    <form:option value="">Selecione sua faculdade</form:option>
+			    <form:options items="${colleges}" itemValue="id" itemLabel="name" />
+		      </form:select>
+			</div>
+		    <form:errors path="collegeId" cssClass="error" />
+		  </div>
+		  <div class="form-group">
+		    <div class="col-xs-offset-4">
+              <input class="form-control btn btn-primary" type="submit" value="Salvar" />
+            </div>
+		  </div>
+		
+      </form:form>
+      </div>
 
     </div>
     

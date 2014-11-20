@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
 	public void create(String firstName, String lastName, Date birthDate,
 			String genre, Integer phoneDdd, String phoneNumber, String email,
 			String password, boolean isPromoter, College college,
-			Profession profession) {
+			Profession profession) throws Exception {
 		User user = new User(null, firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, password, isPromoter, college, profession);
 		
 		this.userDao.create(user);
