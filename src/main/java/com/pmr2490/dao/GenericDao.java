@@ -40,7 +40,6 @@ public class GenericDao<T, PK extends Serializable> {
 				session.close();
 		}
 		return null;
-		
 	}
 
 	@SuppressWarnings("unchecked")

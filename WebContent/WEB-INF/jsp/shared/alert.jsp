@@ -12,6 +12,16 @@
   </div>
 </c:if>
 
+<c:if test="${not empty errors}">
+  <div class="alert alert-danger" role="alert">
+    <ul>
+   	<c:forEach var="error" items="${errors}">
+   	  <li>${error}</li>
+   	</c:forEach>
+   	</ul>
+  </div>
+</c:if>
+
 <c:if test="${not empty info_message}">
   <div class="alert alert-info" role="alert">
    	${info_message}

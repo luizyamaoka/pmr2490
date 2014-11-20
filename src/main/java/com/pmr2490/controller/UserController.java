@@ -1,23 +1,29 @@
 package com.pmr2490.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.pmr2490.dto.UserDto;
 import com.pmr2490.model.College;
 import com.pmr2490.model.Profession;
 import com.pmr2490.model.User;
@@ -46,70 +52,6 @@ public class UserController {
 		Map<String, Object> map = new HashMap<>();
 		map.put("users", userService.getAll());
 		return new ModelAndView("user/index", map);
-	}
-	
-	@RequestMapping(value="/new", method=RequestMethod.GET)
-	public ModelAndView insert(HttpServletRequest request, HttpServletResponse response) {
-		ModelAndView modelAndView = new ModelAndView("user/new");
-		modelAndView.addObject("colleges", this.collegeService.getAll());
-		modelAndView.addObject("professions", this.professionService.getAll());
-		
-		if(request.getParameter("passwords_not_matching") != null)
-			modelAndView.addObject("error_message", "<strong>Erro!</strong> A senha e sua confirmação devem ser iguais.");
-		if(request.getParameter("existant_email") != null)
-			modelAndView.addObject("error_message", "<strong>Erro!</strong> Este e-mail já está cadastrado.");
-		
-		return modelAndView;
-	}
-	
-	@RequestMapping(value="/create", method=RequestMethod.POST)
-	public void create(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam(value="first_name") String firstName,
-			@RequestParam(value="last_name") String lastName,
-			@RequestParam(value="birth_day", required=false) Integer birthDay,
-			@RequestParam(value="birth_month", required=false) Integer birthMonth,
-			@RequestParam(value="birth_year", required=false) Integer birthYear,
-			@RequestParam(value="genre", required=false) String genre,
-			@RequestParam(value="phone_ddd", required=false) Integer phoneDdd,
-			@RequestParam(value="phone_number", required=false) String phoneNumber,
-			@RequestParam(value="email") String email,
-			@RequestParam(value="password") String password,
-			@RequestParam(value="password_confirmation") String passwordConfirmation,
-			@RequestParam(value="college_id", required=false) Integer collegeId,
-			@RequestParam(value="profession_id") Integer professionId) {	
-		
-		try {
-		
-			if (!password.equals(passwordConfirmation))
-				response.sendRedirect("/pmr2490/users/new?passwords_not_matching");
-			else if (professionId == 0) {
-				response.sendRedirect("/pmr2490/users/new?profession_missing");
-			}
-			else if (this.userService.getByEmail(email) != null)
-				response.sendRedirect("/pmr2490/users/new?existant_email");
-			else {
-		
-				Date birthDate = null;
-				if (birthDay != null && birthMonth != null && birthYear != null) {
-					Calendar cal = Calendar.getInstance();
-					cal.set(birthYear, birthMonth-1, birthDay);
-					birthDate = cal.getTime();
-				}
-				
-				phoneNumber = phoneNumber.equals("") ? null : phoneNumber;
-				genre = genre.equals("0") ? null : genre;
-				
-				College college = collegeId == 0 ? null : this.collegeService.get(collegeId);
-				Profession profession = this.professionService.get(professionId);
-				
-				this.userService.create(firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, password, false, college, profession);
-			
-				response.sendRedirect("/pmr2490/login");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 	}
 	
 	@RequestMapping(value="/{id}")
@@ -257,5 +199,77 @@ public class UserController {
 			e.printStackTrace();
 		}
 	}
+	
+	@RequestMapping(value="/new", method=RequestMethod.POST)
+    public String submitForm(@Valid UserDto userDto, BindingResult result, Model m, HttpServletResponse response) {
+		
+		List<String> errors = new ArrayList<String>();
+		
+		if(userDto.getFirstName().isEmpty())
+			errors.add("O nome precisa ser preenchido.");
+		if(userDto.getLastName().isEmpty())
+			errors.add("O sobrenome precisa ser preenchido.");
+		if(userDto.getEmail().isEmpty())
+			errors.add("O email precisa ser preenchido.");
+		if(userDto.getPassword().isEmpty())
+			errors.add("A senha precisa ser preenchido.");
+		if(userDto.getPasswordConfirmation().isEmpty())
+			errors.add("A confirmação da senha precisa ser preenchido.");
+		if (userDto.getProfessionId().toString().isEmpty())
+			errors.add("O campo ocupação precisa ser preenchido.");
+		if (!userDto.isPasswordConfirmed())
+			errors.add("A senha e a confirmação precisam ser iguais.");
+		int phoneNumberLength = userDto.getPhoneNumber().length();
+		if (phoneNumberLength != 0 && (phoneNumberLength < 8 || phoneNumberLength > 9))
+			errors.add("O numero de telefone deve ter 8 ou 9 caracteres");
+		if(this.userService.getByEmail(userDto.getEmail()) != null)
+			errors.add("Este e-mail já possui um cadastro");
+		
+		userDto.setProfessionService(this.professionService);
+		userDto.setCollegeService(this.collegeService);
+		User user = userDto.toUser();
+		
+		if (errors.isEmpty()) {
+			try {
+				
+				if (phoneNumberLength == 0)
+					userDto.setPhoneNumber(null);
+				
+				Date birthDate = null;
+				if (userDto.getBirthDay() != null && userDto.getBirthMonth() != null && userDto.getBirthYear() != null) {
+					Calendar cal = Calendar.getInstance();
+					cal.set(userDto.getBirthYear(), userDto.getBirthMonth()-1, userDto.getBirthDay());
+					birthDate = cal.getTime();
+				}
+				College college = userDto.getCollegeId() == null ? null : this.collegeService.get(userDto.getCollegeId());
+				Profession profession = userDto.getProfessionId() == null ? null : this.professionService.get(userDto.getProfessionId());
+				this.userService.create(userDto.getFirstName(), userDto.getLastName(), birthDate, 
+						userDto.getGender(), userDto.getPhoneDdd(), userDto.getPhoneNumber(), 
+						userDto.getEmail(), userDto.getPassword(), false, college, profession);
+			}
+			catch(Exception e) {
+				errors.add("Um erro inesperado ocorreu ao efetuar o cadastro. Por favor tente novamente ou contacte o responsavel.");
+			}
+		}
+		
+        if(!errors.isEmpty()) {
+        	m.addAttribute("errors", errors);
+        	m.addAttribute("professions", this.professionService.getAll());
+     		m.addAttribute("colleges", this.collegeService.getAll());
+            return "user/form";
+        }
+         
+        m.addAttribute("success_message", "Usuário cadastrado com sucesso");
+        return "static-pages/login";
+    }
+	
+	@RequestMapping(value="/new", method=RequestMethod.GET)
+    public ModelAndView form(Model m) {
+		ModelAndView modelAndView = new ModelAndView("user/form");
+		modelAndView.addObject("userDto", new UserDto());
+		modelAndView.addObject("professions", this.professionService.getAll());
+		modelAndView.addObject("colleges", this.collegeService.getAll());
+        return modelAndView;
+    }
 	
 }

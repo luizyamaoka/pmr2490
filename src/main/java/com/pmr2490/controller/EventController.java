@@ -193,4 +193,26 @@ public class EventController {
 		}
 	}
 	
+	@RequestMapping(value="/search", method=RequestMethod.GET)
+	public ModelAndView search(HttpServletRequest request, HttpServletResponse response) {
+		
+		ModelAndView modelAndView = new ModelAndView("event/search");
+		modelAndView.addObject("locals", this.localService.getAll());
+		modelAndView.addObject("tags", this.tagService.getAll());
+		
+		return modelAndView;
+	}
+	
+	@RequestMapping(value="/search", method=RequestMethod.POST)
+	public ModelAndView doSearch(HttpServletRequest request, HttpServletResponse response, 
+			@RequestParam(value="date", required=false) String date,
+			@RequestParam(value="local_id", required=false) Integer localId,
+			@RequestParam(value="tag_id", required=false) Integer tagId) {
+		
+		ModelAndView modelAndView = new ModelAndView("event/index");
+		modelAndView.addObject("events", this.eventService.getAll());
+		return modelAndView;
+			
+	}
+	
 }

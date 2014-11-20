@@ -56,7 +56,7 @@
 	    
 	      <c:import url="/WEB-INF/jsp/shared/alert.jsp" /> 
 	    
-	      <form class="form-signin" role="form" action="<c:url value='j_spring_security_check' />" method="post">
+	      <form class="form-signin" role="form" action="/pmr2490/<c:url value='j_spring_security_check' />" method="post">
 	        <h2 class="form-signin-heading">Seja bem vindo!</h2>
 	        <input type="email" name="username" class="form-control" placeholder="Usuário" required autofocus>
 	        <input type="password" name="password" class="form-control" placeholder="Senha" required>
