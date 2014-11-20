@@ -1,24 +1,17 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Novo evento</title>
+    <title>Editar evento</title>
     <c:import url="/WEB-INF/jsp/shared/css.jsp" />
     <c:import url="/WEB-INF/jsp/shared/js.jsp" />
     <style>
-    .form-signin {
-      max-width: 330px;
-      padding: 15px;
-      margin: 0px auto;
-    }
-    .form-signin .form-control {
-      position: relative;
-      height: auto;
-      box-sizing: border-box;
-      padding: 10px;
-      font-size: 16px;
-    }
+      .center-form {
+        max-width: 600px;
+        margin: 0 auto;
+      }
     </style>
   </head>
   <body>
@@ -26,32 +19,99 @@
     
     <div class="container theme-showcase" role="main">
     
-      <form class="form-signin" role="form" action="create" method="post">
-        <h2 class="form-signin-heading">Adicionar evento</h2>
-        <input class="form-control" name="name" placeholder="Nome" required autofocus type="text">
-        <input class="form-control" name="date_start" placeholder="Início" type="number">
-        <input class="form-control" name="hour_start" placeholder="Hora" type="number" min="0" max="23">
-        <input class="form-control" name="minute_start" placeholder="Minuto" type="number" min="0" max="59">
-        <input class="form-control" name="date_end" placeholder="Final" type="number">
-        <input class="form-control" name="hour_end" placeholder="Hora" type="number" min="0" max="23">
-        <input class="form-control" name="minute_end" placeholder="Minuto" type="number" min="0" max="59">
-        <input class="form-control" name="phone_ddd" placeholder="DDD" type="number" min="1" max="99">
-        <input class="form-control" name="phone_number" placeholder="Telefone" type="number">
-        <input class="form-control" name="email" placeholder="Email" required type="email">
-		<textarea class="form-control" name="description" placeholder="Descrição" rows="3"></textarea>
-        <select class="form-control" name="local_id" required >
-          <option value="0" selected>Local</option>
-          <c:forEach var="local" items="${locals}">
-            <option value="${local.id}">${local.name}</option>
-          </c:forEach>
-		</select> 
-		<c:forEach var="tag" items="${tags}">
-		  <label class="checkbox">
-			<input type="checkbox" name="tag_ids[]" value="${tag.id}"> ${tag.name}
-	      </label>
-		</c:forEach>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Adicionar</button>
-      </form>
+      <c:import url="/WEB-INF/jsp/shared/alert.jsp" />
+      <div class="center-form">
+        <form:form class="form-horizontal" action="new" modelAttribute="eventDto">
+          <div class="form-group">
+            <label for="nameInput" class="control-label col-xs-4">Nome * </label>
+            <div class="col-xs-8">
+			  <form:input path="name" class="form-control" id="nameInput" placeholder="Nome do evento" required="true" autofocus="true" />
+			</div>
+		    <form:errors path="name" cssClass="error" />
+		  </div>
+		  <div class="form-group">
+            <label for="dayStartInput" class="control-label col-xs-4">Data início * </label>
+            <div class="col-xs-8">
+              <div class="input-group">
+			  <form:input path="dayStart" class="form-control" id="dayStartInput" placeholder="DD" />
+			  <span class="input-group-addon">/</span>
+			  <form:input path="monthStart" class="form-control" id="monthStartInput" placeholder="MM" />
+			  <span class="input-group-addon">/</span>
+			  <form:input path="yearStart" class="form-control" id="yearStartInput" placeholder="YYYY" />
+			  <span class="input-group-addon">às</span>
+			  <form:input path="hourStart" class="form-control" id="hourStartInput" placeholder="HH" />
+			  <span class="input-group-addon">:</span>
+			  <form:input path="minuteStart" class="form-control" id="minuteStartInput" placeholder="mm" />
+			  </div>
+			</div>
+		    <form:errors path="dayStart" cssClass="error" />
+		  </div>
+		  <div class="form-group">
+            <label for="dayEndInput" class="control-label col-xs-4">Data término</label>
+            <div class="col-xs-8">
+              <div class="input-group">
+			  <form:input path="dayEnd" class="form-control" id="dayEndInput" placeholder="DD" />
+			  <span class="input-group-addon">/</span>
+			  <form:input path="monthEnd" class="form-control" id="monthEndInput" placeholder="MM" />
+			  <span class="input-group-addon">/</span>
+			  <form:input path="yearEnd" class="form-control" id="yearEndInput" placeholder="YYYY" />
+			  <span class="input-group-addon">às</span>
+			  <form:input path="hourEnd" class="form-control" id="hourEndInput" placeholder="HH" />
+			  <span class="input-group-addon">:</span>
+			  <form:input path="minuteEnd" class="form-control" id="minuteEndInput" placeholder="mm" />
+			  </div>
+			</div>
+		    <form:errors path="dayEnd" cssClass="error" />
+		  </div>
+		  <div class="form-group">
+            <label for="phoneDddInput" class="control-label col-xs-4">Telefone de contato </label>
+            <div class="col-xs-2">
+			  <form:input path="phoneDdd" class="form-control" id="phoneDddInput" placeholder="DDD" />
+			</div>
+			<div class="col-xs-6">
+			  <form:input path="phoneNumber" class="form-control" id="phoneNumberInput" placeholder="Telefone" />
+			</div>
+		    <form:errors path="phoneNumber" cssClass="error" />
+		  </div>
+		  <div class="form-group">
+            <label for="emailInput" class="control-label col-xs-4">E-mail de contato * </label>
+            <div class="col-xs-8">
+			  <form:input path="email" class="form-control" id="emailInput" placeholder="E-mail" required="true" />
+			</div>
+		    <form:errors path="email" cssClass="error" />
+		  </div>
+		  <div class="form-group">
+            <label for="descriptionInput" class="control-label col-xs-4">Descrição </label>
+            <div class="col-xs-8">
+			  <form:input path="description" class="form-control" id="descriptionInput" placeholder="Descrição" />
+			</div>
+		    <form:errors path="description" cssClass="error" />
+		  </div>
+		  <div class="form-group">
+            <label for="localOptions" class="control-label col-xs-4">Local * </label>
+            <div class="col-xs-8">
+			  <form:select path="localId" class="form-control" id="localOptions">
+			    <form:option value="">Selecione o local do evento</form:option>
+          		<form:options items="${locals}" itemValue="id" itemLabel="name" required="true" />
+		      </form:select>
+			</div>
+		    <form:errors path="localId" cssClass="error" />
+		  </div>
+		  <div class="form-group">
+            <label for="tagsCheckbox" class="control-label col-xs-4">Tags </label>
+            <div class="col-xs-8">
+              <form:checkboxes items="${tags}" itemValue="id" itemLabel="name" path="tagIds" />
+			</div>
+		    <form:errors path="tagIds" cssClass="error" />
+		  </div>
+		  <div class="form-group">
+		    <div class="col-xs-offset-4">
+              <input class="form-control btn btn-primary" type="submit" value="Salvar" />
+            </div>
+		  </div>
+		
+      </form:form>
+      </div>
 
     </div>
     

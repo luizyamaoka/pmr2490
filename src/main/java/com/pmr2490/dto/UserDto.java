@@ -3,8 +3,6 @@ package com.pmr2490.dto;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.pmr2490.model.User;
 import com.pmr2490.service.CollegeService;
 import com.pmr2490.service.ProfessionService;

@@ -1,6 +1,7 @@
 package com.pmr2490.model;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +17,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+
+import com.pmr2490.dto.EventDto;
 
 @Entity
 @Table(name=DomainConstants.TB_EVENT)
@@ -33,7 +36,7 @@ public class Event {
 		this.name = name;
 		this.dateStart = dateStart;
 		this.dateEnd = dateEnd;
-		this.setEmail(email);
+		this.email = email;
 		this.phoneDdd = phoneDdd;
 		this.phoneNumber = phoneNumber;
 		this.description = description;
@@ -178,6 +181,48 @@ public class Event {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	public EventDto toEventDto() {
+		EventDto eventDto = new EventDto();
+		
+		eventDto.setId(this.id);
+		eventDto.setName(this.name);
+		eventDto.setCreatorId(this.creator.getId());
+		
+		if (this.dateStart != null) {
+			Calendar cal = Calendar.getInstance();
+		    cal.setTime(this.dateStart);
+		    eventDto.setDayStart(cal.get(Calendar.DAY_OF_MONTH));
+		    eventDto.setMonthStart(cal.get(Calendar.MONTH) + 1);
+		    eventDto.setYearStart(cal.get(Calendar.YEAR));
+		    eventDto.setHourStart(cal.get(Calendar.HOUR_OF_DAY));
+		    eventDto.setMinuteStart(cal.get(Calendar.MINUTE));
+		}
+		if (this.dateEnd != null) {
+			Calendar cal = Calendar.getInstance();
+		    cal.setTime(this.dateEnd);
+		    eventDto.setDayEnd(cal.get(Calendar.DAY_OF_MONTH));
+		    eventDto.setMonthEnd(cal.get(Calendar.MONTH) + 1);
+		    eventDto.setYearEnd(cal.get(Calendar.YEAR));
+		    eventDto.setHourEnd(cal.get(Calendar.HOUR_OF_DAY));
+		    eventDto.setMinuteEnd(cal.get(Calendar.MINUTE));
+		}
+		
+		eventDto.setPhoneDdd(this.phoneDdd);
+		eventDto.setPhoneNumber(this.phoneNumber);
+		eventDto.setEmail(this.email);
+		eventDto.setDescription(this.description);
+		
+		if (this.local != null) eventDto.setLocalId(this.local.getId());
+		if (this.taggings != null) {
+			Integer[] tagIds = new Integer[this.taggings.size()]; 
+			for (int i = 0; i < this.taggings.size(); i++)
+				tagIds[i] = this.taggings.get(i).getTag().getId();
+			eventDto.setTagIds(tagIds);
+		}
+
+		return eventDto;
 	}
 	
 }

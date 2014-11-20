@@ -243,7 +243,7 @@ public class UserController {
         	m.addAttribute("errors", errors);
         	m.addAttribute("professions", this.professionService.getAll());
      		m.addAttribute("colleges", this.collegeService.getAll());
-            return "user/form";
+            return "user/edit";
         }
          
         m.addAttribute("success_message", "Usuário salvo com sucesso");
@@ -261,7 +261,7 @@ public class UserController {
 		if (user.getId() != id) 
 			return new ModelAndView("error/403");
 		
-		ModelAndView modelAndView = new ModelAndView("user/form");
+		ModelAndView modelAndView = new ModelAndView("user/edit");
 		modelAndView.addObject("userDto", user.toDto());
 		modelAndView.addObject("professions", this.professionService.getAll());
 		modelAndView.addObject("colleges", this.collegeService.getAll());

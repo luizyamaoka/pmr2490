@@ -1,5 +1,6 @@
 package com.pmr2490.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.pmr2490.dao.EventDao;
+import com.pmr2490.dto.EventDto;
 import com.pmr2490.model.Event;
 import com.pmr2490.model.Local;
 import com.pmr2490.model.Tag;
@@ -65,11 +67,19 @@ public class EventServiceImpl implements EventService {
 		event.setDescription(description);
 		event.setLocal(local);
 		
+		List<Tagging> taggings = new ArrayList<Tagging>();
 		for(Tag tag : tags)
-			event.getTaggings().add(new Tagging(tag, event));
+			taggings.add(new Tagging(tag, event));
+		
+		event.setTaggings(taggings);
 		
 		this.eventDao.update(event);
 
+	}
+
+	@Override
+	public EventDto getEventDto(int id) throws Exception {
+		return this.eventDao.getEventDto(id);
 	}
 
 }

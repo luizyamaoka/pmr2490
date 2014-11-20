@@ -3,6 +3,7 @@ package com.pmr2490.service;
 import java.util.Date;
 import java.util.List;
 
+import com.pmr2490.dto.EventDto;
 import com.pmr2490.model.Event;
 import com.pmr2490.model.Local;
 import com.pmr2490.model.Tag;
@@ -14,6 +15,8 @@ public interface EventService {
 	
 	public Event get(int id);
 	
+	public EventDto getEventDto(int id) throws Exception;
+	
 	public void delete(int id);
 	
 	public int create(String name, Date startDate, Date endDate, String email, Integer phoneDDD, 
@@ -21,5 +24,6 @@ public interface EventService {
 	
 	public void update(int id, String name, Date startDate, Date endDate, String email, Integer phoneDDD, 
 			String phoneNumber, String description, Local local, List<Tag> tags);
+	
 	
 }
