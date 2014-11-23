@@ -27,24 +27,24 @@ public class EventServiceImpl implements EventService {
 	}
 	
 	@Override
-	public List<Event> getAll() {
+	public List<Event> getAll() throws Exception {
 		return this.eventDao.getAll();
 	}
 
 	@Override
-	public Event get(int id) {
+	public Event get(int id) throws Exception {
 		return this.eventDao.get(id);
 	}
 
 	@Override
-	public void delete(int id) {
+	public void delete(int id) throws Exception {
 		Event event = this.eventDao.get(id);
 		this.eventDao.delete(event);
 	}
 
 	@Override
 	public int create(String name, Date dateStart, Date dateEnd, String email, Integer phoneDdd,
-			String phoneNumber, String description, User creator, Local local, List<Tag> tags) {
+			String phoneNumber, String description, User creator, Local local, List<Tag> tags) throws Exception {
 		Event event = new Event(null, name, dateStart, dateEnd,  email, phoneDdd, 
 				phoneNumber, description, creator, local);
 		
@@ -56,7 +56,7 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	public void update(int id, String name, Date dateStart, Date dateEnd, String email, 
-			Integer phoneDdd, String phoneNumber, String description, Local local, List<Tag> tags) {
+			Integer phoneDdd, String phoneNumber, String description, Local local, List<Tag> tags) throws Exception {
 		Event event = this.eventDao.get(id);
 		event.setName(name);
 		event.setDateStart(dateStart);

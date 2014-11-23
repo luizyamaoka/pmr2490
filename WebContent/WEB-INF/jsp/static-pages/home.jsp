@@ -17,7 +17,7 @@
 
       <!-- Main jumbotron for a primary marketing message or call to action -->
       <div class="jumbotron" style="text-align: center">
-        <h1>Eventos Poli USP</h1>
+        <h1>Poli Cultural</h1>
         
         <security:authorize access="isAuthenticated()">
           <p>Esta é a página inicial do projeto de SI PMR2490.</p>

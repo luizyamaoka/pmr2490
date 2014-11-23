@@ -83,7 +83,7 @@
 		  <div class="form-group">
             <label for="descriptionInput" class="control-label col-xs-4">Descrição </label>
             <div class="col-xs-8">
-			  <form:input path="description" class="form-control" id="descriptionInput" placeholder="Descrição" />
+			  <form:textarea style="height: 200px;" path="description" class="form-control" id="descriptionInput" placeholder="Descrição" />
 			</div>
 		    <form:errors path="description" cssClass="error" />
 		  </div>

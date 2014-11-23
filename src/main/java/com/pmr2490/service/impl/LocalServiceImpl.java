@@ -20,30 +20,30 @@ public class LocalServiceImpl implements LocalService {
 	}
 	
 	@Override
-	public List<Local> getAll() {
+	public List<Local> getAll() throws Exception {
 		return this.localDao.getAll();
 	}
 
 	@Override
-	public Local get(int id) {
+	public Local get(int id) throws Exception {
 		return this.localDao.get(id);
 	}
 
 	@Override
-	public void delete(int id) {
+	public void delete(int id) throws Exception {
 		Local local = this.localDao.get(id);
 		this.localDao.delete(local);
 	}
 
 	@Override
-	public int create(String name) {
+	public int create(String name) throws Exception {
 		Local local = new Local();
 		local.setName(name);
 		return this.localDao.create(local);
 	}
 
 	@Override
-	public void update(int id, String name) {
+	public void update(int id, String name) throws Exception {
 		Local local = new Local();
 		local.setId(id);
 		local.setName(name);

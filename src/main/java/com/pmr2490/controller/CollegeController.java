@@ -30,20 +30,28 @@ public class CollegeController {
 	
 	@RequestMapping("")
 	public ModelAndView getAll() {
-		ModelAndView modelAndView = new ModelAndView("college/index");
-		modelAndView.addObject("colleges", this.collegeService.getAll());
-		return modelAndView;
+		
+		try {
+			ModelAndView modelAndView = new ModelAndView("college/index");
+			modelAndView.addObject("colleges", this.collegeService.getAll());
+			return modelAndView;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
+		
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
 	public void create(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("name") String name) {
 		
-		this.collegeService.create(name);
-		
 		try {
+			this.collegeService.create(name);
 			response.sendRedirect("/pmr2490/colleges");
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -51,37 +59,51 @@ public class CollegeController {
 	
 	@RequestMapping(value="/{id}")
 	public ModelAndView show(@PathVariable int id) {
-		Map<String, Object> map = new HashMap<>();
-		map.put("college", this.collegeService.get(id));
-		return new ModelAndView("college/show", map);
+		try {
+			Map<String, Object> map = new HashMap<>();
+			map.put("college", this.collegeService.get(id));
+			return new ModelAndView("college/show", map);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
 	}
 	
 	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
 	public void destroy(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
-		this.collegeService.delete(id);
 		try {
+			this.collegeService.delete(id);
 			response.sendRedirect("/pmr2490/colleges");
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@RequestMapping(value="/{id}/edit")
 	public ModelAndView edit(@PathVariable int id) {
-		ModelAndView modelAndView = new ModelAndView("college/edit");
-		modelAndView.addObject("college", this.collegeService.get(id));
-		return modelAndView;
+		try {
+			ModelAndView modelAndView = new ModelAndView("college/edit");
+			modelAndView.addObject("college", this.collegeService.get(id));
+			return modelAndView;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
 	}
 	
 	@RequestMapping(value="/{id}/update", method=RequestMethod.POST)
 	public void update(HttpServletRequest request, HttpServletResponse response, 
 			@PathVariable int id, @RequestParam("name") String name) {
-		
-		this.collegeService.update(id, name);
-		
 		try {
+			this.collegeService.update(id, name);
 			response.sendRedirect("/pmr2490/colleges");
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

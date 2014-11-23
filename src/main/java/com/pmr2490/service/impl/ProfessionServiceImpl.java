@@ -20,30 +20,30 @@ public class ProfessionServiceImpl implements ProfessionService {
 	}
 	
 	@Override
-	public List<Profession> getAll() {
+	public List<Profession> getAll() throws Exception {
 		return this.professionDao.getAll();
 	}
 
 	@Override
-	public Profession get(int id) {
+	public Profession get(int id) throws Exception {
 		return this.professionDao.get(id);
 	}
 
 	@Override
-	public void delete(int id) {
+	public void delete(int id) throws Exception {
 		Profession profession = this.professionDao.get(id);
 		this.professionDao.delete(profession);
 	}
 
 	@Override
-	public int create(String name) {
+	public int create(String name) throws Exception {
 		Profession profession = new Profession();
 		profession.setName(name);
 		return this.professionDao.create(profession);
 	}
 
 	@Override
-	public void update(int id, String name) {
+	public void update(int id, String name) throws Exception {
 		Profession profession = new Profession();
 		profession.setId(id);
 		profession.setName(name);

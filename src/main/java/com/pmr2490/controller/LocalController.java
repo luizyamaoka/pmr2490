@@ -28,57 +28,78 @@ public class LocalController {
 	
 	@RequestMapping(value="")
 	public ModelAndView index(HttpServletRequest request, HttpServletResponse response) {
-		ModelAndView mv = new ModelAndView("local/index");
-		mv.addObject("locals", this.localService.getAll());
-		return mv;
+		try {
+			ModelAndView modelAndView = new ModelAndView("local/index");
+			modelAndView.addObject("locals", this.localService.getAll());
+			return modelAndView;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
 	public void create(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam String name) {
-		this.localService.create(name);
-		
 		try {
+			this.localService.create(name);
 			response.sendRedirect("/pmr2490/locals");
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@RequestMapping(value="/{id}")
 	public ModelAndView show(@PathVariable int id) {
-		ModelAndView mv = new ModelAndView("local/show");
-		mv.addObject("local", this.localService.get(id));
-		return mv;
+		try {
+			ModelAndView modelAndView = new ModelAndView("local/show");
+			modelAndView.addObject("local", this.localService.get(id));
+			return modelAndView;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("erorr/unexpected-error");
+		}
 	}
 	
 	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
 	public void destroy(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
-		this.localService.delete(id);
 		try {
+			this.localService.delete(id);
 			response.sendRedirect("/pmr2490/locals");
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@RequestMapping(value="/{id}/edit")
 	public ModelAndView edit(@PathVariable int id) {
-		ModelAndView mv = new ModelAndView("local/edit");
-		mv.addObject("local", this.localService.get(id));
-		return mv;
+		try {
+			ModelAndView modelAndView = new ModelAndView("local/edit");
+			modelAndView.addObject("local", this.localService.get(id));
+			return modelAndView;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
 	}
 	
 	@RequestMapping(value="/{id}/update", method=RequestMethod.POST)
 	public void update(HttpServletRequest request, HttpServletResponse response, 
 			@PathVariable int id,
 			@RequestParam("name") String name) {
-		
-		this.localService.update(id, name);
-		
 		try {
+			this.localService.update(id, name);
 			response.sendRedirect("/pmr2490/locals");
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

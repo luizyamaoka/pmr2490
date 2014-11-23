@@ -23,41 +23,40 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	@Override
-	public List<User> getAll() {
+	public List<User> getAll() throws Exception {
 		return this.userDao.getAll();
 	}
 
 	@Override
-	public User get(int id) {
+	public User get(int id) throws Exception {
 		return this.userDao.get(id);
 	}
 	
-	public User getByEmail(String email) {
+	public User getByEmail(String email) throws Exception {
 		return this.userDao.getByEmail(email);
 	}
 
 	@Override
-	public void delete(int id) {
+	public void delete(int id) throws Exception {
 		User user = this.userDao.get(id);
 		this.userDao.delete(user);
 	}
 
 	@Override
-	public void create(String firstName, String lastName, Date birthDate,
+	public int create(String firstName, String lastName, Date birthDate,
 			String genre, Integer phoneDdd, String phoneNumber, String email,
 			String password, boolean isPromoter, College college,
 			Profession profession) throws Exception {
 		User user = new User(null, firstName, lastName, birthDate, genre, phoneDdd, phoneNumber, email, password, isPromoter, college, profession);
 		
-		this.userDao.create(user);
-		
+		return this.userDao.create(user);
 	}
 
 	@Override
 	public void update(int id, String firstName, String lastName,
 			Date birthDate, String genre, Integer phoneDdd, String phoneNumber,
 			String email, Boolean isPromoter, College college,
-			Profession profession, String password) {
+			Profession profession, String password) throws Exception {
 		User user = this.userDao.get(id);
 		
 		if (firstName != null) user.setFirstName(firstName);

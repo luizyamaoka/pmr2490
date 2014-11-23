@@ -18,7 +18,7 @@ public class UserDao extends GenericDao<User, Integer>  {
 		super(sessionFactory, User.class);
 	}
 	
-	public User getByEmail(String email) {
+	public User getByEmail(String email) throws Exception {
 		Session session = null;
 		Transaction transaction = null;
 		
@@ -34,12 +34,12 @@ public class UserDao extends GenericDao<User, Integer>  {
 		catch(Exception e) {
 			transaction.rollback();
 			e.printStackTrace();
+			throw new Exception();
 		}
 		finally {
 			if (session.isOpen())
 				session.close();
 		}
-		return null;
 	}
 	
 }

@@ -19,7 +19,7 @@ public class GenericDao<T, PK extends Serializable> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public PK create(T object) {
+	public PK create(T object) throws Exception {
 		
 		Session session = null;
 		Transaction transaction = null;
@@ -34,16 +34,16 @@ public class GenericDao<T, PK extends Serializable> {
 		catch(Exception e) {
 			transaction.rollback();
 			e.printStackTrace();
+			throw new Exception();
 		}
 		finally {
 			if (session.isOpen())
 				session.close();
 		}
-		return null;
 	}
 
 	@SuppressWarnings("unchecked")
-	public T get(PK id) {
+	public T get(PK id) throws Exception {
 		Session session = null;
 		Transaction transaction = null;
 		
@@ -57,16 +57,16 @@ public class GenericDao<T, PK extends Serializable> {
 		catch(Exception e) {
 			transaction.rollback();
 			e.printStackTrace();
+			throw new Exception();
 		}
 		finally {
 			if (session.isOpen())
 				session.close();
 		}
-		return null;
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<T> getAll() {
+	public List<T> getAll() throws Exception {
 		Session session = null;
 		Transaction transaction = null;
 		
@@ -81,15 +81,15 @@ public class GenericDao<T, PK extends Serializable> {
 		catch(Exception e) {
 			transaction.rollback();
 			e.printStackTrace();
+			throw new Exception();
 		}
 		finally {
 			if (session.isOpen())
 				session.close();
 		}
-		return null;
 	}
 
-	public void update(T object) {
+	public void update(T object) throws Exception {
 		Session session = null;
 		Transaction transaction = null;
 		
@@ -102,6 +102,7 @@ public class GenericDao<T, PK extends Serializable> {
 		catch(Exception e) {
 			transaction.rollback();
 			e.printStackTrace();
+			throw new Exception();
 		}
 		finally {
 			if (session.isOpen())
@@ -109,7 +110,7 @@ public class GenericDao<T, PK extends Serializable> {
 		}
 	}
 
-	public void delete(T object) {
+	public void delete(T object) throws Exception {
 		Session session = null;
 		Transaction transaction = null;
 		
@@ -122,6 +123,7 @@ public class GenericDao<T, PK extends Serializable> {
 		catch(Exception e) {
 			transaction.rollback();
 			e.printStackTrace();
+			throw new Exception();
 		}
 		finally {
 			if (session.isOpen())

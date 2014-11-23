@@ -11,19 +11,19 @@ import com.pmr2490.model.User;
 
 public interface EventService {
 
-	public List<Event> getAll();
+	public List<Event> getAll() throws Exception;
 	
-	public Event get(int id);
+	public Event get(int id) throws Exception;
 	
 	public EventDto getEventDto(int id) throws Exception;
 	
-	public void delete(int id);
+	public void delete(int id) throws Exception;
 	
 	public int create(String name, Date startDate, Date endDate, String email, Integer phoneDDD, 
-			String phoneNumber, String description, User creator, Local local, List<Tag> tags);
+			String phoneNumber, String description, User creator, Local local, List<Tag> tags) throws Exception;
 	
 	public void update(int id, String name, Date startDate, Date endDate, String email, Integer phoneDDD, 
-			String phoneNumber, String description, Local local, List<Tag> tags);
+			String phoneNumber, String description, Local local, List<Tag> tags) throws Exception;
 	
 	
 }

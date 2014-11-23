@@ -20,31 +20,31 @@ public class CollegeServiceImpl implements CollegeService {
 	}
 	
 	@Override
-	public List<College> getAll() {
+	public List<College> getAll() throws Exception {
 		return this.collegeDao.getAll();
 	}
 
 	@Override
-	public College get(int id) {
+	public College get(int id) throws Exception {
 		return this.collegeDao.get(id);
 	}
 
 	@Override
-	public void delete(int id) {
+	public void delete(int id) throws Exception {
 		College college = this.collegeDao.get(id);
 		this.collegeDao.delete(college);
 
 	}
 
 	@Override
-	public int create(String name) {
+	public int create(String name) throws Exception {
 		College college = new College();
 		college.setName(name);
 		return this.collegeDao.create(college);
 	}
 
 	@Override
-	public void update(int id, String name) {
+	public void update(int id, String name) throws Exception {
 		College college = new College();
 		college.setId(id);
 		college.setName(name);

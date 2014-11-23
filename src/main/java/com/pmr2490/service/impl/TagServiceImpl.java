@@ -20,30 +20,30 @@ public class TagServiceImpl implements TagService {
 	}
 	
 	@Override
-	public List<Tag> getAll() {
+	public List<Tag> getAll() throws Exception {
 		return this.tagDao.getAll();
 	}
 
 	@Override
-	public Tag get(int id) {
+	public Tag get(int id) throws Exception {
 		return this.tagDao.get(id);
 	}
 
 	@Override
-	public void delete(int id) {
+	public void delete(int id) throws Exception {
 		Tag tag = this.tagDao.get(id);
 		this.tagDao.delete(tag);
 	}
 
 	@Override
-	public int create(String name) {
+	public int create(String name) throws Exception {
 		Tag tag = new Tag();
 		tag.setName(name);
 		return this.tagDao.create(tag);
 	}
 
 	@Override
-	public void update(int id, String name) {
+	public void update(int id, String name) throws Exception {
 		Tag tag = new Tag();
 		tag.setId(id);
 		tag.setName(name);

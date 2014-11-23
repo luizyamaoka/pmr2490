@@ -22,29 +22,29 @@ public class TaggingServiceImpl implements TaggingService {
 	}
 	
 	@Override
-	public List<Tagging> getAll() {
+	public List<Tagging> getAll() throws Exception {
 		return this.taggingDao.getAll();
 	}
 
 	@Override
-	public Tagging get(int id) {
+	public Tagging get(int id) throws Exception {
 		return this.taggingDao.get(id);
 	}
 
 	@Override
-	public void delete(int id) {
+	public void delete(int id) throws Exception {
 		Tagging tagging = this.taggingDao.get(id);
 		this.taggingDao.delete(tagging);
 	}
 
 	@Override
-	public int create(Event event, Tag tag) {
+	public int create(Event event, Tag tag) throws Exception {
 		Tagging tagging = new Tagging(tag, event);
 		return this.taggingDao.create(tagging);
 	}
 
 	@Override
-	public void update(int id, Event event, Tag tag) {
+	public void update(int id, Event event, Tag tag) throws Exception {
 		Tagging tagging = this.taggingDao.get(id);
 		tagging.setEvent(event);
 		tagging.setTag(tag);

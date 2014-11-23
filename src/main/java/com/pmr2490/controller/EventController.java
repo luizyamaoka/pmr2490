@@ -1,9 +1,6 @@
 package com.pmr2490.controller;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -55,82 +52,38 @@ public class EventController {
 	
 	@RequestMapping(value="")
 	public ModelAndView index() {
-		ModelAndView modelAndView = new ModelAndView("event/index");
-		modelAndView.addObject("events", this.eventService.getAll());
-		return modelAndView;
+		try {
+			ModelAndView modelAndView = new ModelAndView("event/index");
+			modelAndView.addObject("events", this.eventService.getAll());
+			return modelAndView;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
 	}
 	
 	@RequestMapping(value="/{id}")
 	public ModelAndView show(@PathVariable int id) {
-		Map<String, Object> map = new HashMap<>();
-		map.put("event", this.eventService.get(id));
-		return new ModelAndView("event/show", map);
+		try{
+			Map<String, Object> map = new HashMap<>();
+			map.put("event", this.eventService.get(id));
+			return new ModelAndView("event/show", map);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
 	}
 	
 	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
 	public void destroy(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
-		this.eventService.delete(id);
 		try {
+			this.eventService.delete(id);
 			response.sendRedirect("/pmr2490/events");
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-	}
-	
-	@RequestMapping(value="/{id}/edit")
-	public ModelAndView edit(@PathVariable int id) {
-		ModelAndView modelAndView = new ModelAndView("event/edit");
-		modelAndView.addObject("event", this.eventService.get(id));
-		modelAndView.addObject("locals", this.localService.getAll());
-		return modelAndView;
-	}
-	
-	@RequestMapping(value="/{id}/update", method=RequestMethod.POST)
-	public void update(HttpServletRequest request, HttpServletResponse response, 
-			@PathVariable int id,
-			@RequestParam(value="name") String name,
-			@RequestParam(value="date_start") String dateStartString,
-			@RequestParam(value="hour_start") Integer hourStart,
-			@RequestParam(value="minute_start") Integer minuteStart,
-			@RequestParam(value="date_end", required=false) String dateEndString,
-			@RequestParam(value="hour_end", required=false) Integer hourEnd,
-			@RequestParam(value="minute_end", required=false) Integer minuteEnd,
-			@RequestParam(value="email") String email,
-			@RequestParam(value="phone_ddd", required=false) Integer phoneDdd,
-			@RequestParam(value="phone_number", required=false) String phoneNumber,
-			@RequestParam(value="description", required=false) String description,
-			@RequestParam(value="local_id") Integer localId,
-			@RequestParam(value="tag_ids[]", required=false) Integer[] tagIds) {
-		
-		try {
-			
-			if (localId == 0)
-				response.sendRedirect("/pmr2490/events/" + id + "/edit?local_missing");
-			else {
-			
-				DateFormat df = new SimpleDateFormat("yyyyMMdd hh:mm");
-				
-				Date startDate = df.parse(dateStartString + " " + hourStart + ":" + minuteStart);
-				
-				Date endDate = null;
-				if (!dateEndString.equals("") && hourEnd != null && minuteEnd != null)
-					endDate = df.parse(dateEndString + " " + hourEnd + ":" + minuteEnd);
-				
-				phoneNumber = phoneNumber.equals("") ? null : phoneNumber;
-				
-				Local local = this.localService.get(localId);
-				
-				List<Tag> tags = new ArrayList<Tag>();
-				for(int tagId : tagIds)
-					tags.add(this.tagService.get(tagId));
-				
-				this.eventService.update(id, name, startDate, endDate, email, phoneDdd, phoneNumber, description, local, tags);
-				
-				response.sendRedirect("/pmr2490/events");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -138,11 +91,17 @@ public class EventController {
 	@RequestMapping(value="/search", method=RequestMethod.GET)
 	public ModelAndView search(HttpServletRequest request, HttpServletResponse response) {
 		
-		ModelAndView modelAndView = new ModelAndView("event/search");
-		modelAndView.addObject("locals", this.localService.getAll());
-		modelAndView.addObject("tags", this.tagService.getAll());
+		try {
+			ModelAndView modelAndView = new ModelAndView("event/search");
+			modelAndView.addObject("locals", this.localService.getAll());
+			modelAndView.addObject("tags", this.tagService.getAll());
+			return modelAndView;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
 		
-		return modelAndView;
 	}
 	
 	@RequestMapping(value="/search", method=RequestMethod.POST)
@@ -150,165 +109,183 @@ public class EventController {
 			@RequestParam(value="date", required=false) String date,
 			@RequestParam(value="local_id", required=false) Integer localId,
 			@RequestParam(value="tag_id", required=false) Integer tagId) {
-		
-		ModelAndView modelAndView = new ModelAndView("event/index");
-		modelAndView.addObject("events", this.eventService.getAll());
-		return modelAndView;
-			
+		try {
+			ModelAndView modelAndView = new ModelAndView("event/index");
+			modelAndView.addObject("events", this.eventService.getAll());
+			return modelAndView;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
 	}
 	
 	@RequestMapping(value="/new", method=RequestMethod.POST)
     public String insert(@Valid EventDto eventDto, BindingResult result, Model m) {
 		
-		String email = SecurityContextHolder.getContext().getAuthentication().getName();
-		User creator = this.userService.getByEmail(email);
-		
-		if (creator == null)
-			return "error/403";
-		
-		List<String> errors = new ArrayList<String>();
-		
-		if(eventDto.getName().isEmpty())
-			errors.add("O nome do evento precisa ser preenchido.");
-		if(eventDto.getEmail().isEmpty())
-			errors.add("O email de contato precisa ser preenchido.");
-		if(eventDto.getDayStart() == null || eventDto.getMonthStart() == null || eventDto.getYearStart() == null ||
-				eventDto.getHourStart() == null || eventDto.getMinuteStart() == null)
-			errors.add("A data de início do evneto precisa ser preenchida.");
-		int phoneNumberLength = eventDto.getPhoneNumber().length();
-		if (phoneNumberLength != 0 && (phoneNumberLength < 8 || phoneNumberLength > 9))
-			errors.add("O numero de telefone deve ter 8 ou 9 caracteres");
-		
-		if (errors.isEmpty()) {
-			try {
-				
-				if (phoneNumberLength == 0)
-					eventDto.setPhoneNumber(null);
-				
-				Date dateStart = null;
-				if (eventDto.getDayStart() != null && eventDto.getMonthStart() != null && eventDto.getYearStart() != null
-						 && eventDto.getHourStart() != null && eventDto.getMinuteStart() != null) {
-					Calendar cal = Calendar.getInstance();
-					cal.set(eventDto.getYearStart(), eventDto.getMonthStart()-1, eventDto.getDayStart(),
-							eventDto.getHourStart(), eventDto.getMinuteStart());
-					dateStart = cal.getTime();
+		try { 
+			String email = SecurityContextHolder.getContext().getAuthentication().getName();
+			User creator = this.userService.getByEmail(email);
+			
+			List<String> errors = new ArrayList<String>();
+			
+			if(eventDto.getName().isEmpty())
+				errors.add("O nome do evento precisa ser preenchido.");
+			if(eventDto.getEmail().isEmpty())
+				errors.add("O email de contato precisa ser preenchido.");
+			if(eventDto.getDayStart() == null || eventDto.getMonthStart() == null || eventDto.getYearStart() == null ||
+					eventDto.getHourStart() == null || eventDto.getMinuteStart() == null)
+				errors.add("A data de início do evneto precisa ser preenchida.");
+			int phoneNumberLength = eventDto.getPhoneNumber().length();
+			if (phoneNumberLength != 0 && (phoneNumberLength < 8 || phoneNumberLength > 9))
+				errors.add("O numero de telefone deve ter 8 ou 9 caracteres");
+			
+			if (errors.isEmpty()) {
+				try {
+					
+					if (phoneNumberLength == 0)
+						eventDto.setPhoneNumber(null);
+					
+					Date dateStart = null;
+					if (eventDto.getDayStart() != null && eventDto.getMonthStart() != null && eventDto.getYearStart() != null
+							 && eventDto.getHourStart() != null && eventDto.getMinuteStart() != null) {
+						Calendar cal = Calendar.getInstance();
+						cal.set(eventDto.getYearStart(), eventDto.getMonthStart()-1, eventDto.getDayStart(),
+								eventDto.getHourStart(), eventDto.getMinuteStart());
+						dateStart = cal.getTime();
+					}
+					Date dateEnd = null;
+					if (eventDto.getDayEnd() != null && eventDto.getMonthEnd() != null && eventDto.getYearEnd() != null
+							 && eventDto.getHourEnd() != null && eventDto.getMinuteEnd() != null) {
+						Calendar cal = Calendar.getInstance();
+						cal.set(eventDto.getYearEnd(), eventDto.getMonthEnd()-1, eventDto.getDayEnd(),
+								eventDto.getHourEnd(), eventDto.getMinuteEnd());
+						dateEnd = cal.getTime();
+					}
+					
+					Local local = eventDto.getLocalId() == null ? null : this.localService.get(eventDto.getLocalId());
+					List<Tag> tags = new ArrayList<Tag>();
+					for (Integer tagId : eventDto.getTagIds())
+						tags.add(this.tagService.get(tagId));
+					
+					int eventId = this.eventService.create(eventDto.getName(), dateStart, dateEnd, eventDto.getEmail(), 
+							eventDto.getPhoneDdd(), eventDto.getPhoneNumber(), eventDto.getDescription(), 
+							creator, local, tags);
+					eventDto.setId(eventId);
 				}
-				Date dateEnd = null;
-				if (eventDto.getDayEnd() != null && eventDto.getMonthEnd() != null && eventDto.getYearEnd() != null
-						 && eventDto.getHourEnd() != null && eventDto.getMinuteEnd() != null) {
-					Calendar cal = Calendar.getInstance();
-					cal.set(eventDto.getYearEnd(), eventDto.getMonthEnd()-1, eventDto.getDayEnd(),
-							eventDto.getHourEnd(), eventDto.getMinuteEnd());
-					dateEnd = cal.getTime();
+				catch(Exception e) {
+					errors.add("Um erro inesperado ocorreu ao efetuar o cadastro. Por favor tente novamente ou contacte o responsavel.");
 				}
-				
-				Local local = eventDto.getLocalId() == null ? null : this.localService.get(eventDto.getLocalId());
-				List<Tag> tags = new ArrayList<Tag>();
-				for (Integer tagId : eventDto.getTagIds())
-					tags.add(this.tagService.get(tagId));
-				
-				int eventId = this.eventService.create(eventDto.getName(), dateStart, dateEnd, eventDto.getEmail(), 
-						eventDto.getPhoneDdd(), eventDto.getPhoneNumber(), eventDto.getDescription(), 
-						creator, local, tags);
-				eventDto.setId(eventId);
 			}
-			catch(Exception e) {
-				errors.add("Um erro inesperado ocorreu ao efetuar o cadastro. Por favor tente novamente ou contacte o responsavel.");
-			}
+			
+	        if(!errors.isEmpty()) {
+	        	m.addAttribute("errors", errors);
+	        	m.addAttribute("tags", this.tagService.getAll());
+	     		m.addAttribute("locals", this.localService.getAll());
+	            return "event/new";
+	        }
+	         
+	        m.addAttribute("success_message", "Evento criado com sucesso");
+	        m.addAttribute("event", this.eventService.get(eventDto.getId()));
+	        return "event/show";
 		}
-		
-        if(!errors.isEmpty()) {
-        	m.addAttribute("errors", errors);
-        	m.addAttribute("tags", this.tagService.getAll());
-     		m.addAttribute("locals", this.localService.getAll());
-            return "event/new";
+        catch (Exception ex) {
+        	ex.printStackTrace();
+        	return "error/unexpected-error";
         }
-         
-        m.addAttribute("success_message", "Evento criado com sucesso");
-        m.addAttribute("event", this.eventService.get(eventDto.getId()));
-        return "event/show";
     }
 	
 	@RequestMapping(value="/new", method=RequestMethod.GET)
     public ModelAndView newForm() {
-		
-		ModelAndView modelAndView = new ModelAndView("event/new");
-		modelAndView.addObject("eventDto", new EventDto());
-		modelAndView.addObject("tags", this.tagService.getAll());
-		modelAndView.addObject("locals", this.localService.getAll());
-        return modelAndView;
+		try {
+			ModelAndView modelAndView = new ModelAndView("event/new");
+			modelAndView.addObject("eventDto", new EventDto());
+			modelAndView.addObject("tags", this.tagService.getAll());
+			modelAndView.addObject("locals", this.localService.getAll());
+	        return modelAndView;
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
     }
 	
 	@RequestMapping(value="/{id}/edit", method=RequestMethod.POST)
     public String updateForm(@PathVariable int id, @Valid EventDto eventDto, BindingResult result, Model m) {
 		
-		String email = SecurityContextHolder.getContext().getAuthentication().getName();
-		User creator = this.userService.getByEmail(email);
-		
-		if (creator == null || this.eventService.get(id).getCreator().getId() != creator.getId())
-			return "error/403";
-		
-		List<String> errors = new ArrayList<String>();
-		
-		if(eventDto.getName().isEmpty())
-			errors.add("O nome do evento precisa ser preenchido.");
-		if(eventDto.getEmail().isEmpty())
-			errors.add("O email de contato precisa ser preenchido.");
-		if(eventDto.getDayStart() == null || eventDto.getMonthStart() == null || eventDto.getYearStart() == null ||
-				eventDto.getHourStart() == null || eventDto.getMinuteStart() == null)
-			errors.add("A data de início do evneto precisa ser preenchida.");
-		int phoneNumberLength = eventDto.getPhoneNumber().length();
-		if (phoneNumberLength != 0 && (phoneNumberLength < 8 || phoneNumberLength > 9))
-			errors.add("O numero de telefone deve ter 8 ou 9 caracteres");
-		
-		if (errors.isEmpty()) {
-			try {
-				
-				if (phoneNumberLength == 0)
-					eventDto.setPhoneNumber(null);
-				
-				Date dateStart = null;
-				if (eventDto.getDayStart() != null && eventDto.getMonthStart() != null && eventDto.getYearStart() != null
-						 && eventDto.getHourStart() != null && eventDto.getMinuteStart() != null) {
-					Calendar cal = Calendar.getInstance();
-					cal.set(eventDto.getYearStart(), eventDto.getMonthStart()-1, eventDto.getDayStart(),
-							eventDto.getHourStart(), eventDto.getMinuteStart());
-					dateStart = cal.getTime();
+		try {
+			String email = SecurityContextHolder.getContext().getAuthentication().getName();
+			User creator = this.userService.getByEmail(email);
+			
+			if (creator == null || this.eventService.get(id).getCreator().getId() != creator.getId())
+				return "error/403";
+			
+			List<String> errors = new ArrayList<String>();
+			
+			if(eventDto.getName().isEmpty())
+				errors.add("O nome do evento precisa ser preenchido.");
+			if(eventDto.getEmail().isEmpty())
+				errors.add("O email de contato precisa ser preenchido.");
+			if(eventDto.getDayStart() == null || eventDto.getMonthStart() == null || eventDto.getYearStart() == null ||
+					eventDto.getHourStart() == null || eventDto.getMinuteStart() == null)
+				errors.add("A data de início do evneto precisa ser preenchida.");
+			int phoneNumberLength = eventDto.getPhoneNumber().length();
+			if (phoneNumberLength != 0 && (phoneNumberLength < 8 || phoneNumberLength > 9))
+				errors.add("O numero de telefone deve ter 8 ou 9 caracteres");
+			
+			if (errors.isEmpty()) {
+				try {
+					
+					if (phoneNumberLength == 0)
+						eventDto.setPhoneNumber(null);
+					
+					Date dateStart = null;
+					if (eventDto.getDayStart() != null && eventDto.getMonthStart() != null && eventDto.getYearStart() != null
+							 && eventDto.getHourStart() != null && eventDto.getMinuteStart() != null) {
+						Calendar cal = Calendar.getInstance();
+						cal.set(eventDto.getYearStart(), eventDto.getMonthStart()-1, eventDto.getDayStart(),
+								eventDto.getHourStart(), eventDto.getMinuteStart());
+						dateStart = cal.getTime();
+					}
+					Date dateEnd = null;
+					if (eventDto.getDayEnd() != null && eventDto.getMonthEnd() != null && eventDto.getYearEnd() != null
+							 && eventDto.getHourEnd() != null && eventDto.getMinuteEnd() != null) {
+						Calendar cal = Calendar.getInstance();
+						cal.set(eventDto.getYearEnd(), eventDto.getMonthEnd()-1, eventDto.getDayEnd(),
+								eventDto.getHourEnd(), eventDto.getMinuteEnd());
+						dateEnd = cal.getTime();
+					}
+					
+					Local local = eventDto.getLocalId() == null ? null : this.localService.get(eventDto.getLocalId());
+					List<Tag> tags = new ArrayList<Tag>();
+					for (Integer tagId : eventDto.getTagIds())
+						tags.add(this.tagService.get(tagId));
+					
+					this.eventService.update(id, eventDto.getName(), dateStart, dateEnd, eventDto.getEmail(), 
+							eventDto.getPhoneDdd(), eventDto.getPhoneNumber(), eventDto.getDescription(), 
+							local, tags);
 				}
-				Date dateEnd = null;
-				if (eventDto.getDayEnd() != null && eventDto.getMonthEnd() != null && eventDto.getYearEnd() != null
-						 && eventDto.getHourEnd() != null && eventDto.getMinuteEnd() != null) {
-					Calendar cal = Calendar.getInstance();
-					cal.set(eventDto.getYearEnd(), eventDto.getMonthEnd()-1, eventDto.getDayEnd(),
-							eventDto.getHourEnd(), eventDto.getMinuteEnd());
-					dateEnd = cal.getTime();
+				catch(Exception e) {
+					e.printStackTrace();
+					errors.add("Um erro inesperado ocorreu ao efetuar o cadastro. Por favor tente novamente ou contacte o responsavel.");
 				}
-				
-				Local local = eventDto.getLocalId() == null ? null : this.localService.get(eventDto.getLocalId());
-				List<Tag> tags = new ArrayList<Tag>();
-				for (Integer tagId : eventDto.getTagIds())
-					tags.add(this.tagService.get(tagId));
-				
-				this.eventService.update(id, eventDto.getName(), dateStart, dateEnd, eventDto.getEmail(), 
-						eventDto.getPhoneDdd(), eventDto.getPhoneNumber(), eventDto.getDescription(), 
-						local, tags);
 			}
-			catch(Exception e) {
-				e.printStackTrace();
-				errors.add("Um erro inesperado ocorreu ao efetuar o cadastro. Por favor tente novamente ou contacte o responsavel.");
-			}
+			
+	        if(!errors.isEmpty()) {
+	        	m.addAttribute("errors", errors);
+	        	m.addAttribute("tags", this.tagService.getAll());
+	     		m.addAttribute("locals", this.localService.getAll());
+	            return "event/edit";
+	        }
+	         
+	        m.addAttribute("success_message", "Evento criado com sucesso");
+	        m.addAttribute("event", this.eventService.get(eventDto.getId()));
+	        return "event/show";
 		}
-		
-        if(!errors.isEmpty()) {
-        	m.addAttribute("errors", errors);
-        	m.addAttribute("tags", this.tagService.getAll());
-     		m.addAttribute("locals", this.localService.getAll());
-            return "event/edit";
-        }
-         
-        m.addAttribute("success_message", "Evento criado com sucesso");
-        m.addAttribute("event", this.eventService.get(eventDto.getId()));
-        return "event/show";
+		catch (Exception ex) {
+			ex.printStackTrace();
+			return "error/unexpected-error";
+		}
     }
 	
 	@RequestMapping(value="{id}/edit", method=RequestMethod.GET)
@@ -331,7 +308,7 @@ public class EventController {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			return new ModelAndView("error/500");
+			return new ModelAndView("error/unexpected-error");
 		}
     }
 	

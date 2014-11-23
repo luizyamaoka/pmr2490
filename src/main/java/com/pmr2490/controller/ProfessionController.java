@@ -28,57 +28,77 @@ public class ProfessionController {
 	
 	@RequestMapping(value="")
 	public ModelAndView index(HttpServletRequest request, HttpServletResponse response) {
-		ModelAndView mv = new ModelAndView("profession/index");
-		mv.addObject("professions", this.professionService.getAll());
-		return mv;
+		try {
+			ModelAndView modelAndView = new ModelAndView("profession/index");
+			modelAndView.addObject("professions", this.professionService.getAll());
+			return modelAndView;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
 	public void create(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam String name) {
-		this.professionService.create(name);
-		
 		try {
+			this.professionService.create(name);
 			response.sendRedirect("/pmr2490/professions");
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@RequestMapping(value="/{id}")
 	public ModelAndView show(@PathVariable int id) {
-		ModelAndView mv = new ModelAndView("profession/show");
-		mv.addObject("profession", this.professionService.get(id));
-		return mv;
+		try {
+			ModelAndView modelAndView = new ModelAndView("profession/show");
+			modelAndView.addObject("profession", this.professionService.get(id));
+			return modelAndView;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
 	}
 	
 	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
 	public void destroy(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
-		this.professionService.delete(id);
 		try {
+			this.professionService.delete(id);
 			response.sendRedirect("/pmr2490/professions");
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
 	}
 	
 	@RequestMapping(value="/{id}/edit")
 	public ModelAndView edit(@PathVariable int id) {
-		ModelAndView mv = new ModelAndView("profession/edit");
-		mv.addObject("profession", this.professionService.get(id));
-		return mv;
+		try {
+			ModelAndView modelAndView = new ModelAndView("profession/edit");
+			modelAndView.addObject("profession", this.professionService.get(id));
+			return modelAndView;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
 	}
 	
 	@RequestMapping(value="/{id}/update", method=RequestMethod.POST)
 	public void update(HttpServletRequest request, HttpServletResponse response, 
 			@PathVariable int id,
 			@RequestParam("name") String name) {
-		
-		this.professionService.update(id, name);
-		
 		try {
+			this.professionService.update(id, name);
 			response.sendRedirect("/pmr2490/professions");
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

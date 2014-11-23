@@ -28,57 +28,75 @@ public class TagController {
 	
 	@RequestMapping(value="")
 	public ModelAndView index(HttpServletRequest request, HttpServletResponse response) {
-		ModelAndView mv = new ModelAndView("tag/index");
-		mv.addObject("tags", this.tagService.getAll());
-		return mv;
+		try {
+			ModelAndView modelAndView = new ModelAndView("tag/index");
+			modelAndView.addObject("tags", this.tagService.getAll());
+			return modelAndView;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
 	}
 	
 	@RequestMapping(value="/create", method=RequestMethod.POST)
 	public void create(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam String name) {
-		this.tagService.create(name);
-		
 		try {
+			this.tagService.create(name);
 			response.sendRedirect("/pmr2490/tags");
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@RequestMapping(value="/{id}")
 	public ModelAndView show(@PathVariable int id) {
-		ModelAndView mv = new ModelAndView("tag/show");
-		mv.addObject("tag", this.tagService.get(id));
-		return mv;
+		try {
+			ModelAndView modelAndView = new ModelAndView("tag/show");
+			modelAndView.addObject("tag", this.tagService.get(id));
+			return modelAndView;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
 	}
 	
 	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
 	public void destroy(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
-		this.tagService.delete(id);
 		try {
+			this.tagService.delete(id);
 			response.sendRedirect("/pmr2490/tags");
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@RequestMapping(value="/{id}/edit")
 	public ModelAndView edit(@PathVariable int id) {
-		ModelAndView mv = new ModelAndView("tag/edit");
-		mv.addObject("tag", this.tagService.get(id));
-		return mv;
+		try {
+			ModelAndView modelAndView = new ModelAndView("tag/edit");
+			modelAndView.addObject("tag", this.tagService.get(id));
+			return modelAndView;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
 	}
 	
 	@RequestMapping(value="/{id}/update", method=RequestMethod.POST)
 	public void update(HttpServletRequest request, HttpServletResponse response, 
 			@PathVariable int id,
 			@RequestParam("name") String name) {
-		
-		this.tagService.update(id, name);
-		
 		try {
+			this.tagService.update(id, name);
 			response.sendRedirect("/pmr2490/tags");
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

@@ -8,14 +8,14 @@ import com.pmr2490.model.Tagging;
 
 public interface TaggingService {
 
-	public List<Tagging> getAll();
+	public List<Tagging> getAll() throws Exception;
 	
-	public Tagging get(int id);
+	public Tagging get(int id) throws Exception;
 	
-	public void delete(int id);
+	public void delete(int id) throws Exception;
 	
-	public int create(Event event, Tag tag);
+	public int create(Event event, Tag tag) throws Exception;
 	
-	public void update(int id, Event event, Tag tag);
+	public void update(int id, Event event, Tag tag) throws Exception;
 	
 }

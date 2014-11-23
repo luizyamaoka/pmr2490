@@ -21,7 +21,7 @@
     
       <c:import url="/WEB-INF/jsp/shared/alert.jsp" />
       <div class="center-form">
-        <form:form class="form-horizontal" action="form" modelAttribute="userDto">
+        <form:form class="form-horizontal" action="new" modelAttribute="userDto">
           <div class="form-group">
             <label for="firstNameInput" class="control-label col-xs-4">Nome * </label>
             <div class="col-xs-8">

@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Editar evento</title>
+    <title>Novo evento</title>
     <c:import url="/WEB-INF/jsp/shared/css.jsp" />
     <c:import url="/WEB-INF/jsp/shared/js.jsp" />
     <style>
@@ -83,7 +83,7 @@
 		  <div class="form-group">
             <label for="descriptionInput" class="control-label col-xs-4">Descrição </label>
             <div class="col-xs-8">
-			  <form:input path="description" class="form-control" id="descriptionInput" placeholder="Descrição" />
+			  <form:textarea style="height: 200px;" path="description" class="form-control" id="descriptionInput" placeholder="Descrição" />
 			</div>
 		    <form:errors path="description" cssClass="error" />
 		  </div>
@@ -106,7 +106,7 @@
 		  </div>
 		  <div class="form-group">
 		    <div class="col-xs-offset-4">
-              <input class="form-control btn btn-primary" type="submit" value="Salvar" />
+              <input class="form-control btn btn-primary" type="submit" value="Criar evento" />
             </div>
 		  </div>
 		

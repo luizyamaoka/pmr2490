@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,24 +47,39 @@ public class UserController {
 	
 	@RequestMapping(value="")
 	public ModelAndView index() {
-		Map<String, Object> map = new HashMap<>();
-		map.put("users", userService.getAll());
-		return new ModelAndView("user/index", map);
+		try {
+			ModelAndView modelAndView = new ModelAndView("user/index");
+			modelAndView.addObject("users", this.userService.getAll());
+			return modelAndView;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
 	}
 	
 	@RequestMapping(value="/{id}")
 	public ModelAndView show(@PathVariable int id) {
-		ModelAndView modelAndView = new ModelAndView("user/show");
-		modelAndView.addObject("user", this.userService.get(id));
-		return modelAndView;
+		try {
+			ModelAndView modelAndView = new ModelAndView("user/show");
+			modelAndView.addObject("user", this.userService.get(id));
+			return modelAndView;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
 	}
 	
 	@RequestMapping(value="/profile")
 	public ModelAndView profile() {
-		ModelAndView modelAndView = new ModelAndView("user/show");
-		String email = SecurityContextHolder.getContext().getAuthentication().getName();
-		modelAndView.addObject("user", this.userService.getByEmail(email));
-		return modelAndView;
+		try {
+			ModelAndView modelAndView = new ModelAndView("user/show");
+			String email = SecurityContextHolder.getContext().getAuthentication().getName();
+			modelAndView.addObject("user", this.userService.getByEmail(email));
+			return modelAndView;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
 	}
 	
 	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
@@ -83,6 +96,8 @@ public class UserController {
 				response.sendRedirect("/pmr2490/users");
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -121,151 +136,170 @@ public class UserController {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
 	@RequestMapping(value="/new", method=RequestMethod.POST)
     public String insert(@Valid UserDto userDto, BindingResult result, Model m, HttpServletResponse response) {
-		
-		List<String> errors = new ArrayList<String>();
-		
-		if(userDto.getFirstName().isEmpty())
-			errors.add("O nome precisa ser preenchido.");
-		if(userDto.getLastName().isEmpty())
-			errors.add("O sobrenome precisa ser preenchido.");
-		if(userDto.getEmail().isEmpty())
-			errors.add("O email precisa ser preenchido.");
-		if(userDto.getPassword().isEmpty())
-			errors.add("A senha precisa ser preenchido.");
-		if(userDto.getPasswordConfirmation().isEmpty())
-			errors.add("A confirmação da senha precisa ser preenchido.");
-		if (userDto.getProfessionId() == null)
-			errors.add("O campo ocupação precisa ser preenchido.");
-		if (!userDto.isPasswordConfirmed())
-			errors.add("A senha e a confirmação precisam ser iguais.");
-		int phoneNumberLength = userDto.getPhoneNumber().length();
-		if (phoneNumberLength != 0 && (phoneNumberLength < 8 || phoneNumberLength > 9))
-			errors.add("O numero de telefone deve ter 8 ou 9 caracteres");
-		if(this.userService.getByEmail(userDto.getEmail()) != null)
-			errors.add("Este e-mail já possui um cadastro");
-		
-		if (errors.isEmpty()) {
-			try {
-				
-				if (phoneNumberLength == 0)
-					userDto.setPhoneNumber(null);
-				
-				Date birthDate = null;
-				if (userDto.getBirthDay() != null && userDto.getBirthMonth() != null && userDto.getBirthYear() != null) {
-					Calendar cal = Calendar.getInstance();
-					cal.set(userDto.getBirthYear(), userDto.getBirthMonth()-1, userDto.getBirthDay());
-					birthDate = cal.getTime();
+		try {
+			List<String> errors = new ArrayList<String>();
+			
+			if(userDto.getFirstName().isEmpty())
+				errors.add("O nome precisa ser preenchido.");
+			if(userDto.getLastName().isEmpty())
+				errors.add("O sobrenome precisa ser preenchido.");
+			if(userDto.getEmail().isEmpty())
+				errors.add("O email precisa ser preenchido.");
+			if(userDto.getPassword().isEmpty())
+				errors.add("A senha precisa ser preenchido.");
+			if(userDto.getPasswordConfirmation().isEmpty())
+				errors.add("A confirmação da senha precisa ser preenchido.");
+			if (userDto.getProfessionId() == null)
+				errors.add("O campo ocupação precisa ser preenchido.");
+			if (!userDto.isPasswordConfirmed())
+				errors.add("A senha e a confirmação precisam ser iguais.");
+			int phoneNumberLength = userDto.getPhoneNumber().length();
+			if (phoneNumberLength != 0 && (phoneNumberLength < 8 || phoneNumberLength > 9))
+				errors.add("O numero de telefone deve ter 8 ou 9 caracteres");
+			if(this.userService.getByEmail(userDto.getEmail()) != null)
+				errors.add("Este e-mail já possui um cadastro");
+			
+			if (errors.isEmpty()) {
+				try {
+					
+					if (phoneNumberLength == 0)
+						userDto.setPhoneNumber(null);
+					
+					Date birthDate = null;
+					if (userDto.getBirthDay() != null && userDto.getBirthMonth() != null && userDto.getBirthYear() != null) {
+						Calendar cal = Calendar.getInstance();
+						cal.set(userDto.getBirthYear(), userDto.getBirthMonth()-1, userDto.getBirthDay());
+						birthDate = cal.getTime();
+					}
+					College college = userDto.getCollegeId() == null ? null : this.collegeService.get(userDto.getCollegeId());
+					Profession profession = userDto.getProfessionId() == null ? null : this.professionService.get(userDto.getProfessionId());
+					this.userService.create(userDto.getFirstName(), userDto.getLastName(), birthDate, 
+							userDto.getGender(), userDto.getPhoneDdd(), userDto.getPhoneNumber(), 
+							userDto.getEmail(), userDto.getPassword(), false, college, profession);
 				}
-				College college = userDto.getCollegeId() == null ? null : this.collegeService.get(userDto.getCollegeId());
-				Profession profession = userDto.getProfessionId() == null ? null : this.professionService.get(userDto.getProfessionId());
-				this.userService.create(userDto.getFirstName(), userDto.getLastName(), birthDate, 
-						userDto.getGender(), userDto.getPhoneDdd(), userDto.getPhoneNumber(), 
-						userDto.getEmail(), userDto.getPassword(), false, college, profession);
+				catch(Exception e) {
+					errors.add("Um erro inesperado ocorreu ao efetuar o cadastro. Por favor tente novamente ou contacte o responsavel.");
+				}
 			}
-			catch(Exception e) {
-				errors.add("Um erro inesperado ocorreu ao efetuar o cadastro. Por favor tente novamente ou contacte o responsavel.");
-			}
+			
+	        if(!errors.isEmpty()) {
+	        	m.addAttribute("errors", errors);
+	        	m.addAttribute("professions", this.professionService.getAll());
+	     		m.addAttribute("colleges", this.collegeService.getAll());
+	            return "user/new";
+	        }
+	         
+	        m.addAttribute("success_message", "Usuário cadastrado com sucesso");
+	        return "static-pages/login";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error/unexpected-error";
 		}
-		
-        if(!errors.isEmpty()) {
-        	m.addAttribute("errors", errors);
-        	m.addAttribute("professions", this.professionService.getAll());
-     		m.addAttribute("colleges", this.collegeService.getAll());
-            return "user/new";
-        }
-         
-        m.addAttribute("success_message", "Usuário cadastrado com sucesso");
-        return "static-pages/login";
     }
 	
 	@RequestMapping(value="/new", method=RequestMethod.GET)
     public ModelAndView newUser(Model m) {
-		ModelAndView modelAndView = new ModelAndView("user/new");
-		modelAndView.addObject("userDto", new UserDto());
-		modelAndView.addObject("professions", this.professionService.getAll());
-		modelAndView.addObject("colleges", this.collegeService.getAll());
-        return modelAndView;
+		try {
+			ModelAndView modelAndView = new ModelAndView("user/new");
+			modelAndView.addObject("userDto", new UserDto());
+			modelAndView.addObject("professions", this.professionService.getAll());
+			modelAndView.addObject("colleges", this.collegeService.getAll());
+	        return modelAndView;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
     }
 	
 	@RequestMapping(value="/{id}/edit", method=RequestMethod.POST)
     public String update(@PathVariable int id, @Valid UserDto userDto, BindingResult result, Model m, HttpServletResponse response) {
-		
-		String email = SecurityContextHolder.getContext().getAuthentication().getName();
-		User user = this.userService.getByEmail(email);
-		
-		// if user is trying to access the edit page from another user
-		if (user.getId() != id) 
-			return "error/403";
-		
-		List<String> errors = new ArrayList<String>();
-		
-		if(userDto.getFirstName().isEmpty())
-			errors.add("O nome precisa ser preenchido.");
-		if(userDto.getLastName().isEmpty())
-			errors.add("O sobrenome precisa ser preenchido.");
-		if(userDto.getEmail().isEmpty())
-			errors.add("O email precisa ser preenchido.");
-		if (userDto.getProfessionId() == null)
-			errors.add("O campo ocupação precisa ser preenchido.");
-		int phoneNumberLength = userDto.getPhoneNumber().length();
-		if (phoneNumberLength != 0 && (phoneNumberLength < 8 || phoneNumberLength > 9))
-			errors.add("O numero de telefone deve ter 8 ou 9 caracteres");
-		
-		if (errors.isEmpty()) {
-			try {
-				
-				if (phoneNumberLength == 0)
-					userDto.setPhoneNumber(null);
-				
-				Date birthDate = null;
-				if (userDto.getBirthDay() != null && userDto.getBirthMonth() != null && userDto.getBirthYear() != null) {
-					Calendar cal = Calendar.getInstance();
-					cal.set(userDto.getBirthYear(), userDto.getBirthMonth()-1, userDto.getBirthDay());
-					birthDate = cal.getTime();
+		try {
+			String email = SecurityContextHolder.getContext().getAuthentication().getName();
+			User user = this.userService.getByEmail(email);
+			
+			// if user is trying to access the edit page from another user
+			if (user.getId() != id) 
+				return "error/403";
+			
+			List<String> errors = new ArrayList<String>();
+			
+			if(userDto.getFirstName().isEmpty())
+				errors.add("O nome precisa ser preenchido.");
+			if(userDto.getLastName().isEmpty())
+				errors.add("O sobrenome precisa ser preenchido.");
+			if(userDto.getEmail().isEmpty())
+				errors.add("O email precisa ser preenchido.");
+			if (userDto.getProfessionId() == null)
+				errors.add("O campo ocupação precisa ser preenchido.");
+			int phoneNumberLength = userDto.getPhoneNumber().length();
+			if (phoneNumberLength != 0 && (phoneNumberLength < 8 || phoneNumberLength > 9))
+				errors.add("O numero de telefone deve ter 8 ou 9 caracteres");
+			
+			if (errors.isEmpty()) {
+				try {
+					
+					if (phoneNumberLength == 0)
+						userDto.setPhoneNumber(null);
+					
+					Date birthDate = null;
+					if (userDto.getBirthDay() != null && userDto.getBirthMonth() != null && userDto.getBirthYear() != null) {
+						Calendar cal = Calendar.getInstance();
+						cal.set(userDto.getBirthYear(), userDto.getBirthMonth()-1, userDto.getBirthDay());
+						birthDate = cal.getTime();
+					}
+					College college = userDto.getCollegeId() == null ? null : this.collegeService.get(userDto.getCollegeId());
+					Profession profession = userDto.getProfessionId() == null ? null : this.professionService.get(userDto.getProfessionId());
+					this.userService.update(id, userDto.getFirstName(), userDto.getLastName(), birthDate, 
+							userDto.getGender(), userDto.getPhoneDdd(), userDto.getPhoneNumber(), 
+							userDto.getEmail(), false, college, profession, null);
 				}
-				College college = userDto.getCollegeId() == null ? null : this.collegeService.get(userDto.getCollegeId());
-				Profession profession = userDto.getProfessionId() == null ? null : this.professionService.get(userDto.getProfessionId());
-				this.userService.update(id, userDto.getFirstName(), userDto.getLastName(), birthDate, 
-						userDto.getGender(), userDto.getPhoneDdd(), userDto.getPhoneNumber(), 
-						userDto.getEmail(), false, college, profession, null);
+				catch(Exception e) {
+					errors.add("Um erro inesperado ocorreu ao efetuar o cadastro. Por favor tente novamente ou contacte o responsavel.");
+				}
 			}
-			catch(Exception e) {
-				errors.add("Um erro inesperado ocorreu ao efetuar o cadastro. Por favor tente novamente ou contacte o responsavel.");
-			}
+			
+	        if(!errors.isEmpty()) {
+	        	m.addAttribute("errors", errors);
+	        	m.addAttribute("professions", this.professionService.getAll());
+	     		m.addAttribute("colleges", this.collegeService.getAll());
+	            return "user/edit";
+	        }
+	         
+	        m.addAttribute("success_message", "Usuário salvo com sucesso");
+	        m.addAttribute("user", this.userService.get(id));
+	        return "user/show";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error/unexpected-error";
 		}
-		
-        if(!errors.isEmpty()) {
-        	m.addAttribute("errors", errors);
-        	m.addAttribute("professions", this.professionService.getAll());
-     		m.addAttribute("colleges", this.collegeService.getAll());
-            return "user/edit";
-        }
-         
-        m.addAttribute("success_message", "Usuário salvo com sucesso");
-        m.addAttribute("user", this.userService.get(id));
-        return "user/show";
     }
 	
 	@RequestMapping(value="{id}/edit", method=RequestMethod.GET)
     public ModelAndView edit(@PathVariable int id, Model m) {
-		
-		String email = SecurityContextHolder.getContext().getAuthentication().getName();
-		User user = this.userService.getByEmail(email);
-		
-		// if user is trying to access the edit page from another user
-		if (user.getId() != id) 
-			return new ModelAndView("error/403");
-		
-		ModelAndView modelAndView = new ModelAndView("user/edit");
-		modelAndView.addObject("userDto", user.toDto());
-		modelAndView.addObject("professions", this.professionService.getAll());
-		modelAndView.addObject("colleges", this.collegeService.getAll());
-        return modelAndView;
+		try {
+			String email = SecurityContextHolder.getContext().getAuthentication().getName();
+			User user = this.userService.getByEmail(email);
+			
+			// if user is trying to access the edit page from another user
+			if (user.getId() != id) 
+				return new ModelAndView("error/403");
+			
+			ModelAndView modelAndView = new ModelAndView("user/edit");
+			modelAndView.addObject("userDto", user.toDto());
+			modelAndView.addObject("professions", this.professionService.getAll());
+			modelAndView.addObject("colleges", this.collegeService.getAll());
+	        return modelAndView;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
     }
 	
 }

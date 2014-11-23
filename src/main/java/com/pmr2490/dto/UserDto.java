@@ -1,11 +1,5 @@
 package com.pmr2490.dto;
 
-import java.util.Calendar;
-import java.util.Date;
-
-import com.pmr2490.model.User;
-import com.pmr2490.service.CollegeService;
-import com.pmr2490.service.ProfessionService;
 
 public class UserDto {
 	
@@ -25,9 +19,6 @@ public class UserDto {
 	private String passwordConfirmation;
 	private Integer professionId;
 	private Integer collegeId;
-	
-	private ProfessionService professionService;
-	private CollegeService collegeService;
 	
 	public Integer getId() {
 		return id;
@@ -113,47 +104,6 @@ public class UserDto {
 	public void setCollegeId(Integer collegeId) {
 		this.collegeId = collegeId;
 	}
-	public ProfessionService getProfessionService() {
-		return professionService;
-	}
-	public void setProfessionService(ProfessionService professionService) {
-		this.professionService = professionService;
-	}
-	public CollegeService getCollegeService() {
-		return collegeService;
-	}
-	public void setCollegeService(CollegeService collegeService) {
-		this.collegeService = collegeService;
-	}
-	
-	public User toUser() {
-		User user = new User();
-		if(this.id != null) user.setId(this.id);
-		user.setFirstName(this.firstName);
-		user.setLastName(this.firstName);
-		
-		Date birthDate = null;
-		if (birthDay != null && birthMonth != null && birthYear != null) {
-			Calendar cal = Calendar.getInstance();
-			cal.set(birthYear, birthMonth-1, birthDay);
-			birthDate = cal.getTime();
-		}
-		user.setBirthDate(birthDate);
-		
-		user.setGenre(this.gender);
-		user.setPhoneDdd(this.phoneDdd);
-		user.setPhoneNumber(this.phoneNumber);
-		user.setPassword(this.password);
-		user.setEmail(this.email);
-		
-		if(this.professionId != null)
-			user.setProfession(this.professionService.get(1));
-		if(this.collegeId != null)
-			user.setCollege(this.collegeService.get(1));
-		
-		return user;
-	}
-	
 	public boolean isPasswordConfirmed() {
 		return this.password.equals(this.passwordConfirmation);
 	}
