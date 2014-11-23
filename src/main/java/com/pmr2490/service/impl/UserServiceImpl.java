@@ -36,6 +36,10 @@ public class UserServiceImpl implements UserService {
 		return this.userDao.getByEmail(email);
 	}
 
+	public User getEagerByEmail(String email) throws Exception {
+		return this.userDao.getEagerByEmail(email);
+	}
+	
 	@Override
 	public void delete(int id) throws Exception {
 		User user = this.userDao.get(id);

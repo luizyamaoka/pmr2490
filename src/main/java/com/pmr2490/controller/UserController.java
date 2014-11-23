@@ -281,7 +281,7 @@ public class UserController {
 		}
     }
 	
-	@RequestMapping(value="{id}/edit", method=RequestMethod.GET)
+	@RequestMapping(value="/{id}/edit", method=RequestMethod.GET)
     public ModelAndView edit(@PathVariable int id, Model m) {
 		try {
 			String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -295,6 +295,22 @@ public class UserController {
 			modelAndView.addObject("userDto", user.toDto());
 			modelAndView.addObject("professions", this.professionService.getAll());
 			modelAndView.addObject("colleges", this.collegeService.getAll());
+	        return modelAndView;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
+    }
+	
+	@RequestMapping(value="/my-events", method=RequestMethod.GET)
+    public ModelAndView myEvents() {
+		try {
+			String email = SecurityContextHolder.getContext().getAuthentication().getName();
+			User user = this.userService.getEagerByEmail(email);
+			
+			ModelAndView modelAndView = new ModelAndView("event/index");
+			modelAndView.addObject("events", user.getEvents());
+			modelAndView.addObject("username", user.getEmail());
 	        return modelAndView;
 		} catch (Exception e) {
 			e.printStackTrace();

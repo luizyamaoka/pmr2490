@@ -55,6 +55,9 @@ public class EventController {
 		try {
 			ModelAndView modelAndView = new ModelAndView("event/index");
 			modelAndView.addObject("events", this.eventService.getAll());
+			if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+				modelAndView.addObject("username", SecurityContextHolder.getContext().getAuthentication().getName());
+			}
 			return modelAndView;
 		}
 		catch (Exception e) {
@@ -305,6 +308,9 @@ public class EventController {
 			ModelAndView modelAndView = new ModelAndView("event/index");
 			String data = date.equals("") ? null : date;
 			modelAndView.addObject("events", this.eventService.getBySet(data, name, localId, tagId));
+			if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+				modelAndView.addObject("username", SecurityContextHolder.getContext().getAuthentication().getName());
+			}
 			return modelAndView;
 		}
 		catch (Exception e) {

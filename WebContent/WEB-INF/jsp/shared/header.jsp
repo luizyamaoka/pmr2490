@@ -40,6 +40,7 @@
             <a href="#" class="dropdown-toggle glyphicon glyphicon-cog" data-toggle="dropdown" role="button" aria-expanded="false"></a>
             <ul class="dropdown-menu" role="menu">
               <li><a href="/pmr2490/users/profile">Perfil</a></li>
+              <li><a href="/pmr2490/users/my-events">Meus eventos</a></li>
               <li><a href="/pmr2490/users/edit-password">Alterar senha</a></li>
               <li class="divider"></li>
               <!-- li class="dropdown-header">Nav header</li> -->

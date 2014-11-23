@@ -15,6 +15,8 @@ public interface UserService {
 	
 	public User getByEmail(String email) throws Exception;
 	
+	public User getEagerByEmail(String email) throws Exception;
+	
 	public void delete(int id) throws Exception;
 	
 	public int create(String firstName, String lastName, Date birthDate, String genre, Integer phoneDdd, 
