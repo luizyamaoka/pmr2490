@@ -76,50 +76,6 @@ public class EventController {
 		}
 	}
 	
-	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
-	public void destroy(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
-		try {
-			this.eventService.delete(id);
-			response.sendRedirect("/pmr2490/events");
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	@RequestMapping(value="/search", method=RequestMethod.GET)
-	public ModelAndView search(HttpServletRequest request, HttpServletResponse response) {
-		
-		try {
-			ModelAndView modelAndView = new ModelAndView("event/search");
-			modelAndView.addObject("locals", this.localService.getAll());
-			modelAndView.addObject("tags", this.tagService.getAll());
-			return modelAndView;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return new ModelAndView("error/unexpected-error");
-		}
-		
-	}
-	
-	@RequestMapping(value="/search", method=RequestMethod.POST)
-	public ModelAndView doSearch(HttpServletRequest request, HttpServletResponse response, 
-			@RequestParam(value="date", required=false) String date,
-			@RequestParam(value="local_id", required=false) Integer localId,
-			@RequestParam(value="tag_id", required=false) Integer tagId) {
-		try {
-			ModelAndView modelAndView = new ModelAndView("event/index");
-			modelAndView.addObject("events", this.eventService.getAll());
-			return modelAndView;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			return new ModelAndView("error/unexpected-error");
-		}
-	}
-	
 	@RequestMapping(value="/new", method=RequestMethod.POST)
     public String insert(@Valid EventDto eventDto, BindingResult result, Model m) {
 		
@@ -211,7 +167,7 @@ public class EventController {
     }
 	
 	@RequestMapping(value="/{id}/edit", method=RequestMethod.POST)
-    public String updateForm(@PathVariable int id, @Valid EventDto eventDto, BindingResult result, Model m) {
+    public String update(@PathVariable int id, @Valid EventDto eventDto, BindingResult result, Model m) {
 		
 		try {
 			String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -305,11 +261,56 @@ public class EventController {
 			modelAndView.addObject("tags", this.tagService.getAll());
 			modelAndView.addObject("locals", this.localService.getAll());
 	        return modelAndView;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
+    }
+	
+	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
+	public void destroy(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
+		try {
+			this.eventService.delete(id);
+			response.sendRedirect("/pmr2490/events");
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@RequestMapping(value="/search", method=RequestMethod.GET)
+	public ModelAndView search(HttpServletRequest request, HttpServletResponse response) {
+		
+		try {
+			ModelAndView modelAndView = new ModelAndView("event/search");
+			modelAndView.addObject("locals", this.localService.getAll());
+			modelAndView.addObject("tags", this.tagService.getAll());
+			return modelAndView;
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 			return new ModelAndView("error/unexpected-error");
 		}
-    }
+		
+	}
+	
+	@RequestMapping(value="/search", method=RequestMethod.POST)
+	public ModelAndView doSearch(HttpServletRequest request, HttpServletResponse response, 
+			@RequestParam(value="name", required=false) String name,
+			@RequestParam(value="date", required=false) String date,
+			@RequestParam(value="localId", required=false) Integer localId,
+			@RequestParam(value="tagId", required=false) Integer tagId) {
+		try {
+			ModelAndView modelAndView = new ModelAndView("event/index");
+			String data = date.equals("") ? null : date;
+			modelAndView.addObject("events", this.eventService.getBySet(data, name, localId, tagId));
+			return modelAndView;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
+	}
 	
 }
