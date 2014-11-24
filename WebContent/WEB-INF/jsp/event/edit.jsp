@@ -21,7 +21,7 @@
     
       <c:import url="/WEB-INF/jsp/shared/alert.jsp" />
       <div class="center-form">
-        <form:form class="form-horizontal" action="form" modelAttribute="eventDto">
+        <form:form class="form-horizontal" action="edit" modelAttribute="eventDto">
           <div class="form-group">
             <label for="nameInput" class="control-label col-xs-4">Nome * </label>
             <div class="col-xs-8">
@@ -97,12 +97,18 @@
 			</div>
 		    <form:errors path="localId" cssClass="error" />
 		  </div>
-		  <div class="form-group">
+		  <!--div class="form-group">
             <label for="tagsCheckbox" class="control-label col-xs-4">Tags </label>
             <div class="col-xs-8">
+              <a href="edit-tags" class="btn btn-warning">Editar tags</a>
               <form:checkboxes items="${tags}" itemValue="id" itemLabel="name" path="tagIds" />
 			</div>
 		    <form:errors path="tagIds" cssClass="error" />
+		  </div>-->
+		  <div class="form-group">
+		    <div class="col-xs-offset-4">
+              <a href="edit-tags" class="form-control btn btn-warning">Editar tags</a>
+            </div>
 		  </div>
 		  <div class="form-group">
 		    <div class="col-xs-offset-4">

@@ -21,6 +21,12 @@
     
     <div class="container theme-showcase" role="main">
     
+      <c:if test="${empty events}">
+        <div class="jumbotron" style="text-align: center">
+          <h3>Nenhum evento encontrado</h3>
+        </div>
+      </c:if>
+    
       <div class="row">
         <c:forEach var="event" items="${events}">
           <div class="col-md-4 col-sm-6">

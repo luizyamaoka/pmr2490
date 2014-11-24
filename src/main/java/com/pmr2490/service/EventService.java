@@ -17,6 +17,8 @@ public interface EventService {
 	
 	public Event get(int id) throws Exception;
 	
+	public Event getEager(int id) throws Exception;
+	
 	public EventDto getEventDto(int id) throws Exception;
 	
 	public void delete(int id) throws Exception;

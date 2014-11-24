@@ -10,16 +10,16 @@
 		<intercept-url pattern="/users/edit-password**" access="isAuthenticated()" />
 		<intercept-url pattern="/users/update-password**" access="isAuthenticated()" />
 		<intercept-url pattern="/users/my-events**" access="isAuthenticated()" />
-	    <intercept-url pattern="/*/*/edit**" access="isAuthenticated()" />
-	    <intercept-url pattern="/*/*/update**" access="isAuthenticated()" />
+		<intercept-url pattern="/colleges**" access="hasRole('ADMIN')" />
+		<intercept-url pattern="/locals**" access="hasRole('ADMIN')" />
+		<intercept-url pattern="/professions**" access="hasRole('ADMIN')" />
+		<intercept-url pattern="/tag**" access="hasRole('ADMIN')" />
+		<intercept-url pattern="/*/*/edit**" access="isAuthenticated()" />
 	    
 	    <intercept-url pattern="/users/new**" access="hasRole('ROLE_ANONYMOUS')" />
-	    <intercept-url pattern="/users/create**" access="hasRole('ROLE_ANONYMOUS')" />
 	    
 	    <intercept-url pattern="/*/new**" access="isAuthenticated()" />
-	    <intercept-url pattern="/*/create**" access="isAuthenticated()" />
 	    <intercept-url pattern="/*/*/destroy**" access="isAuthenticated()" />
-	    <!-- intercept-url pattern="/colleges**" access="hasRole('ADMIN')" /> -->
 	    
 		<access-denied-handler error-page="/403" />
 		<form-login 

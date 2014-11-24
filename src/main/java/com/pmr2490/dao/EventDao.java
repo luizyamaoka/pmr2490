@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import com.pmr2490.dto.EventDto;
 import com.pmr2490.model.Event;
+import com.pmr2490.model.Tagging;
 
 @Repository
 public class EventDao extends GenericDao<Event, Integer> {
@@ -26,6 +27,31 @@ public class EventDao extends GenericDao<Event, Integer> {
 		super(sessionFactory, Event.class);
 	}
 
+	public Event getEager(int id) throws Exception {
+		Session session = null;
+		Transaction transaction = null;
+		
+		try{
+			session = this.sessionFactory.getCurrentSession();
+			transaction = session.beginTransaction();
+			Event event = (Event)session.get(Event.class, id);
+			for(Tagging tagging : event.getTaggings())
+				tagging.getTag().getName();
+			transaction.commit();
+			return event;
+			
+		}
+		catch(Exception e) {
+			transaction.rollback();
+			e.printStackTrace();
+			throw new Exception();
+		}
+		finally {
+			if (session.isOpen())
+				session.close();
+		}
+	}
+	
 	public EventDto getEventDto(int id) throws Exception {
 		Session session = null;
 		Transaction transaction = null;

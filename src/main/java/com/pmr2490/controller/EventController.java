@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.pmr2490.dto.EventDto;
+import com.pmr2490.model.Event;
 import com.pmr2490.model.Local;
 import com.pmr2490.model.Tag;
 import com.pmr2490.model.User;
@@ -217,8 +218,8 @@ public class EventController {
 					
 					Local local = eventDto.getLocalId() == null ? null : this.localService.get(eventDto.getLocalId());
 					List<Tag> tags = new ArrayList<Tag>();
-					for (Integer tagId : eventDto.getTagIds())
-						tags.add(this.tagService.get(tagId));
+//					for (Integer tagId : eventDto.getTagIds())
+//						tags.add(this.tagService.get(tagId));
 					
 					this.eventService.update(id, eventDto.getName(), dateStart, dateEnd, eventDto.getEmail(), 
 							eventDto.getPhoneDdd(), eventDto.getPhoneNumber(), eventDto.getDescription(), 
@@ -318,5 +319,27 @@ public class EventController {
 			return new ModelAndView("error/unexpected-error");
 		}
 	}
+	
+	@RequestMapping(value="{id}/edit-tags", method=RequestMethod.GET)
+    public ModelAndView editTagsForm(@PathVariable int id) {
+		
+		try {
+			Event event = this.eventService.getEager(id);
+			
+			String email = SecurityContextHolder.getContext().getAuthentication().getName();
+			User creator = this.userService.getByEmail(email);
+			
+			if (creator == null || event.getCreator().getId() != creator.getId())
+				return new ModelAndView("error/403");
+			
+			ModelAndView modelAndView = new ModelAndView("event/tags");
+			modelAndView.addObject("tags", this.tagService.getAll());
+			modelAndView.addObject("event", event);
+	        return modelAndView;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ModelAndView("error/unexpected-error");
+		}
+    }
 	
 }

@@ -92,4 +92,9 @@ public class EventServiceImpl implements EventService {
 		return this.eventDao.getBySet(data, name, localId, tagId);
 	}
 
+	@Override
+	public Event getEager(int id) throws Exception {
+		return this.eventDao.getEager(id);
+	}
+
 }
