@@ -70,9 +70,7 @@ public class EventController {
 		try{
 			ModelAndView modelAndView = new ModelAndView("event/show");
 			modelAndView.addObject("event", this.eventService.getEager(id));
-			if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
-				modelAndView.addObject("username", SecurityContextHolder.getContext().getAuthentication().getName());
-			}
+			modelAndView.addObject("username", SecurityContextHolder.getContext().getAuthentication().getName());
 			return modelAndView;
 		}
 		catch (Exception e) {

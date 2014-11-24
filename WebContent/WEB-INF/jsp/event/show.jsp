@@ -1,5 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="security" %>
 
 <html>
   <head>
@@ -8,8 +10,9 @@
     <c:import url="/WEB-INF/jsp/shared/css.jsp" />
     <c:import url="/WEB-INF/jsp/shared/js.jsp" />
     <style>
-      .bold {
+      .info-title {
         font-weight: bold;
+        text-align: right;
       }
     </style>
   </head>
@@ -18,53 +21,104 @@
     
     <div class="container theme-showcase" role="main">
 
-	<h1>${event.name}</h1>
-	<h3>
-	  <c:forEach var="tagging" items="${event.taggings}">
-	    <span class="label label-default">${tagging.tag.name}</span>
-	  </c:forEach>
-	</h3>
+        <h1>${event.name}</h1>
+	    <h3>
+	      <c:forEach var="tagging" items="${event.taggings}">
+	        <span class="label label-default">${tagging.tag.name}</span>
+	      </c:forEach>
+	    </h3>
 
       <div class="row">
-        <div class="col-md-6 col-xs-12">
-          <h3 style="text-align: center;">Destalhes do evento</h3>
-          <p style="text-align: center;">
-            <span class="bold">Início </span>
-            <fmt:formatDate value="${event.dateStart}" pattern="dd/MM/yyyy hh:mm" />
-          </p>
-          <c:if test="${!empty event.dateEnd}">
-            <p style="text-align: center;">
-              <span class="bold">Término </span>
-              <fmt:formatDate value="${event.dateEnd}" pattern="dd/MM/yyyy hh:mm" />
-            </p>
-          </c:if>
-          <p style="text-align: center;">
-            <span class="bold">Local </span>
-            ${event.local.name}
-          </p>
-          <c:if test="${!empty event.phoneNumber}">
-            <p style="text-align: center;">
-              <span class="bold">Telefone de contato </span>
-              (${event.phoneDdd}) ${event.phoneNumber}
-            </p>
-          </c:if>
-          <p style="text-align: center;">
-            <span class="bold">Email de contato </span>
-            ${event.email}
-          </p>
-          <div class="text-center">
-            <c:if test="${event.creator.email == username}">
-              <a href="/pmr2490/events/${event.id}/edit" class="btn btn-warning btn-sm" role="button">Editar evento</a>
-            </c:if>
+        
+        <div class="col-md-4 col-xs-12">
+          <h3 style="text-align: center;">Detalhes do evento</h3>
+          <div class="row">
+            <div class="col-xs-4 info-title">Início</div>
+            <div class="col-xs-8">
+              <fmt:formatDate value="${event.dateStart}" pattern="dd/MM/yyyy hh:mm" />
+            </div>
           </div>
+          
+          <c:if test="${!empty event.dateEnd}">
+            <div class="row">
+              <div class="col-xs-4 info-title">Término</div>
+              <div class="col-xs-8">
+                <fmt:formatDate value="${event.dateEnd}" pattern="dd/MM/yyyy hh:mm" />
+              </div>
+            </div>
+          </c:if>
+          
+          <div class="row">
+            <div class="col-xs-4 info-title">Local</div>
+            <div class="col-xs-8">${event.local.name}</div>
+          </div>
+          
+          <div class="row">
+            <div class="col-xs-4 info-title">Organizador</div>
+            <div class="col-xs-8">
+              <a href="/pmr2490/users/${event.creator.id}">${event.creator.firstName} ${event.creator.lastName}</a>
+            </div>
+          </div>
+          
+          <c:if test="${!empty event.phoneNumber}">
+            <div class="row">
+              <div class="col-xs-4 info-title">Telefone</div>
+              <div class="col-xs-8">(${event.phoneDdd}) ${event.phoneNumber}</div>
+            </div>
+          </c:if>
+          
+          <div class="row">
+            <div class="col-xs-4 info-title">Email</div>
+            <div class="col-xs-8">${event.email}</div>
+          </div>
+          
+          <div class="row">
+            <div class="text-center">
+              <c:if test="${event.creator.email == username}">
+                <a href="/pmr2490/events/${event.id}/edit" class="btn btn-warning btn-sm" role="button">Editar evento</a>
+              </c:if>
+            </div>
+          </div>
+          
         </div>
-        <div class="col-md-6 col-xs-12">
+        <div class="col-md-4 col-xs-12">
           <c:if test="${!empty event.description}">
             <h3 style="text-align: center;">Descrição</h3>
             <p style="text-align: justify;">
               ${event.description}
             </p>
           </c:if>
+        </div>
+        <div class="col-md-4 col-xs-12">
+          <security:authorize access="isAuthenticated()">
+            <c:forEach items="${event.participants}" var="participant">
+			  <c:if test="${participant.user.email.equals(username)}">
+			    <c:set var="participantId" value="${participant.id}" />
+			  </c:if>
+			</c:forEach>
+		  </security:authorize>
+        
+            <h3 style="text-align: center;">Partcipantes</h3>
+            <security:authorize access="isAuthenticated()">
+              <div class="text-center">
+              <c:choose>
+                <c:when test="${participantId == null}">
+                  <form class="crud-buttons" action="/pmr2490/participants/new" method="post">
+                    <input type="hidden" name="eventId" value="${event.id}" />
+                    <input type="submit" value="Confirmar presença" class="btn btn-success btn-sm" />
+                  </form>
+                </c:when>
+                <c:otherwise>
+                  <form class="crud-buttons" action="/pmr2490/participants/${participantId}/destroy" method="post">
+                    <input type="submit" value="Cancelar presença" class="btn btn-danger btn-sm" />
+                  </form>
+                </c:otherwise>
+              </c:choose>
+              </div>
+            </security:authorize>
+            <p>
+              ${fn:length(event.participants)} confirmaram presença neste evento
+            </p>
         </div>
       </div>
     </div>

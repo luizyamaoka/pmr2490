@@ -21,7 +21,7 @@ import com.pmr2490.service.ParticipantService;
 import com.pmr2490.service.UserService;
 
 @Controller
-@RequestMapping("participants")
+@RequestMapping("/participants")
 public class ParticipantController {
 
 	private ParticipantService participantService;
@@ -40,10 +40,9 @@ public class ParticipantController {
 	public void insert(HttpServletRequest request, HttpServletResponse response, 
 			@RequestParam("eventId") Integer eventId) {
 		try {
-			if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated())
-				response.sendRedirect("/pmr2490/403");
-			else if (eventId == null)
-				response.sendRedirect("/pmr2490/events/" + eventId);
+			
+			if (eventId == null)
+				response.sendRedirect("/pmr2490/events");
 			else {
 				String email = SecurityContextHolder.getContext().getAuthentication().getName();
 				User user = this.userService.getByEmail(email);
@@ -63,8 +62,8 @@ public class ParticipantController {
 		try {
 			Participant participant = this.participantService.get(id);
 			String email = SecurityContextHolder.getContext().getAuthentication().getName();
-
-			if (participant.getUser().getEmail().equals(email))
+			
+			if (!participant.getUser().getEmail().equals(email))
 				response.sendRedirect("/pmr2490/403");
 			else {
 				this.participantService.delete(id);

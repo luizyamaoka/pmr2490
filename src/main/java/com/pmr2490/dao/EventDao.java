@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import com.pmr2490.dto.EventDto;
 import com.pmr2490.model.Event;
+import com.pmr2490.model.Participant;
 import com.pmr2490.model.Tagging;
 
 @Repository
@@ -37,6 +38,8 @@ public class EventDao extends GenericDao<Event, Integer> {
 			Event event = (Event)session.get(Event.class, id);
 			for(Tagging tagging : event.getTaggings())
 				tagging.getTag().getName();
+			for(Participant participant : event.getParticipants())
+				participant.getUser().getFirstName();
 			transaction.commit();
 			return event;
 			

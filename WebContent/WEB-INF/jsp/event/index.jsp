@@ -45,7 +45,9 @@
                 <a href="/pmr2490/events/${event.id}/edit" class="btn btn-warning btn-sm" role="button">Editar evento</a>
               </c:if>
               <security:authorize access="hasRole('ADMIN')">
-                <a href="/pmr2490/events/${event.id}/destroy" class="btn btn-danger btn-sm" role="button">Deletar evento</a>
+                <form class="crud-buttons" action="/pmr2490/events/${event.id}/destroy" method="post">
+                  <input type="submit" value="Deletar" class="btn btn-danger btn-sm" />
+                </form>
               </security:authorize>
             </div>
             </div>
