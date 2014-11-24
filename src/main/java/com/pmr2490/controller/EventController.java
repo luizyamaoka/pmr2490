@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -70,9 +68,12 @@ public class EventController {
 	@RequestMapping(value="/{id}")
 	public ModelAndView show(@PathVariable int id) {
 		try{
-			Map<String, Object> map = new HashMap<>();
-			map.put("event", this.eventService.get(id));
-			return new ModelAndView("event/show", map);
+			ModelAndView modelAndView = new ModelAndView("event/show");
+			modelAndView.addObject("event", this.eventService.getEager(id));
+			if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+				modelAndView.addObject("username", SecurityContextHolder.getContext().getAuthentication().getName());
+			}
+			return modelAndView;
 		}
 		catch (Exception e) {
 			e.printStackTrace();

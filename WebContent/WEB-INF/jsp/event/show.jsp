@@ -7,57 +7,64 @@
     <title>${event.name}</title>
     <c:import url="/WEB-INF/jsp/shared/css.jsp" />
     <c:import url="/WEB-INF/jsp/shared/js.jsp" />
+    <style>
+      .bold {
+        font-weight: bold;
+      }
+    </style>
   </head>
   <body>
     <c:import url="/WEB-INF/jsp/shared/header.jsp" />
     
     <div class="container theme-showcase" role="main">
 
-	
+	<h1>${event.name}</h1>
+	<h3>
+	  <c:forEach var="tagging" items="${event.taggings}">
+	    <span class="label label-default">${tagging.tag.name}</span>
+	  </c:forEach>
+	</h3>
 
       <div class="row">
-        <div class="col-md-4"></div>
-        <div class="col-md-4">
-          <table class="table">
-            <tbody>
-              <tr>
-                <td style="font-weight: bold;">Id</td>
-                <td>${event.id}</td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold;">Nome</td>
-                <td>${event.name}</td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold;">Início</td>
-                <td><fmt:formatDate value="${event.dateStart}" pattern="dd/MM/yyyy hh:mm" /></td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold;">Fim</td>
-                <td><fmt:formatDate value="${event.dateEnd}" pattern="dd/MM/yyyy hh:mm" /></td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold;">Telefone</td>
-                <td>(${event.phoneDdd}) ${event.phoneNumber}</td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold;">Email</td>
-                <td>${event.email}</td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold;">Descrição</td>
-                <td>${event.description}</td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold;">Local</td>
-                <td>${event.local.name}</td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold;">Criador</td>
-                <td>${event.creator.firstName} ${event.creator.lastName}</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="col-md-6 col-xs-12">
+          <h3 style="text-align: center;">Destalhes do evento</h3>
+          <p style="text-align: center;">
+            <span class="bold">Início </span>
+            <fmt:formatDate value="${event.dateStart}" pattern="dd/MM/yyyy hh:mm" />
+          </p>
+          <c:if test="${!empty event.dateEnd}">
+            <p style="text-align: center;">
+              <span class="bold">Término </span>
+              <fmt:formatDate value="${event.dateEnd}" pattern="dd/MM/yyyy hh:mm" />
+            </p>
+          </c:if>
+          <p style="text-align: center;">
+            <span class="bold">Local </span>
+            ${event.local.name}
+          </p>
+          <c:if test="${!empty event.phoneNumber}">
+            <p style="text-align: center;">
+              <span class="bold">Telefone de contato </span>
+              (${event.phoneDdd}) ${event.phoneNumber}
+            </p>
+          </c:if>
+          <p style="text-align: center;">
+            <span class="bold">Email de contato </span>
+            ${event.email}
+          </p>
+          <div class="text-center">
+            <c:if test="${event.creator.email == username}">
+              <a href="/pmr2490/events/${event.id}/edit" class="btn btn-warning btn-sm" role="button">Editar evento</a>
+            </c:if>
+          </div>
+        </div>
+        <div class="col-md-6 col-xs-12">
+          <c:if test="${!empty event.description}">
+            <h3 style="text-align: center;">Descrição</h3>
+            <p style="text-align: justify;">
+              ${event.description}
+            </p>
+          </c:if>
         </div>
       </div>
     </div>
