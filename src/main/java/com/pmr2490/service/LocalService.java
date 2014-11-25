@@ -12,7 +12,7 @@ public interface LocalService {
 	
 	public void delete(int id) throws Exception;
 	
-	public int create(String name) throws Exception;
+	public List<String> create(String name) throws Exception;
 	
-	public void update(int id, String name) throws Exception;
+	public List<String> update(int id, String name) throws Exception;
 }

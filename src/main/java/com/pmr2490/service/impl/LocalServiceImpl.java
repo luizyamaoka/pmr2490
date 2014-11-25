@@ -1,5 +1,6 @@
 package com.pmr2490.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,19 +42,59 @@ public class LocalServiceImpl implements LocalService {
 
 	@Override
 	@Transactional
-	public int create(String name) throws Exception {
-		Local local = new Local();
-		local.setName(name);
-		return this.localDao.create(local);
+	public List<String> create(String name) throws Exception {
+		
+		List<String> status = new ArrayList<String>();
+		status.add("success");
+
+		if (name.isEmpty()) {
+			status.set(0, "error");
+			status.add("name.required");
+		}
+		if (name.length() > 50) {
+			status.set(0, "error");
+			status.add("name.toolong");
+		}
+		if (this.localDao.getByName(name) != null) {
+			status.set(0, "error");
+			status.add("name.existant");
+		}
+		if (status.size() == 1) {
+			Local local = new Local();
+			local.setName(name);
+			status.add(this.localDao.create(local).toString());
+		}
+		return status;
 	}
 
 	@Override
 	@Transactional
-	public void update(int id, String name) throws Exception {
-		Local local = new Local();
-		local.setId(id);
-		local.setName(name);
-		this.localDao.update(local);
+	public List<String> update(int id, String name) throws Exception {
+		
+		List<String> status = new ArrayList<String>();
+		status.add("success");
+
+		if (name.isEmpty()) {
+			status.set(0, "error");
+			status.add("name.required");
+		}
+		if (name.length() > 50) {
+			status.set(0, "error");
+			status.add("name.toolong");
+		}
+		Local existantLocal = this.localDao.getByName(name);
+		if (existantLocal != null && existantLocal.getId() != id) {
+			status.set(0, "error");
+			status.add("name.existant");
+		}
+		if (status.size() == 1) {
+			Local local = this.localDao.get(id);
+			local.setName(name);
+			this.localDao.update(local);
+			status.add(String.valueOf(id));
+		}
+		
+		return status;
 	}
 
 }

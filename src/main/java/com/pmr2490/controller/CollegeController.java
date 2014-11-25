@@ -68,7 +68,6 @@ public class CollegeController {
 	
 	@RequestMapping(value="/new", method=RequestMethod.POST)
 	public String insert(Model m, @RequestParam("name") String name) {
-		
 		try {
 			List<String> status = this.collegeService.create(name);
 			if (status.get(0).equals("success")) {
@@ -78,12 +77,10 @@ public class CollegeController {
 				m.addAttribute("errors", this.getErrorMessages(status, name));
 				return "college/new";
 			}
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "error/unexpected-error";
 		}
-
 	}
 	
 	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)

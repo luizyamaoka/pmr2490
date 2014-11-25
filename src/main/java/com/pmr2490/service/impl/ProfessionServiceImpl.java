@@ -1,5 +1,6 @@
 package com.pmr2490.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,19 +42,59 @@ public class ProfessionServiceImpl implements ProfessionService {
 
 	@Override
 	@Transactional
-	public int create(String name) throws Exception {
-		Profession profession = new Profession();
-		profession.setName(name);
-		return this.professionDao.create(profession);
+	public List<String> create(String name) throws Exception {
+		
+		List<String> status = new ArrayList<String>();
+		status.add("success");
+
+		if (name.isEmpty()) {
+			status.set(0, "error");
+			status.add("name.required");
+		}
+		if (name.length() > 50) {
+			status.set(0, "error");
+			status.add("name.toolong");
+		}
+		if (this.professionDao.getByName(name) != null) {
+			status.set(0, "error");
+			status.add("name.existant");
+		}
+		if (status.size() == 1) {
+			Profession profession = new Profession();
+			profession.setName(name);
+			status.add(this.professionDao.create(profession).toString());
+		}
+		return status;
 	}
 
 	@Override
 	@Transactional
-	public void update(int id, String name) throws Exception {
-		Profession profession = new Profession();
-		profession.setId(id);
-		profession.setName(name);
-		this.professionDao.update(profession);
+	public List<String> update(int id, String name) throws Exception {
+		
+		List<String> status = new ArrayList<String>();
+		status.add("success");
+
+		if (name.isEmpty()) {
+			status.set(0, "error");
+			status.add("name.required");
+		}
+		if (name.length() > 50) {
+			status.set(0, "error");
+			status.add("name.toolong");
+		}
+		Profession existantProfession = this.professionDao.getByName(name);
+		if (existantProfession != null && existantProfession.getId() != id) {
+			status.set(0, "error");
+			status.add("name.existant");
+		}
+		if (status.size() == 1) {
+			Profession profession = this.professionDao.get(id);
+			profession.setName(name);
+			this.professionDao.update(profession);
+			status.add(String.valueOf(id));
+		}
+		
+		return status;
 	}
 
 }

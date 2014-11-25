@@ -1,5 +1,6 @@
 package com.pmr2490.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,19 +42,58 @@ public class TagServiceImpl implements TagService {
 
 	@Override
 	@Transactional
-	public int create(String name) throws Exception {
-		Tag tag = new Tag();
-		tag.setName(name);
-		return this.tagDao.create(tag);
+	public List<String> create(String name) throws Exception {
+		
+		List<String> status = new ArrayList<String>();
+		status.add("success");
+
+		if (name.isEmpty()) {
+			status.set(0, "error");
+			status.add("name.required");
+		}
+		if (name.length() > 20) {
+			status.set(0, "error");
+			status.add("name.toolong");
+		}
+		if (this.tagDao.getByName(name) != null) {
+			status.set(0, "error");
+			status.add("name.existant");
+		}
+		if (status.size() == 1) {
+			Tag tag = new Tag();
+			tag.setName(name);
+			status.add(this.tagDao.create(tag).toString());
+		}
+		return status;
 	}
 
 	@Override
 	@Transactional
-	public void update(int id, String name) throws Exception {
-		Tag tag = new Tag();
-		tag.setId(id);
-		tag.setName(name);
-		this.tagDao.update(tag);
-	}
+	public List<String> update(int id, String name) throws Exception {
+		
+		List<String> status = new ArrayList<String>();
+		status.add("success");
 
+		if (name.isEmpty()) {
+			status.set(0, "error");
+			status.add("name.required");
+		}
+		if (name.length() > 50) {
+			status.set(0, "error");
+			status.add("name.toolong");
+		}
+		Tag existantTag = this.tagDao.getByName(name);
+		if (existantTag != null && existantTag.getId() != id) {
+			status.set(0, "error");
+			status.add("name.existant");
+		}
+		if (status.size() == 1) {
+			Tag tag = this.tagDao.get(id);
+			tag.setName(name);
+			this.tagDao.update(tag);
+			status.add(String.valueOf(id));
+		}
+		
+		return status;
+	}
 }
