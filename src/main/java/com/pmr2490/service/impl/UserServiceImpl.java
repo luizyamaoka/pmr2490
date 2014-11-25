@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pmr2490.dao.UserDao;
 import com.pmr2490.model.College;
@@ -23,30 +24,36 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	@Override
+	@Transactional
 	public List<User> getAll() throws Exception {
 		return this.userDao.getAll();
 	}
 
 	@Override
+	@Transactional
 	public User get(int id) throws Exception {
 		return this.userDao.get(id);
 	}
 	
+	@Transactional
 	public User getByEmail(String email) throws Exception {
 		return this.userDao.getByEmail(email);
 	}
 
+	@Transactional
 	public User getEagerByEmail(String email) throws Exception {
 		return this.userDao.getEagerByEmail(email);
 	}
 	
 	@Override
+	@Transactional
 	public void delete(int id) throws Exception {
 		User user = this.userDao.get(id);
 		this.userDao.delete(user);
 	}
 
 	@Override
+	@Transactional
 	public int create(String firstName, String lastName, Date birthDate,
 			String genre, Integer phoneDdd, String phoneNumber, String email,
 			String password, boolean isPromoter, College college,
@@ -57,6 +64,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
 	public void update(int id, String firstName, String lastName,
 			Date birthDate, String genre, Integer phoneDdd, String phoneNumber,
 			String email, Boolean isPromoter, College college,

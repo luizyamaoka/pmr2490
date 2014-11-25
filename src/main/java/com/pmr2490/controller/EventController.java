@@ -145,7 +145,7 @@ public class EventController {
 	        }
 	         
 	        m.addAttribute("success_message", "Evento criado com sucesso");
-	        m.addAttribute("event", this.eventService.get(eventDto.getId()));
+	        m.addAttribute("event", this.eventService.getEager(eventDto.getId()));
 	        return "event/show";
 		}
         catch (Exception ex) {
@@ -170,7 +170,8 @@ public class EventController {
     }
 	
 	@RequestMapping(value="/{id}/edit", method=RequestMethod.POST)
-    public String update(@PathVariable int id, @Valid EventDto eventDto, BindingResult result, Model m) {
+    public String update(@PathVariable int id, @Valid EventDto eventDto, BindingResult result, 
+    		Model m, HttpServletResponse response) {
 		
 		try {
 			String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -239,6 +240,7 @@ public class EventController {
 	         
 	        m.addAttribute("success_message", "Evento criado com sucesso");
 	        m.addAttribute("event", this.eventService.get(eventDto.getId()));
+	        m.addAttribute("username", email);
 	        return "event/show";
 		}
 		catch (Exception ex) {

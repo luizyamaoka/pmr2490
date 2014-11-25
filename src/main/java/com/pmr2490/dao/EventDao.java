@@ -7,7 +7,6 @@ import java.util.List;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -30,98 +29,50 @@ public class EventDao extends GenericDao<Event, Integer> {
 
 	public Event getEager(int id) throws Exception {
 		Session session = null;
-		Transaction transaction = null;
-		
-		try{
-			session = this.sessionFactory.getCurrentSession();
-			transaction = session.beginTransaction();
-			Event event = (Event)session.get(Event.class, id);
-			for(Tagging tagging : event.getTaggings())
-				tagging.getTag().getName();
-			for(Participant participant : event.getParticipants())
-				participant.getUser().getFirstName();
-			transaction.commit();
-			return event;
-			
-		}
-		catch(Exception e) {
-			transaction.rollback();
-			e.printStackTrace();
-			throw new Exception();
-		}
-		finally {
-			if (session.isOpen())
-				session.close();
-		}
+		session = this.sessionFactory.getCurrentSession();
+		Event event = (Event)session.get(Event.class, id);
+		for(Tagging tagging : event.getTaggings())
+			tagging.getTag().getName();
+		for(Participant participant : event.getParticipants())
+			participant.getUser().getFirstName();
+		return event;
 	}
 	
 	public EventDto getEventDto(int id) throws Exception {
 		Session session = null;
-		Transaction transaction = null;
-		
-		try{
-			session = this.sessionFactory.getCurrentSession();
-			transaction = session.beginTransaction();
-			Event event = (Event)session.get(Event.class, id);
-			EventDto eventDto = event.toEventDto();
-			transaction.commit();
-			return eventDto;
-			
-		}
-		catch(Exception e) {
-			transaction.rollback();
-			e.printStackTrace();
-			throw new Exception();
-		}
-		finally {
-			if (session.isOpen())
-				session.close();
-		}
+		session = this.sessionFactory.getCurrentSession();
+		Event event = (Event)session.get(Event.class, id);
+		EventDto eventDto = event.toEventDto();
+		return eventDto;
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<Event> getBySet(Date date, String name, Integer localId, Integer tagId) throws Exception {
 		Session session = null;
-		Transaction transaction = null;
+		session = this.sessionFactory.getCurrentSession();
+		Criteria criteria = session.createCriteria(Event.class);
+		criteria.createAlias("local", "l");
+		criteria.createAlias("taggings", "tt", JoinType.LEFT_OUTER_JOIN);
+		criteria.createAlias("tt.tag", "t", JoinType.LEFT_OUTER_JOIN);
 		
-		try{
-			session = this.sessionFactory.getCurrentSession();
-			transaction = session.beginTransaction();
-			Criteria criteria = session.createCriteria(Event.class);
-			criteria.createAlias("local", "l");
-			criteria.createAlias("taggings", "tt", JoinType.LEFT_OUTER_JOIN);
-			criteria.createAlias("tt.tag", "t", JoinType.LEFT_OUTER_JOIN);
-			
-			if(date != null) {
-				Date dateStart = getDateWithoutTime(date);
-				Date dateEnd = getTomorrowDate(dateStart);
-				criteria.add(Restrictions.ge("dateStart", dateStart)); 
-				criteria.add(Restrictions.lt("dateStart", dateEnd));
-			}
-			if(name != null) 
-				criteria.add(Restrictions.like("name", name, MatchMode.ANYWHERE));
-			if(localId != null)
-				criteria.add(Restrictions.eq("l.id", localId));
-			if(tagId != null)
-				criteria.add(Restrictions.eq("t.id", tagId));
-			
-			criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-			criteria.addOrder(Order.asc("dateStart"));
-			
-			List<Event> events = criteria.list();
-			transaction.commit();
-			return events;
-			
+		if(date != null) {
+			Date dateStart = getDateWithoutTime(date);
+			Date dateEnd = getTomorrowDate(dateStart);
+			criteria.add(Restrictions.ge("dateStart", dateStart)); 
+			criteria.add(Restrictions.lt("dateStart", dateEnd));
 		}
-		catch(Exception e) {
-			transaction.rollback();
-			e.printStackTrace();
-			throw new Exception();
-		}
-		finally {
-			if (session.isOpen())
-				session.close();
-		}
+		if(name != null) 
+			criteria.add(Restrictions.like("name", name, MatchMode.ANYWHERE));
+		if(localId != null)
+			criteria.add(Restrictions.eq("l.id", localId));
+		if(tagId != null)
+			criteria.add(Restrictions.eq("t.id", tagId));
+		
+		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		criteria.addOrder(Order.asc("dateStart"));
+			
+		List<Event> events = criteria.list();
+		return events;
 	}
 	
 	private Date getDateWithoutTime(Date date) {

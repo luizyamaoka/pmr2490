@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pmr2490.dao.EventDao;
 import com.pmr2490.dto.EventDto;
@@ -29,22 +30,26 @@ public class EventServiceImpl implements EventService {
 	}
 	
 	@Override
+	@Transactional
 	public List<Event> getAll() throws Exception {
 		return this.eventDao.getAll();
 	}
 
 	@Override
+	@Transactional
 	public Event get(int id) throws Exception {
 		return this.eventDao.get(id);
 	}
 
 	@Override
+	@Transactional
 	public void delete(int id) throws Exception {
 		Event event = this.eventDao.get(id);
 		this.eventDao.delete(event);
 	}
 
 	@Override
+	@Transactional
 	public int create(String name, Date dateStart, Date dateEnd, String email, Integer phoneDdd,
 			String phoneNumber, String description, User creator, Local local, List<Tag> tags) throws Exception {
 		Event event = new Event(null, name, dateStart, dateEnd,  email, phoneDdd, 
@@ -57,6 +62,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
+	@Transactional
 	public void update(int id, String name, Date dateStart, Date dateEnd, String email, 
 			Integer phoneDdd, String phoneNumber, String description, Local local, List<Tag> tags) throws Exception {
 		Event event = this.eventDao.get(id);
@@ -80,11 +86,13 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
+	@Transactional
 	public EventDto getEventDto(int id) throws Exception {
 		return this.eventDao.getEventDto(id);
 	}
 
 	@Override
+	@Transactional
 	public List<Event> getBySet(String date, String name, Integer localId,
 			Integer tagId) throws Exception {
 		DateFormat formatter = new SimpleDateFormat("yyyyMMdd"); // Create formatter
@@ -93,6 +101,7 @@ public class EventServiceImpl implements EventService {
 	}
 
 	@Override
+	@Transactional
 	public Event getEager(int id) throws Exception {
 		return this.eventDao.getEager(id);
 	}

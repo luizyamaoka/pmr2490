@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pmr2490.dao.TagDao;
 import com.pmr2490.model.Tag;
@@ -20,22 +21,26 @@ public class TagServiceImpl implements TagService {
 	}
 	
 	@Override
+	@Transactional
 	public List<Tag> getAll() throws Exception {
 		return this.tagDao.getAll();
 	}
 
 	@Override
+	@Transactional
 	public Tag get(int id) throws Exception {
 		return this.tagDao.get(id);
 	}
 
 	@Override
+	@Transactional
 	public void delete(int id) throws Exception {
 		Tag tag = this.tagDao.get(id);
 		this.tagDao.delete(tag);
 	}
 
 	@Override
+	@Transactional
 	public int create(String name) throws Exception {
 		Tag tag = new Tag();
 		tag.setName(name);
@@ -43,6 +48,7 @@ public class TagServiceImpl implements TagService {
 	}
 
 	@Override
+	@Transactional
 	public void update(int id, String name) throws Exception {
 		Tag tag = new Tag();
 		tag.setId(id);

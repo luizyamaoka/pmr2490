@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pmr2490.dao.ParticipantDao;
 import com.pmr2490.model.Event;
@@ -22,16 +23,19 @@ public class ParticipantServiceImpl implements ParticipantService {
 	}
 	
 	@Override
+	@Transactional
 	public List<Participant> getAll() throws Exception {
 		return this.participantDao.getAll();
 	}
 
 	@Override
+	@Transactional
 	public Participant get(int id) throws Exception {
 		return this.participantDao.get(id);
 	}
 
 	@Override
+	@Transactional
 	public void delete(int id) throws Exception {
 		Participant participant = this.participantDao.get(id);
 		this.participantDao.delete(participant);
@@ -39,6 +43,7 @@ public class ParticipantServiceImpl implements ParticipantService {
 	}
 
 	@Override
+	@Transactional
 	public int create(Event event, User user) throws Exception {
 		Participant participant = new Participant();
 		participant.setEvent(event);
@@ -47,6 +52,7 @@ public class ParticipantServiceImpl implements ParticipantService {
 	}
 
 	@Override
+	@Transactional
 	public void update(int id, Event event, User user)
 			throws Exception {
 		Participant participant = this.participantDao.get(id);

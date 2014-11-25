@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pmr2490.dao.CollegeDao;
 import com.pmr2490.model.College;
@@ -20,16 +21,19 @@ public class CollegeServiceImpl implements CollegeService {
 	}
 	
 	@Override
+	@Transactional
 	public List<College> getAll() throws Exception {
 		return this.collegeDao.getAll();
 	}
 
 	@Override
+	@Transactional
 	public College get(int id) throws Exception {
 		return this.collegeDao.get(id);
 	}
 
 	@Override
+	@Transactional
 	public void delete(int id) throws Exception {
 		College college = this.collegeDao.get(id);
 		this.collegeDao.delete(college);
@@ -37,6 +41,7 @@ public class CollegeServiceImpl implements CollegeService {
 	}
 
 	@Override
+	@Transactional
 	public int create(String name) throws Exception {
 		College college = new College();
 		college.setName(name);
@@ -44,6 +49,7 @@ public class CollegeServiceImpl implements CollegeService {
 	}
 
 	@Override
+	@Transactional
 	public void update(int id, String name) throws Exception {
 		College college = new College();
 		college.setId(id);
