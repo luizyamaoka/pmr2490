@@ -44,89 +44,6 @@ public class CollegeController {
 		
 	}
 	
-	@RequestMapping(value="/new", method=RequestMethod.GET)
-	public ModelAndView newForm() {
-		return new ModelAndView("college/new");
-	}
-	
-//	@RequestMapping(value="/new", method=RequestMethod.POST)
-//	public ModelAndView insert(HttpServletRequest request, HttpServletResponse response,
-//			@RequestParam("name") String name) {
-//		ModelAndView modelAndView = new ModelAndView();
-//		List<String> errors = new ArrayList<String>();
-//		try {
-//			List<String> status = this.collegeService.create(name);
-//			if (status.get(0).equals("success")) {
-//				modelAndView.setViewName("college/show");
-//				modelAndView.addObject("college", this.collegeService.get(Integer.parseInt(status.get(1))));
-//				modelAndView.addObject("success_message", "Faculdade criada com sucesso");
-//			}
-//			else {
-//				modelAndView.setViewName("college/new");
-//				for (int i = 1; i < status.size(); i++) {
-//					switch (status.get(i)) {
-//					case "name.required":
-//						errors.add("O campo nome é obrigatório.");
-//						break;
-//					case "name.toolong":
-//						errors.add("O nome deve ter no máximo 50 caracteres.");
-//						break;
-//					case "name.existant":
-//						errors.add("O nome " + name + " já existe.");
-//						break;
-//					default:
-//						errors.add("Erro não mapeado.");
-//						break;
-//					}
-//				}
-//				modelAndView.addObject("errors", errors);
-//			}
-//			
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return new ModelAndView("error/unexpected-error");
-//		}
-//		return modelAndView;
-//
-//	}
-	
-	@RequestMapping(value="/new", method=RequestMethod.POST)
-	public String insert(Model m, @RequestParam("name") String name) {
-		
-		try {
-			List<String> status = this.collegeService.create(name);
-			if (status.get(0).equals("success")) {
-				return "redirect:/colleges/" + status.get(1) + "?success";
-			}
-			else {
-				List<String> errors = new ArrayList<String>();
-				for (int i = 1; i < status.size(); i++) {
-					switch (status.get(i)) {
-					case "name.required":
-						errors.add("O campo nome é obrigatório.");
-						break;
-					case "name.toolong":
-						errors.add("O nome deve ter no máximo 50 caracteres.");
-						break;
-					case "name.existant":
-						errors.add("O nome " + name + " já existe.");
-						break;
-					default:
-						errors.add("Erro não mapeado.");
-						break;
-					}
-				}
-				m.addAttribute("errors", errors);
-				return "college/new";
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "error/unexpected-error";
-		}
-
-	}
-	
 	@RequestMapping(value="/{id}")
 	public ModelAndView show(HttpServletRequest request, @PathVariable int id) {
 		try {
@@ -142,6 +59,31 @@ public class CollegeController {
 			e.printStackTrace();
 			return new ModelAndView("error/unexpected-error");
 		}
+	}
+	
+	@RequestMapping(value="/new", method=RequestMethod.GET)
+	public ModelAndView newForm() {
+		return new ModelAndView("college/new");
+	}
+	
+	@RequestMapping(value="/new", method=RequestMethod.POST)
+	public String insert(Model m, @RequestParam("name") String name) {
+		
+		try {
+			List<String> status = this.collegeService.create(name);
+			if (status.get(0).equals("success")) {
+				return "redirect:/colleges/" + status.get(1) + "?success";
+			}
+			else {
+				m.addAttribute("errors", this.getErrorMessages(status, name));
+				return "college/new";
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error/unexpected-error";
+		}
+
 	}
 	
 	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
@@ -171,38 +113,13 @@ public class CollegeController {
 	@RequestMapping(value="/{id}/edit", method=RequestMethod.POST)
 	public String update(HttpServletRequest request, HttpServletResponse response, Model m,
 			@PathVariable int id, @RequestParam("name") String name) {
-//		try {
-//			this.collegeService.update(id, name);
-//			return "redirect:/colleges/" + id + "?edited";
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			return "error/unexpected-error";
-//		}
-		
 		try {
 			List<String> status = this.collegeService.update(id, name);
 			if (status.get(0).equals("success")) {
 				return "redirect:/colleges/" + status.get(1) + "?edited";
 			}
 			else {
-				List<String> errors = new ArrayList<String>();
-				for (int i = 1; i < status.size(); i++) {
-					switch (status.get(i)) {
-					case "name.required":
-						errors.add("O campo nome é obrigatório.");
-						break;
-					case "name.toolong":
-						errors.add("O nome deve ter no máximo 50 caracteres.");
-						break;
-					case "name.existant":
-						errors.add("O nome " + name + " já existe.");
-						break;
-					default:
-						errors.add("Erro não mapeado.");
-						break;
-					}
-				}
-				m.addAttribute("errors", errors);
+				m.addAttribute("errors", this.getErrorMessages(status, name));
 				m.addAttribute("college", this.collegeService.get(id));
 				return "college/edit";
 			}
@@ -213,5 +130,25 @@ public class CollegeController {
 		}
 	}
 	
+	private List<String> getErrorMessages(List<String> status, String name) {
+		List<String> errors = new ArrayList<String>();
+		for (int i = 1; i < status.size(); i++) {
+			switch (status.get(i)) {
+			case "name.required":
+				errors.add("O campo nome é obrigatório.");
+				break;
+			case "name.toolong":
+				errors.add("O nome deve ter no máximo 50 caracteres.");
+				break;
+			case "name.existant":
+				errors.add("O nome " + name + " já existe.");
+				break;
+			default:
+				errors.add("Erro não mapeado.");
+				break;
+			}
+		}
+		return errors;
+	}
 	
 }

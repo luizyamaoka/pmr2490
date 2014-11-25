@@ -31,6 +31,8 @@ public class TagController {
 		try {
 			ModelAndView modelAndView = new ModelAndView("tag/index");
 			modelAndView.addObject("tags", this.tagService.getAll());
+			if(request.getParameter("deleted") != null)
+				modelAndView.addObject("info_message", "<strong>Sucesso!</strong> Tag deletada com sucesso.");
 			return modelAndView;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -38,7 +40,12 @@ public class TagController {
 		}
 	}
 	
-	@RequestMapping(value="/create", method=RequestMethod.POST)
+	@RequestMapping(value="/new", method=RequestMethod.GET)
+	public ModelAndView newForm() {
+		return new ModelAndView("tag/new");
+	}
+	
+	@RequestMapping(value="/new", method=RequestMethod.POST)
 	public void create(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam String name) {
 		try {
@@ -52,10 +59,14 @@ public class TagController {
 	}
 	
 	@RequestMapping(value="/{id}")
-	public ModelAndView show(@PathVariable int id) {
+	public ModelAndView show(HttpServletRequest request, @PathVariable int id) {
 		try {
 			ModelAndView modelAndView = new ModelAndView("tag/show");
 			modelAndView.addObject("tag", this.tagService.get(id));
+			if(request.getParameter("success") != null)
+				modelAndView.addObject("success_message", "<strong>Sucesso!</strong> Tag criada com sucesso.");
+			if(request.getParameter("edited") != null)
+				modelAndView.addObject("success_message", "<strong>Sucesso!</strong> Tag editada com sucesso.");
 			return modelAndView;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -64,14 +75,13 @@ public class TagController {
 	}
 	
 	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
-	public void destroy(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
+	public String destroy(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
 		try {
 			this.tagService.delete(id);
-			response.sendRedirect("/pmr2490/tags");
-		} catch (IOException e) {
-			e.printStackTrace();
+			return "redirect:/tags?deleted";
 		} catch (Exception e) {
 			e.printStackTrace();
+			return "error/unexpected-error";
 		}
 	}
 	
@@ -87,7 +97,7 @@ public class TagController {
 		}
 	}
 	
-	@RequestMapping(value="/{id}/update", method=RequestMethod.POST)
+	@RequestMapping(value="/{id}/edit", method=RequestMethod.POST)
 	public void update(HttpServletRequest request, HttpServletResponse response, 
 			@PathVariable int id,
 			@RequestParam("name") String name) {

@@ -12,7 +12,7 @@
     
     <div class="container theme-showcase" role="main">
 
-	
+	  <c:import url="/WEB-INF/jsp/shared/alert.jsp" />
 
       <div class="row">
         <div class="col-md-4"></div>

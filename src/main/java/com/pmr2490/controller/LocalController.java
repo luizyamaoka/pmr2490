@@ -31,6 +31,8 @@ public class LocalController {
 		try {
 			ModelAndView modelAndView = new ModelAndView("local/index");
 			modelAndView.addObject("locals", this.localService.getAll());
+			if(request.getParameter("deleted") != null)
+				modelAndView.addObject("info_message", "<strong>Sucesso!</strong> Local deletado com sucesso.");
 			return modelAndView;
 		}
 		catch (Exception e) {
@@ -39,7 +41,12 @@ public class LocalController {
 		}
 	}
 	
-	@RequestMapping(value="/create", method=RequestMethod.POST)
+	@RequestMapping(value="/new", method=RequestMethod.GET)
+	public ModelAndView newForm() {
+		return new ModelAndView("local/new");
+	}
+	
+	@RequestMapping(value="/new", method=RequestMethod.POST)
 	public void create(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam String name) {
 		try {
@@ -53,10 +60,14 @@ public class LocalController {
 	}
 	
 	@RequestMapping(value="/{id}")
-	public ModelAndView show(@PathVariable int id) {
+	public ModelAndView show(HttpServletRequest request, @PathVariable int id) {
 		try {
 			ModelAndView modelAndView = new ModelAndView("local/show");
 			modelAndView.addObject("local", this.localService.get(id));
+			if(request.getParameter("success") != null)
+				modelAndView.addObject("success_message", "<strong>Sucesso!</strong> Local criado com sucesso.");
+			if(request.getParameter("edited") != null)
+				modelAndView.addObject("success_message", "<strong>Sucesso!</strong> Local editado com sucesso.");
 			return modelAndView;
 		}
 		catch (Exception e) {
@@ -66,14 +77,13 @@ public class LocalController {
 	}
 	
 	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
-	public void destroy(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
+	public String destroy(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
 		try {
 			this.localService.delete(id);
-			response.sendRedirect("/pmr2490/locals");
-		} catch (IOException e) {
-			e.printStackTrace();
+			return "redirect:/locals?deleted";
 		} catch (Exception e) {
 			e.printStackTrace();
+			return "error/unexpected-error";
 		}
 	}
 	
@@ -90,7 +100,7 @@ public class LocalController {
 		}
 	}
 	
-	@RequestMapping(value="/{id}/update", method=RequestMethod.POST)
+	@RequestMapping(value="/{id}/edit", method=RequestMethod.POST)
 	public void update(HttpServletRequest request, HttpServletResponse response, 
 			@PathVariable int id,
 			@RequestParam("name") String name) {

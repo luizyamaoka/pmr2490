@@ -7,30 +7,39 @@
     <c:import url="/WEB-INF/jsp/shared/css.jsp" />
     <c:import url="/WEB-INF/jsp/shared/js.jsp" />
     <style>
-    .form-signin {
-      max-width: 330px;
-      padding: 15px;
-      margin: 0px auto;
-    }
-    .form-signin .form-control {
-      position: relative;
-      height: auto;
-      box-sizing: border-box;
-      padding: 10px;
-      font-size: 16px;
-    }
+    .center-form {
+        max-width: 600px;
+        margin: 0 auto;
+      }
     </style>
   </head>
   <body>
     <c:import url="/WEB-INF/jsp/shared/header.jsp" />
     
     <div class="container theme-showcase" role="main">
-
-	  <form class="form-signin" role="form" action="update" method="post">
-        <h2 class="form-signin-heading">Editar Tag</h2>
-        <input class="form-control" name="name" type="text" value="${tag.name}" placeholder="Nome" required autofocus>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Atualizar</button>
-      </form>
+    
+      <c:import url="/WEB-INF/jsp/shared/alert.jsp" />  
+      
+	  <div class="center-form">
+	    <div class="col-xs-8 col-xs-offset-4">
+	      <h2>Editar Tag</h2>
+	    </div>
+        <form class="form-horizontal" action="edit" method="post">
+          <div class="form-group">
+            <label for="nameInput" class="control-label col-xs-4">Nome</label>
+            <div class="col-xs-8">
+			  <input name="name" type="text" value="${tag.name}" class="form-control" id="nameInput" placeholder="Nome da tag" required autofocus />
+			</div>
+		  </div>
+		  
+		  <div class="form-group">
+		    <div class="col-xs-8 col-xs-offset-4">
+              <input class="form-control btn btn-primary" type="submit" value="Atualizar" />
+            </div>
+		  </div>
+		
+        </form>
+      </div>
 
     </div>
     
