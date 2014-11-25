@@ -12,7 +12,7 @@
     
     <div class="container theme-showcase" role="main">
 
-	
+	  <c:import url="/WEB-INF/jsp/shared/alert.jsp" />
 
       <div class="row">
         <div class="col-md-4"></div>
@@ -29,6 +29,7 @@
               </tr>
             </tbody>
           </table>
+          <a href="/pmr2490/colleges/${college.id}/edit" class="btn btn-warning" style="width:100%;">Editar</a>
         </div>
       </div>
     </div>

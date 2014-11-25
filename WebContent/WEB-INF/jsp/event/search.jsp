@@ -21,6 +21,7 @@
     <div class="container theme-showcase" role="main">
     
       <c:import url="/WEB-INF/jsp/shared/alert.jsp" />
+      
       <div class="center-form">
         <form class="form-horizontal" action="search" method="post">
           <div class="form-group">

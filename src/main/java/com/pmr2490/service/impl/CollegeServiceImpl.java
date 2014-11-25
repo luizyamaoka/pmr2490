@@ -1,5 +1,6 @@
 package com.pmr2490.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,24 +38,63 @@ public class CollegeServiceImpl implements CollegeService {
 	public void delete(int id) throws Exception {
 		College college = this.collegeDao.get(id);
 		this.collegeDao.delete(college);
-
 	}
 
 	@Override
 	@Transactional
-	public int create(String name) throws Exception {
-		College college = new College();
-		college.setName(name);
-		return this.collegeDao.create(college);
+	public List<String> create(String name) throws Exception {
+		
+		List<String> status = new ArrayList<String>();
+		status.add("success");
+
+		if (name.isEmpty()) {
+			status.set(0, "error");
+			status.add("name.required");
+		}
+		if (name.length() > 50) {
+			status.set(0, "error");
+			status.add("name.toolong");
+		}
+		if (this.collegeDao.getByName(name) != null) {
+			status.set(0, "error");
+			status.add("name.existant");
+		}
+		if (status.size() == 1) {
+			College college = new College();
+			college.setName(name);
+			status.add(this.collegeDao.create(college).toString());
+		}
+		return status;
 	}
 
 	@Override
 	@Transactional
-	public void update(int id, String name) throws Exception {
-		College college = new College();
-		college.setId(id);
-		college.setName(name);
-		this.collegeDao.update(college);
+	public List<String> update(int id, String name) throws Exception {
+		
+		List<String> status = new ArrayList<String>();
+		status.add("success");
+
+		if (name.isEmpty()) {
+			status.set(0, "error");
+			status.add("name.required");
+		}
+		if (name.length() > 50) {
+			status.set(0, "error");
+			status.add("name.toolong");
+		}
+		College existantCollege = this.collegeDao.getByName(name);
+		if (existantCollege != null && existantCollege.getId() != id) {
+			status.set(0, "error");
+			status.add("name.existant");
+		}
+		if (status.size() == 1) {
+			College college = this.collegeDao.get(id);
+			college.setName(name);
+			this.collegeDao.update(college);
+			status.add(String.valueOf(id));
+		}
+		
+		return status;
 	}
 
 }

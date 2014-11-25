@@ -27,6 +27,7 @@
               </tr>
             </tbody>
           </table>
+          <a href="/pmr2490/professions/${profession.id}/edit" class="btn btn-warning" style="width:100%;">Editar</a>
         </div>
       </div>
     </div>

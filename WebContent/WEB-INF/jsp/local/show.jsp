@@ -27,6 +27,7 @@
               </tr>
             </tbody>
           </table>
+          <a href="/pmr2490/locals/${local.id}/edit" class="btn btn-warning" style="width:100%;">Editar</a>
         </div>
       </div>
     </div>
