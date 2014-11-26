@@ -1,7 +1,5 @@
 package com.pmr2490.controller;
 
-import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -35,7 +33,7 @@ public class TaggingController {
 	}
 	
 	@RequestMapping(value="/new", method=RequestMethod.POST)
-	public void insert(HttpServletRequest request, HttpServletResponse response, 
+	public String insert(HttpServletRequest request, HttpServletResponse response, 
 			@RequestParam("tagId") Integer tagId,
 			@RequestParam("eventId") Integer eventId) {
 		try {
@@ -43,37 +41,35 @@ public class TaggingController {
 			Event event = this.eventService.get(eventId);
 			
 			if (!event.getCreator().getEmail().equals(email))
-				response.sendRedirect("/pmr2490/403");
+				return "error/403";
 			else if (tagId == null)
-				response.sendRedirect("/pmr2490/events/" + event.getId() + "/edit-tags");
+				return "redirect:/events/" + event.getId() + "/edit-tags";
 			else {
 				Tag tag = this.tagService.get(tagId);
 				this.taggingService.create(event, tag);
-				response.sendRedirect("/pmr2490/events/" + event.getId() + "/edit");
+				return "redirect:/events/" + event.getId() + "?tag_created";
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
+			return "error/unexpected-error";
 		}
 	}
 	
 	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
-	public void delete(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
+	public String delete(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
 		try {
 			String email = SecurityContextHolder.getContext().getAuthentication().getName();
 			Event event = this.taggingService.get(id).getEvent();
 			
 			if (!event.getCreator().getEmail().equals(email))
-				response.sendRedirect("/pmr2490/403");
+				return "error/403";
 			else {
 				this.taggingService.delete(id);
-				response.sendRedirect("/pmr2490/events/" + event.getId() + "/edit");
+				return "redirect:/events/" + event.getId() + "?tag_deleted";
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
+			return "error/unexpected-error";
 		}
 	}
 	

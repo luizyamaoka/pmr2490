@@ -96,6 +96,10 @@ public class EventController {
 				modelAndView.addObject("success_message", "<strong>Sucesso!</strong> Evento criado com sucesso.");
 			if(request.getParameter("edited") != null)
 				modelAndView.addObject("success_message", "<strong>Sucesso!</strong> Evento editado com sucesso.");
+			if(request.getParameter("tag_deleted") != null)
+				modelAndView.addObject("success_message", "<strong>Sucesso!</strong> Tagueamento deletado com sucesso.");
+			if(request.getParameter("tag_created") != null)
+				modelAndView.addObject("success_message", "<strong>Sucesso!</strong> Tagueamento criado com sucesso.");
 			return modelAndView;
 		}
 		catch (Exception e) {
