@@ -28,7 +28,7 @@
 
 	  <c:import url="/WEB-INF/jsp/shared/alert.jsp" />
 
-	  <form class="form-signin" role="form" action="update-password" method="post">
+	  <form class="form-signin" role="form" action="edit-password" method="post">
         <h2 class="form-signin-heading">Alterar senha</h2>
         <input class="form-control" name="password" placeholder="Senha" required type="password">
         <input class="form-control" name="new_password" placeholder="Nova senha" required type="password">

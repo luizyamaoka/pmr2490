@@ -2,9 +2,9 @@ package com.pmr2490.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,8 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.pmr2490.dto.UserDto;
-import com.pmr2490.model.College;
-import com.pmr2490.model.Profession;
 import com.pmr2490.model.User;
 import com.pmr2490.service.CollegeService;
 import com.pmr2490.service.ProfessionService;
@@ -36,6 +34,25 @@ public class UserController {
 	private UserService userService;
 	private ProfessionService professionService;
 	private CollegeService collegeService;
+	
+	private static final Map<String, String> ERROR_MESSAGES;
+	static {
+		ERROR_MESSAGES = new HashMap<String, String>();
+		ERROR_MESSAGES.put("firstName.required", "O nome precisa ser preenchido.");
+		ERROR_MESSAGES.put("lastName.required", "O sobrenome precisa ser preenchido.");
+		ERROR_MESSAGES.put("email.required", "O email precisa ser preenchido.");
+		ERROR_MESSAGES.put("birthYear.past", "O ano de nascimento não pode ser no futuro.");
+		ERROR_MESSAGES.put("birthMonth.impossible", "O mês de nascimento é inválido.");
+		ERROR_MESSAGES.put("birthDay.impossible", "O dia de nascimento é inválido.");
+		ERROR_MESSAGES.put("birthDate.incomplete", "Sua data de nascimento está incompleta.");
+		ERROR_MESSAGES.put("professionId.required", "O campo ocupação precisa ser preenchido.");
+		ERROR_MESSAGES.put("phoneNumber.length", "O numero de telefone deve ter 8 ou 9 caracteres.");
+		ERROR_MESSAGES.put("phoneNumber.incomplete", "O numero de telefone está incompleto.");
+		ERROR_MESSAGES.put("password.required", "A senha precisa ser preenchido.");
+		ERROR_MESSAGES.put("passwordConfirmation.required", "A confirmação da senha precisa ser preenchido.");
+		ERROR_MESSAGES.put("password.match", "A senha e a confirmação precisam ser iguais.");
+		ERROR_MESSAGES.put("email.existant", "Este e-mail já possui um cadastro.");
+	}
 	
 	@Autowired
 	public UserController(UserService userService, ProfessionService professionService, 
@@ -58,10 +75,12 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="/{id}")
-	public ModelAndView show(@PathVariable int id) {
+	public ModelAndView show(HttpServletRequest request, @PathVariable int id) {
 		try {
 			ModelAndView modelAndView = new ModelAndView("user/show");
 			modelAndView.addObject("user", this.userService.get(id));
+			if(request.getParameter("edited") != null)
+				modelAndView.addObject("success_message", "<strong>Sucesso!</strong> Usuário editado com sucesso.");
 			return modelAndView;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -102,7 +121,7 @@ public class UserController {
 		}
 	}
 	
-	@RequestMapping(value="/edit-password")
+	@RequestMapping(value="/edit-password", method=RequestMethod.GET)
 	public ModelAndView editPassword(HttpServletRequest request, HttpServletResponse response) {
 	
 		ModelAndView modelAndView = new ModelAndView("user/edit-password");
@@ -116,8 +135,8 @@ public class UserController {
 
 	}
 	
-	@RequestMapping(value="/update-password")
-	public void updatePassword(HttpServletRequest request, HttpServletResponse response,
+	@RequestMapping(value="/edit-password", method=RequestMethod.POST)
+	public String updatePassword(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("password") String password,
 			@RequestParam("new_password") String newPassword,
 			@RequestParam("new_password_confirmation") String newPasswordConfirmation) {
@@ -127,77 +146,35 @@ public class UserController {
 			User user = this.userService.getByEmail(email);
 			
 			if (!user.isPasswordCorrect(password))
-				response.sendRedirect("/pmr2490/users/edit-password?wrong_password");
+				return "redirect:/users/edit-password?wrong_password";
 			else if (!newPassword.equals(newPasswordConfirmation))
-				response.sendRedirect("/pmr2490/users/edit-password?passwords_not_matching");
+				return "redirect:/users/edit-password?passwords_not_matching";
 			else {
-				this.userService.update(user.getId(), null, null, null, null, null, null, null, null, null, null, newPassword);
-				response.sendRedirect("/pmr2490/users/edit-password?success");
+				this.userService.updatePassword(user.getId(), newPassword);
+				return "redirect:/users/edit-password?success";
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
+			return "error/unexpected-error";
 		}
 	}
 	
 	@RequestMapping(value="/new", method=RequestMethod.POST)
     public String insert(@Valid UserDto userDto, BindingResult result, Model m, HttpServletResponse response) {
 		try {
-			List<String> errors = new ArrayList<String>();
+			List<String> status = this.userService.create(userDto);
 			
-			if(userDto.getFirstName().isEmpty())
-				errors.add("O nome precisa ser preenchido.");
-			if(userDto.getLastName().isEmpty())
-				errors.add("O sobrenome precisa ser preenchido.");
-			if(userDto.getEmail().isEmpty())
-				errors.add("O email precisa ser preenchido.");
-			if(userDto.getPassword().isEmpty())
-				errors.add("A senha precisa ser preenchido.");
-			if(userDto.getPasswordConfirmation().isEmpty())
-				errors.add("A confirmação da senha precisa ser preenchido.");
-			if (userDto.getProfessionId() == null)
-				errors.add("O campo ocupação precisa ser preenchido.");
-			if (!userDto.isPasswordConfirmed())
-				errors.add("A senha e a confirmação precisam ser iguais.");
-			int phoneNumberLength = userDto.getPhoneNumber().length();
-			if (phoneNumberLength != 0 && (phoneNumberLength < 8 || phoneNumberLength > 9))
-				errors.add("O numero de telefone deve ter 8 ou 9 caracteres");
-			if(this.userService.getByEmail(userDto.getEmail()) != null)
-				errors.add("Este e-mail já possui um cadastro");
-			
-			if (errors.isEmpty()) {
-				try {
-					
-					if (phoneNumberLength == 0)
-						userDto.setPhoneNumber(null);
-					
-					Date birthDate = null;
-					if (userDto.getBirthDay() != null && userDto.getBirthMonth() != null && userDto.getBirthYear() != null) {
-						Calendar cal = Calendar.getInstance();
-						cal.set(userDto.getBirthYear(), userDto.getBirthMonth()-1, userDto.getBirthDay());
-						birthDate = cal.getTime();
-					}
-					College college = userDto.getCollegeId() == null ? null : this.collegeService.get(userDto.getCollegeId());
-					Profession profession = userDto.getProfessionId() == null ? null : this.professionService.get(userDto.getProfessionId());
-					this.userService.create(userDto.getFirstName(), userDto.getLastName(), birthDate, 
-							userDto.getGender(), userDto.getPhoneDdd(), userDto.getPhoneNumber(), 
-							userDto.getEmail(), userDto.getPassword(), false, college, profession);
-				}
-				catch(Exception e) {
-					errors.add("Um erro inesperado ocorreu ao efetuar o cadastro. Por favor tente novamente ou contacte o responsavel.");
-				}
-			}
-			
-	        if(!errors.isEmpty()) {
+	        if(status.get(0).equals("error")) {
+	        	List<String> errors = new ArrayList<String>();
+	        	for (int i = 1; i < status.size(); i++)
+	        		errors.add(ERROR_MESSAGES.get(status.get(i)));
 	        	m.addAttribute("errors", errors);
 	        	m.addAttribute("professions", this.professionService.getAll());
 	     		m.addAttribute("colleges", this.collegeService.getAll());
 	            return "user/new";
 	        }
 	         
-	        m.addAttribute("success_message", "Usuário cadastrado com sucesso");
-	        return "static-pages/login";
+	        return "redirect:/login?user";
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "error/unexpected-error";
@@ -228,53 +205,19 @@ public class UserController {
 			if (user.getId() != id) 
 				return "error/403";
 			
-			List<String> errors = new ArrayList<String>();
+			List<String> status = this.userService.update(userDto);
 			
-			if(userDto.getFirstName().isEmpty())
-				errors.add("O nome precisa ser preenchido.");
-			if(userDto.getLastName().isEmpty())
-				errors.add("O sobrenome precisa ser preenchido.");
-			if(userDto.getEmail().isEmpty())
-				errors.add("O email precisa ser preenchido.");
-			if (userDto.getProfessionId() == null)
-				errors.add("O campo ocupação precisa ser preenchido.");
-			int phoneNumberLength = userDto.getPhoneNumber().length();
-			if (phoneNumberLength != 0 && (phoneNumberLength < 8 || phoneNumberLength > 9))
-				errors.add("O numero de telefone deve ter 8 ou 9 caracteres");
-			
-			if (errors.isEmpty()) {
-				try {
-					
-					if (phoneNumberLength == 0)
-						userDto.setPhoneNumber(null);
-					
-					Date birthDate = null;
-					if (userDto.getBirthDay() != null && userDto.getBirthMonth() != null && userDto.getBirthYear() != null) {
-						Calendar cal = Calendar.getInstance();
-						cal.set(userDto.getBirthYear(), userDto.getBirthMonth()-1, userDto.getBirthDay());
-						birthDate = cal.getTime();
-					}
-					College college = userDto.getCollegeId() == null ? null : this.collegeService.get(userDto.getCollegeId());
-					Profession profession = userDto.getProfessionId() == null ? null : this.professionService.get(userDto.getProfessionId());
-					this.userService.update(id, userDto.getFirstName(), userDto.getLastName(), birthDate, 
-							userDto.getGender(), userDto.getPhoneDdd(), userDto.getPhoneNumber(), 
-							userDto.getEmail(), false, college, profession, null);
-				}
-				catch(Exception e) {
-					errors.add("Um erro inesperado ocorreu ao efetuar o cadastro. Por favor tente novamente ou contacte o responsavel.");
-				}
-			}
-			
-	        if(!errors.isEmpty()) {
+	        if(status.get(0).equals("error")) {
+	        	List<String> errors = new ArrayList<String>();
+	        	for (int i = 1; i < status.size(); i++)
+	        		errors.add(ERROR_MESSAGES.get(status.get(i)));
 	        	m.addAttribute("errors", errors);
 	        	m.addAttribute("professions", this.professionService.getAll());
 	     		m.addAttribute("colleges", this.collegeService.getAll());
 	            return "user/edit";
 	        }
 	         
-	        m.addAttribute("success_message", "Usuário salvo com sucesso");
-	        m.addAttribute("user", this.userService.get(id));
-	        return "user/show";
+	        return "redirect:/users/" + status.get(1) + "?edited";
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "error/unexpected-error";

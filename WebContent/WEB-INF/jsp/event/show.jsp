@@ -65,6 +65,8 @@
     
     <div class="container theme-showcase" role="main">
 
+      <c:import url="/WEB-INF/jsp/shared/alert.jsp" />
+
         <h1>${event.name}</h1>
 	    <h3>
 	      <c:forEach var="tagging" items="${event.taggings}">

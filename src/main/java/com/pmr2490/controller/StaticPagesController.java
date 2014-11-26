@@ -26,6 +26,8 @@ public class StaticPagesController {
 		
 		if(request.getParameter("error") != null)
 			modelAndView.addObject("error_message", "<strong>Erro!</strong> Usuário e/ou senha incorretos.");
+		if(request.getParameter("user") != null)
+			modelAndView.addObject("success_message", "<strong>Sucesso!</strong> Usuário criado com sucesso.");
 		
 		return modelAndView;
 	}
