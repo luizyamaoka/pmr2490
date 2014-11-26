@@ -130,7 +130,7 @@ public class EventController {
 			String email = SecurityContextHolder.getContext().getAuthentication().getName();
 			User creator = this.userService.getByEmail(email);
 			
-			if (creator == null || eventDto.getCreatorId() != creator.getId())
+			if (creator == null)
 				return "error/403";
 			
 			eventDto.setCreatorId(creator.getId());
