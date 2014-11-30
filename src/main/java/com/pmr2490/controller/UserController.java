@@ -108,7 +108,7 @@ public class UserController {
 			String email = SecurityContextHolder.getContext().getAuthentication().getName();
 			User user = this.userService.getByEmail(email);
 			
-			if (user.getId() != id) 
+			if (user.getId() != id && !user.isPromoter()) 
 				response.sendRedirect("/pmr2490/403");
 			else {
 				this.userService.delete(id);
