@@ -65,11 +65,11 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	@Transactional
-	public List<Event> getBySet(String date, String name, Integer localId,
+	public List<Event> getBySet(Integer id, String date, String name, Integer localId,
 			Integer tagId) throws Exception {
 		DateFormat formatter = new SimpleDateFormat("yyyyMMdd"); // Create formatter
 		Date data = date == null ? null : formatter.parse(date);
-		return this.eventDao.getBySet(data, name, localId, tagId);
+		return this.eventDao.getBySet(id, data, name, localId, tagId);
 	}
 
 	@Override

@@ -47,7 +47,7 @@ public class EventDao extends GenericDao<Event, Integer> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Event> getBySet(Date date, String name, Integer localId, Integer tagId) throws Exception {
+	public List<Event> getBySet(Integer id, Date date, String name, Integer localId, Integer tagId) throws Exception {
 		Session session = null;
 		session = this.sessionFactory.getCurrentSession();
 		Criteria criteria = session.createCriteria(Event.class);
@@ -55,6 +55,8 @@ public class EventDao extends GenericDao<Event, Integer> {
 		criteria.createAlias("taggings", "tt", JoinType.LEFT_OUTER_JOIN);
 		criteria.createAlias("tt.tag", "t", JoinType.LEFT_OUTER_JOIN);
 		
+		if (id != null) 
+			criteria.add(Restrictions.eq("id", id));
 		if(date != null) {
 			Date dateStart = getDateWithoutTime(date);
 			Date dateEnd = getTomorrowDate(dateStart);

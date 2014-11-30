@@ -239,6 +239,7 @@ public class EventController {
 	
 	@RequestMapping(value="/search", method=RequestMethod.POST)
 	public ModelAndView doSearch(HttpServletRequest request, HttpServletResponse response, 
+			@RequestParam(value="id", required=false) Integer id,
 			@RequestParam(value="name", required=false) String name,
 			@RequestParam(value="date", required=false) String date,
 			@RequestParam(value="localId", required=false) Integer localId,
@@ -246,7 +247,7 @@ public class EventController {
 		try {
 			ModelAndView modelAndView = new ModelAndView("event/index");
 			String data = date.equals("") ? null : date;
-			modelAndView.addObject("events", this.eventService.getBySet(data, name, localId, tagId));
+			modelAndView.addObject("events", this.eventService.getBySet(id, data, name, localId, tagId));
 			if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
 				modelAndView.addObject("username", SecurityContextHolder.getContext().getAuthentication().getName());
 			}

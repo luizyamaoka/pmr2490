@@ -24,6 +24,14 @@
       
       <div class="center-form">
         <form class="form-horizontal" action="search" method="post">
+          
+          <div class="form-group">
+            <label for="idInput" class="control-label col-xs-4">Código de registro</label>
+            <div class="col-xs-8">
+			  <input name="id" class="form-control" type="number" id="idInput" placeholder="Procurar por código de registro" autofocus />
+			</div>
+		  </div>
+          
           <div class="form-group">
             <label for="nameInput" class="control-label col-xs-4">Nome</label>
             <div class="col-xs-8">
