@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +24,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.pmr2490.dto.UserDto;
 import com.pmr2490.model.User;
+import com.pmr2490.model.Event;
+import com.pmr2490.model.Participant;
 import com.pmr2490.service.CollegeService;
 import com.pmr2490.service.ProfessionService;
 import com.pmr2490.service.UserService;
@@ -250,11 +253,51 @@ public class UserController {
 		try {
 			String email = SecurityContextHolder.getContext().getAuthentication().getName();
 			User user = this.userService.getEagerByEmail(email);
+			Date hoje = new Date(); 
+			List<Participant> participants = new ArrayList<Participant>();
+			List<Event> events = new ArrayList<Event>();
+			List<Event> myeventsocorridos = new ArrayList<Event>();
+			List<Event> myevents = new ArrayList<Event>();
+			List<Event> eventsparticipados = new ArrayList<Event>();
+			List<Event> eventsparticipadosocorridos = new ArrayList<Event>();
+			events = user.getEvents();
+			participants=user.getParticipations();
 			
-			ModelAndView modelAndView = new ModelAndView("event/index");
-			modelAndView.addObject("events", user.getEvents());
+			for(Event event : events){
+				if(event.getDateEnd()!=null){
+					if(event.getDateEnd().after(hoje)==true)
+						myevents.add(event);
+					else
+						myeventsocorridos.add(event);
+				}
+				else {
+					if(event.getDateStart().after(hoje)==true)
+						myevents.add(event);
+					else
+						myeventsocorridos.add(event);
+				}
+			} for(Participant part : participants){
+				if(part.getEvent().getDateEnd()!=null){
+					if(part.getEvent().getDateEnd().after(hoje)==true)
+						eventsparticipados.add(part.getEvent());
+					else
+						eventsparticipadosocorridos.add(part.getEvent());
+				} else {
+					if(part.getEvent().getDateStart().after(hoje)==true)
+						eventsparticipados.add(part.getEvent());
+					else
+						eventsparticipadosocorridos.add(part.getEvent());
+				}
+			}
+
+			ModelAndView modelAndView = new ModelAndView("event/showmyevents");
+			modelAndView.addObject("myevents",myevents );
+			modelAndView.addObject("myeventsocorridos", myeventsocorridos);
+			modelAndView.addObject("eventsparticipados", eventsparticipados);
+			modelAndView.addObject("eventsparticipadosocorridos", eventsparticipadosocorridos);
 			modelAndView.addObject("username", user.getEmail());
 	        return modelAndView;
+	        
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new ModelAndView("error/unexpected-error");
