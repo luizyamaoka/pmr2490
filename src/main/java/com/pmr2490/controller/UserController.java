@@ -254,16 +254,12 @@ public class UserController {
 			String email = SecurityContextHolder.getContext().getAuthentication().getName();
 			User user = this.userService.getEagerByEmail(email);
 			Date hoje = new Date(); 
-			List<Participant> participants = new ArrayList<Participant>();
-			List<Event> events = new ArrayList<Event>();
 			List<Event> myeventsocorridos = new ArrayList<Event>();
 			List<Event> myevents = new ArrayList<Event>();
 			List<Event> eventsparticipados = new ArrayList<Event>();
 			List<Event> eventsparticipadosocorridos = new ArrayList<Event>();
-			events = user.getEvents();
-			participants=user.getParticipations();
 			
-			for(Event event : events){
+			for(Event event : user.getEvents()){
 				if(event.getDateEnd()!=null){
 					if(event.getDateEnd().after(hoje)==true)
 						myevents.add(event);
@@ -276,7 +272,7 @@ public class UserController {
 					else
 						myeventsocorridos.add(event);
 				}
-			} for(Participant part : participants){
+			} for(Participant part : user.getParticipations()){
 				if(part.getEvent().getDateEnd()!=null){
 					if(part.getEvent().getDateEnd().after(hoje)==true)
 						eventsparticipados.add(part.getEvent());
@@ -290,7 +286,7 @@ public class UserController {
 				}
 			}
 
-			ModelAndView modelAndView = new ModelAndView("event/showmyevents");
+			ModelAndView modelAndView = new ModelAndView("event/new");
 			modelAndView.addObject("myevents",myevents );
 			modelAndView.addObject("myeventsocorridos", myeventsocorridos);
 			modelAndView.addObject("eventsparticipados", eventsparticipados);

@@ -1,6 +1,7 @@
 package com.pmr2490.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -246,7 +247,19 @@ public class EventController {
 		try {
 			ModelAndView modelAndView = new ModelAndView("event/index");
 			String data = date.equals("") ? null : date;
-			modelAndView.addObject("events", this.eventService.getBySet(data, name, localId, tagId));
+			List<Event> events = new ArrayList<Event>();
+			Date hoje = new Date(); 
+			for(Event event : this.eventService.getBySet(data, name, localId, tagId)){
+				if(event.getDateEnd()!=null){
+					if(hoje.compareTo(event.getDateEnd())>0)
+						events.add(event);
+				}
+				else {
+					if(hoje.compareTo(event.getDateStart())>0)
+						events.add(event);
+				}
+			}
+			modelAndView.addObject("events", events);
 			if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
 				modelAndView.addObject("username", SecurityContextHolder.getContext().getAuthentication().getName());
 			}
