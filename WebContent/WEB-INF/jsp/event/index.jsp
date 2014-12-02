@@ -26,11 +26,11 @@
           <h3>Nenhum evento encontrado</h3>
         </div>
       </c:if>
-    
+
       <c:import url="/WEB-INF/jsp/event/_events.jsp" />
       
     </div>
-        
+       
     <c:import url="/WEB-INF/jsp/shared/footer.jsp" />
     
   </body>

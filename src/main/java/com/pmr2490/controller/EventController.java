@@ -1,6 +1,7 @@
 package com.pmr2490.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,14 +72,43 @@ public class EventController {
 	}
 	
 	@RequestMapping(value="")
-	public ModelAndView index() {
+	public ModelAndView index(HttpServletRequest request) {
 		try {
-			ModelAndView modelAndView = new ModelAndView("event/index");
-			modelAndView.addObject("events", this.eventService.getAll());
+			
+			User user = null;
+			String username = null;
+			
 			if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
-				modelAndView.addObject("username", SecurityContextHolder.getContext().getAuthentication().getName());
+				username = SecurityContextHolder.getContext().getAuthentication().getName();
+				user = this.userService.getByEmail(username);
 			}
-			return modelAndView;
+			
+			if (user != null && user.isPromoter()) {
+				ModelAndView modelAndView = new ModelAndView("event/indexAdm");
+				List<Event> aprovados = new ArrayList<Event>();
+				List<Event> naprovados = new ArrayList<Event>();
+				for(Event event : this.eventService.getAll()){
+					if(event.isApproved())
+						aprovados.add(event);
+					else
+						naprovados.add(event);
+				}
+				
+				modelAndView.addObject("naprovados", naprovados);
+				modelAndView.addObject("aprovados", aprovados);
+				modelAndView.addObject("username", SecurityContextHolder.getContext().getAuthentication().getName());
+				
+				if(request.getParameter("approved") != null)
+					modelAndView.addObject("success_message", "<strong>Sucesso!</strong> Evento aprovado com sucesso.");
+				
+				return modelAndView;
+			} else {
+				ModelAndView modelAndView = new ModelAndView("event/index");
+				modelAndView.addObject("events", this.eventService.getAll());
+				modelAndView.addObject("username", username);
+				return modelAndView;
+			}
+			
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -210,11 +240,33 @@ public class EventController {
 		}
     }
 	
-	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
+	@RequestMapping(value="/{id}/destroy", method=RequestMethod.GET)
 	public String destroy(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
 		try {
 			this.eventService.delete(id);
 			return "redirect:/events?destroyed";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error/unexpected-error";
+		}
+	}
+	
+	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
+	public String Destroy(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
+		try {
+			this.eventService.delete(id);
+			return "redirect:/events?destroyed";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error/unexpected-error";
+		}
+	}
+	
+	@RequestMapping(value="/{id}/approved", method=RequestMethod.POST)
+	public String approved(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
+		try {
+			this.eventService.approve(id);
+			return "redirect:/events?approved";
 		} catch (Exception e) {
 			e.printStackTrace();
 			return "error/unexpected-error";
@@ -249,7 +301,22 @@ public class EventController {
 			String data = date.equals("") ? null : date;
 			String nameTreated = name.equals("") ? null : name;
 			
-			modelAndView.addObject("events", this.eventService.getBySet(id, data, nameTreated, localId, tagId));
+			List<Event> eventsSearch = new ArrayList<Event>();
+			Date hoje= new Date();
+			for(Event event :  this.eventService.getBySet(id, data, nameTreated, localId, tagId)){
+				if(event.isApproved()==true){
+					if(event.getDateEnd()!=null){
+						if(event.getDateEnd().after(hoje)==true)
+							eventsSearch.add(event);
+					}
+					else {
+						if(event.getDateStart().after(hoje)==true)
+							eventsSearch.add(event);
+					}
+				}
+			}
+			modelAndView.addObject("events", eventsSearch);
+
 			if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
 				modelAndView.addObject("username", SecurityContextHolder.getContext().getAuthentication().getName());
 			}

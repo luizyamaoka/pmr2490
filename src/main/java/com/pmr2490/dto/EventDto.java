@@ -24,6 +24,7 @@ public class EventDto {
 	private Integer creatorId;
 	private Integer localId;
 	private Integer[] tagIds;
+	private boolean isApproved;
 	
 	public Integer getId() {
 		return id;
@@ -138,6 +139,12 @@ public class EventDto {
 	}
 	public void setYearEnd(Integer yearEnd) {
 		this.yearEnd = yearEnd;
+	}
+	public boolean isApproved(){
+		return isApproved;
+	}
+	public void setApproved(boolean Approved){
+		this.isApproved=Approved;
 	}
 	
 }
