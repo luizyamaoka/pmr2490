@@ -21,19 +21,19 @@
       <c:import url="/WEB-INF/jsp/shared/alert.jsp" />  
       
 	  <div class="center-form">
-	    <div class="col-xs-8 col-xs-offset-4">
+	    <div class="col-sm-offset-4 col-sm-8 col-xs-12">
 	      <h2>Editar local</h2>
 	    </div>
         <form class="form-horizontal" action="edit" method="post">
           <div class="form-group">
-            <label for="nameInput" class="control-label col-xs-4">Nome</label>
-            <div class="col-xs-8">
+            <label for="nameInput" class="control-label col-sm-4 col-xs-12">Nome</label>
+            <div class="col-sm-8 col-xs-12">
 			  <input name="name" type="text" value="${local.name}" class="form-control" id="nameInput" placeholder="Nome do local" required autofocus />
 			</div>
 		  </div>
 		  
 		  <div class="form-group">
-		    <div class="col-xs-8 col-xs-offset-4">
+		    <div class="col-sm-offset-4 col-sm-8 col-xs-12">
               <input class="form-control btn btn-primary" type="submit" value="Atualizar" />
             </div>
 		  </div>
