@@ -49,6 +49,14 @@
           </li>
         </ul>
       </security:authorize>
+      
+      <security:authorize access="!isAuthenticated()">
+        <!-- right side of the header -->
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="/pmr2490/users/new">Cadastre-se</a></li>
+          <li><a href="/pmr2490/login">Login</a></li>
+        </ul>
+      </security:authorize>
     </div><!--/.nav-collapse -->
   </div>
 </div>

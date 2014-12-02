@@ -43,6 +43,12 @@ public class EventServiceImpl implements EventService {
 	public List<Event> getAll() throws Exception {
 		return this.eventDao.getAll();
 	}
+	
+	@Override
+	@Transactional
+	public List<Event> getAll(Integer max) throws Exception {
+		return this.eventDao.getAll(max);
+	}
 
 	@Override
 	@Transactional

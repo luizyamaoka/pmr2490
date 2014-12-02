@@ -26,6 +26,17 @@ public class EventDao extends GenericDao<Event, Integer> {
 	public EventDao(SessionFactory sessionFactory) {
 		super(sessionFactory, Event.class);
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Event> getAll(Integer max) {
+		Session session = null;
+		session = this.sessionFactory.getCurrentSession();
+		Criteria criteria = session.createCriteria(Event.class);
+		criteria.add(Restrictions.ge("dateStart", Calendar.getInstance().getTime()));
+		criteria.addOrder(Order.asc("dateStart"));
+		if (max != null) criteria.setMaxResults(max);
+		return criteria.list();
+	}
 
 	public Event getEager(int id) throws Exception {
 		Session session = null;

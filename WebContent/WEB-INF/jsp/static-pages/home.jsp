@@ -7,6 +7,13 @@
     <title>Home page</title>
     <c:import url="/WEB-INF/jsp/shared/css.jsp" />
     <c:import url="/WEB-INF/jsp/shared/js.jsp" />
+    <style>
+    .event-description {
+      text-align: justify; 
+      height: 7em; 
+      overflow: hidden;
+    }
+    </style>
   </head>
   <body>
     <c:import url="/WEB-INF/jsp/shared/header.jsp" />
@@ -17,23 +24,18 @@
 
       <!-- Main jumbotron for a primary marketing message or call to action -->
       <div class="jumbotron" style="text-align: center">
-        <h1>Poli Cultural</h1>
+        <h1>Bem-vindo ao Poli Cultural</h1>
         
-        <security:authorize access="isAuthenticated()">
-          <p>Esta é a página inicial do projeto de SI PMR2490.</p>
-          <p>Gerenciador de eventos da Escola Politécnica da Universidade de São Paulo</p>
-          <p><a href="events/new" class="btn btn-success btn-lg" role="button">Novo evento</a></p>
-        </security:authorize>
+        <a href="/pmr2490/events/search" class="btn btn-success btn-lg" role="button">Procure um evento</a>
         
-        <security:authorize access="!isAuthenticated()">
-          <p></p>
-          <p>Bem vindo ao gerenciador de eventos da Escola Poltécnica da Universidade de São Paulo.</p>
-          <p>Para começar a utilizar o sistema, faça o seu cadastro.</p>
-          <p><a href="users/new" class="btn btn-primary btn-lg" role="button">Cadastre-se</a></p>
-          <p>Caso já esteja cadastrado, faça seu login e comece a utilizar o sistema.</p>
-          <p><a href="login" class="btn btn-primary btn-lg" role="button">Login</a></p>
-        </security:authorize>
       </div>
+      
+      <div class="page-header">
+		<h2>Próximos eventos</h2>
+	  </div>
+	  
+	  <c:import url="/WEB-INF/jsp/event/_events.jsp" />
+	  
     </div>
     
     <c:import url="/WEB-INF/jsp/shared/footer.jsp" />
