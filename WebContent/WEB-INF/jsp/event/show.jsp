@@ -147,10 +147,10 @@
 		  </security:authorize>
         
             <c:if test="${fn:length(event.participants) gt 1}">
-              <h3 style="text-align: center;">${fn:length(event.participants)} Partcipantes Confirmados</h3>
+              <h3 style="text-align: center;">${fn:length(event.participants)} Participantes Confirmados</h3>
             </c:if>
             <c:if test="${fn:length(event.participants) eq 1}">
-              <h3 style="text-align: center;">${fn:length(event.participants)} Partcipante Confirmado</h3>
+              <h3 style="text-align: center;">${fn:length(event.participants)} Participante Confirmado</h3>
             </c:if>
             <security:authorize access="isAuthenticated()">
               <div class="text-center">
