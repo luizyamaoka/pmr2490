@@ -1,6 +1,5 @@
 package com.pmr2490.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,10 +62,12 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="")
-	public ModelAndView index() {
+	public ModelAndView index(HttpServletRequest request) {
 		try {
 			ModelAndView modelAndView = new ModelAndView("user/index");
 			modelAndView.addObject("users", this.userService.getAll());
+			if(request.getParameter("destroyed") != null)
+				modelAndView.addObject("success_message", "<strong>Sucesso!</strong> Usuário deletado com sucesso.");
 			return modelAndView;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -102,22 +103,20 @@ public class UserController {
 	}
 	
 	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
-	public void destroy(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
+	public String destroy(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
 		try {
-		
 			String email = SecurityContextHolder.getContext().getAuthentication().getName();
 			User user = this.userService.getByEmail(email);
 			
 			if (user.getId() != id && !user.isPromoter()) 
-				response.sendRedirect("/pmr2490/403");
+				return "error/403";
 			else {
 				this.userService.delete(id);
-				response.sendRedirect("/pmr2490/users");
+				return "redirect:/users?destroyed";
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
+			return "error/unexpected-error";
 		}
 	}
 	
