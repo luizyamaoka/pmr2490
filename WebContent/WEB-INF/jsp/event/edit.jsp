@@ -107,6 +107,11 @@
               <input class="form-control btn btn-primary" type="submit" value="Salvar" />
             </div>
 		  </div>
+		  <div class="form-group">
+		    <div class="col-xs-offset-4">
+              <a href="destroy" class="form-control btn btn-danger">Deletar Evento</a>
+            </div>
+		  </div>
 		
       </form:form>
       </div>

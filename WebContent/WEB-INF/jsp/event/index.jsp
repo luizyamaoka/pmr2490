@@ -27,24 +27,9 @@
         </div>
       </c:if>
     
-    <p><c:set var="dateAtual" value="<%=new java.util.Date()%>"/></p>
-    <c:set var="temEvento" scope="session" value="${0}"/>
-    <c:set var="tempoExpirado" scope="session" value="${1}"/>
+  
       <div class="row">
         <c:forEach var="event" items="${events}">
-        <c:choose>
-        	<c:when test="${empty event.dateEnd}">
-        		<c:if test="${event.dateStart > dateAtual}">
-        			<c:set var="tempoExpirado" scope="session" value="${0}"/>
-        		</c:if>
-        	</c:when>
-        	<c:otherwise>
-        		<c:if test="${event.dateEnd > dateAtual}">
-        			<c:set var="tempoExpirado" scope="session" value="${0}"/>
-        		</c:if>
-			</c:otherwise>
-		</c:choose>
-        <c:if test="${tempoExpirado==0}">
           	<div class="col-md-4 col-sm-6">
            	 <div style="border-style: solid; border-width: thin; padding: 15px; margin: 10px;">
            	 <h3 style="text-align: center;">${event.name}</h3>
@@ -68,17 +53,9 @@
        	     </div>
        	     </div>
        	   </div>
-       	   <c:set var="temEvento" scope="session" value="${1}"/>
-       	   </c:if>
        	 </c:forEach>
       </div>
     </div>
-    <c:if test="${temEvento==0}">
-        <div class="jumbotron" style="text-align: center">
-          <h3>Nenhum evento encontrado</h3>
-        </div>
-    </c:if>
-      
     
     <c:import url="/WEB-INF/jsp/shared/footer.jsp" />
     

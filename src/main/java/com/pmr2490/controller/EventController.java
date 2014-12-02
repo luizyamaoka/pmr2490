@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -210,8 +211,19 @@ public class EventController {
 		}
     }
 	
-	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
+	@RequestMapping(value="/{id}/destroy", method=RequestMethod.GET)
 	public String destroy(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
+		try {
+			this.eventService.delete(id);
+			return "redirect:/events?destroyed";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error/unexpected-error";
+		}
+	}
+	
+	@RequestMapping(value="/{id}/destroy", method=RequestMethod.POST)
+	public String Destroy(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
 		try {
 			this.eventService.delete(id);
 			return "redirect:/events?destroyed";
@@ -247,7 +259,19 @@ public class EventController {
 		try {
 			ModelAndView modelAndView = new ModelAndView("event/index");
 			String data = date.equals("") ? null : date;
-			modelAndView.addObject("events", this.eventService.getBySet(id, data, name, localId, tagId));
+			List<Event> eventsSearch = new ArrayList<Event>();
+			Date hoje= new Date();
+			for(Event event :  this.eventService.getBySet(id, data, name, localId, tagId)){
+				if(event.getDateEnd()!=null){
+					if(event.getDateEnd().after(hoje)==true)
+						eventsSearch.add(event);
+				}
+				else {
+					if(event.getDateStart().after(hoje)==true)
+						eventsSearch.add(event);
+				}
+			}
+			modelAndView.addObject("events", eventsSearch);
 			if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
 				modelAndView.addObject("username", SecurityContextHolder.getContext().getAuthentication().getName());
 			}

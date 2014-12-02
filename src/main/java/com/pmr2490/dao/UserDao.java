@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.pmr2490.model.Event;
 import com.pmr2490.model.User;
+import com.pmr2490.model.Participant;
 
 @Repository
 public class UserDao extends GenericDao<User, Integer>  {
@@ -35,6 +36,8 @@ public class UserDao extends GenericDao<User, Integer>  {
 		User user = (User) cr.uniqueResult();
 		for (Event event : user.getEvents())
 			event.getName();
+		for (Participant participant : user.getParticipations())
+			participant.getEvent().getName();
 		return user;
 
 	}
