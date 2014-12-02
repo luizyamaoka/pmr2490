@@ -32,7 +32,7 @@
            	 <div style="border-style: solid; border-width: thin; padding: 15px; margin: 10px;">
            	 <h3 style="text-align: center;">${event.name}</h3>
 				<p style="text-align: center;">
-				<c:if test="${event.isApproved==true}">
+				<c:if test="${event.isApproved()}">
 					<span style="color:red;font-weight: bold;">Não Aprovado </span>
 				</c:if>
 				  <span style="font-weight: bold;">Quando? </span>

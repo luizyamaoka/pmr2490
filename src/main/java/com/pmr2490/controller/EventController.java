@@ -1,10 +1,10 @@
 package com.pmr2490.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -72,24 +72,43 @@ public class EventController {
 	}
 	
 	@RequestMapping(value="")
-	public ModelAndView index() {
+	public ModelAndView index(HttpServletRequest request) {
 		try {
-			ModelAndView modelAndView = new ModelAndView("event/indexAdm");
-			List<Event> aprovados = new ArrayList<Event>();
-			List<Event> naprovados = new ArrayList<Event>();
-			for(Event event : this.eventService.getAll()){
-				if(event.isApproved()==true)
-					aprovados.add(event);
-				else
-					naprovados.add(event);
+			
+			User user = null;
+			String username = null;
+			
+			if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+				username = SecurityContextHolder.getContext().getAuthentication().getName();
+				user = this.userService.getByEmail(username);
 			}
 			
-			modelAndView.addObject("naprovados", naprovados);
-			modelAndView.addObject("aprovados", aprovados);
-			if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+			if (user != null && user.isPromoter()) {
+				ModelAndView modelAndView = new ModelAndView("event/indexAdm");
+				List<Event> aprovados = new ArrayList<Event>();
+				List<Event> naprovados = new ArrayList<Event>();
+				for(Event event : this.eventService.getAll()){
+					if(event.isApproved())
+						aprovados.add(event);
+					else
+						naprovados.add(event);
+				}
+				
+				modelAndView.addObject("naprovados", naprovados);
+				modelAndView.addObject("aprovados", aprovados);
 				modelAndView.addObject("username", SecurityContextHolder.getContext().getAuthentication().getName());
+				
+				if(request.getParameter("approved") != null)
+					modelAndView.addObject("success_message", "<strong>Sucesso!</strong> Evento aprovado com sucesso.");
+				
+				return modelAndView;
+			} else {
+				ModelAndView modelAndView = new ModelAndView("event/index");
+				modelAndView.addObject("events", this.eventService.getAll());
+				modelAndView.addObject("username", username);
+				return modelAndView;
 			}
-			return modelAndView;
+			
 		}
 		catch (Exception e) {
 			e.printStackTrace();

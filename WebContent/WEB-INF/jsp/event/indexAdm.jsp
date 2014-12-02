@@ -20,6 +20,9 @@
     <c:import url="/WEB-INF/jsp/shared/header.jsp" />
     
     <div class="container theme-showcase" role="main">
+    
+      <c:import url="/WEB-INF/jsp/shared/alert.jsp" />
+    
     <c:set var="temEvento" scope="session" value="${0}"/>
       <c:if test="${not empty naprovados}">
         <div class="page-header" style="text-align: center">
