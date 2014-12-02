@@ -247,7 +247,9 @@ public class EventController {
 		try {
 			ModelAndView modelAndView = new ModelAndView("event/index");
 			String data = date.equals("") ? null : date;
-			modelAndView.addObject("events", this.eventService.getBySet(id, data, name, localId, tagId));
+			String nameTreated = name.equals("") ? null : name;
+			
+			modelAndView.addObject("events", this.eventService.getBySet(id, data, nameTreated, localId, tagId));
 			if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
 				modelAndView.addObject("username", SecurityContextHolder.getContext().getAuthentication().getName());
 			}

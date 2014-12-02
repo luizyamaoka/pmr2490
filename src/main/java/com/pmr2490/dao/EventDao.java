@@ -62,6 +62,8 @@ public class EventDao extends GenericDao<Event, Integer> {
 			Date dateEnd = getTomorrowDate(dateStart);
 			criteria.add(Restrictions.ge("dateStart", dateStart)); 
 			criteria.add(Restrictions.lt("dateStart", dateEnd));
+		} else {
+			criteria.add(Restrictions.ge("dateStart", Calendar.getInstance().getTime()));
 		}
 		if(name != null) 
 			criteria.add(Restrictions.like("name", name, MatchMode.ANYWHERE));
