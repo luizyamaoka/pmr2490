@@ -1,7 +1,6 @@
 package com.pmr2490.controller;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +103,7 @@ public class EventController {
 				return modelAndView;
 			} else {
 				ModelAndView modelAndView = new ModelAndView("event/index");
-				modelAndView.addObject("events", this.eventService.getAll());
+				modelAndView.addObject("events", this.eventService.getBySet(null, null, null, null, null, true, null));
 				modelAndView.addObject("username", username);
 				return modelAndView;
 			}
@@ -300,22 +299,7 @@ public class EventController {
 			ModelAndView modelAndView = new ModelAndView("event/index");
 			String data = date.equals("") ? null : date;
 			String nameTreated = name.equals("") ? null : name;
-			
-			List<Event> eventsSearch = new ArrayList<Event>();
-			Date hoje= new Date();
-			for(Event event :  this.eventService.getBySet(id, data, nameTreated, localId, tagId)){
-				if(event.isApproved()==true){
-					if(event.getDateEnd()!=null){
-						if(event.getDateEnd().after(hoje)==true)
-							eventsSearch.add(event);
-					}
-					else {
-						if(event.getDateStart().after(hoje)==true)
-							eventsSearch.add(event);
-					}
-				}
-			}
-			modelAndView.addObject("events", eventsSearch);
+			modelAndView.addObject("events", this.eventService.getBySet(id, data, nameTreated, localId, tagId, true, null));
 
 			if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
 				modelAndView.addObject("username", SecurityContextHolder.getContext().getAuthentication().getName());

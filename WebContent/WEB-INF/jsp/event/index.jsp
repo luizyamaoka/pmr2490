@@ -27,6 +27,12 @@
         </div>
       </c:if>
 
+	  <c:if test="${not empty events}">
+	    <div class="page-header">
+		  <h2>Eventos</h2>
+	    </div>
+	  </c:if>
+
       <c:import url="/WEB-INF/jsp/event/_events.jsp" />
       
     </div>

@@ -23,12 +23,17 @@
             <li><a href="/pmr2490/events/new">Criar evento</a></li>
         
             <security:authorize access="hasRole('ADMIN')">
-              <li><a href="/pmr2490/users">Usuários</a></li>
-              <li><a href="/pmr2490/tags">Tags</a></li>
-              <li><a href="/pmr2490/locals">Locais</a></li>
-              <li><a href="/pmr2490/professions">Ocupações</a></li>
-              <li><a href="/pmr2490/colleges">Faculdades</a></li>
-              <li><a href="/pmr2490/events">Eventos</a></li>
+              <li class="dropdown">
+	            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Administrador <span class="caret"></span></a>
+	            <ul class="dropdown-menu" role="menu">
+                  <li><a href="/pmr2490/users">Usuários</a></li>
+                  <li><a href="/pmr2490/tags">Tags</a></li>
+                  <li><a href="/pmr2490/locals">Locais</a></li>
+                  <li><a href="/pmr2490/professions">Ocupações</a></li>
+                  <li><a href="/pmr2490/colleges">Faculdades</a></li>
+                  <li><a href="/pmr2490/events">Eventos</a></li>
+                </ul>
+              </li>
             </security:authorize>
           </security:authorize>
         </ul>

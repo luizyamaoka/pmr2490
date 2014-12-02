@@ -9,9 +9,8 @@ public interface EventService {
 
 	public List<Event> getAll() throws Exception;
 	
-	public List<Event> getAll(Integer max) throws Exception;
-	
-	public List<Event> getBySet(Integer id, String date, String name, Integer localId, Integer tagId) throws Exception;
+	public List<Event> getBySet(Integer id, String date, String name, Integer localId, Integer tagId, 
+			Boolean isApproved, Integer max) throws Exception;
 	
 	public Event get(int id) throws Exception;
 	

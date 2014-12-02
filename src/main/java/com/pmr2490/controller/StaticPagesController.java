@@ -29,7 +29,7 @@ public class StaticPagesController {
 			if(request.getParameter("logout") != null)
 				modelAndView.addObject("info_message", "<strong>Tchau!</strong> Logout efetuado com sucesso.");
 			
-			modelAndView.addObject("events", this.eventService.getAll(12));
+			modelAndView.addObject("events", this.eventService.getBySet(null, null, null, null, null, true, 12));
 			if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
 				modelAndView.addObject("username", SecurityContextHolder.getContext().getAuthentication().getName());
 			}

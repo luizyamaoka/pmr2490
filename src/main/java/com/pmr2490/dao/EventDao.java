@@ -26,17 +26,6 @@ public class EventDao extends GenericDao<Event, Integer> {
 	public EventDao(SessionFactory sessionFactory) {
 		super(sessionFactory, Event.class);
 	}
-	
-	@SuppressWarnings("unchecked")
-	public List<Event> getAll(Integer max) {
-		Session session = null;
-		session = this.sessionFactory.getCurrentSession();
-		Criteria criteria = session.createCriteria(Event.class);
-		criteria.add(Restrictions.ge("dateStart", Calendar.getInstance().getTime()));
-		criteria.addOrder(Order.asc("dateStart"));
-		if (max != null) criteria.setMaxResults(max);
-		return criteria.list();
-	}
 
 	public Event getEager(int id) throws Exception {
 		Session session = null;
@@ -65,7 +54,8 @@ public class EventDao extends GenericDao<Event, Integer> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Event> getBySet(Integer id, Date date, String name, Integer localId, Integer tagId) throws Exception {
+	public List<Event> getBySet(Integer id, Date date, String name, Integer localId, 
+			Integer tagId, Boolean isApproved, Integer max) throws Exception {
 		Session session = null;
 		session = this.sessionFactory.getCurrentSession();
 		Criteria criteria = session.createCriteria(Event.class);
@@ -89,10 +79,13 @@ public class EventDao extends GenericDao<Event, Integer> {
 			criteria.add(Restrictions.eq("l.id", localId));
 		if(tagId != null)
 			criteria.add(Restrictions.eq("t.id", tagId));
+		if(isApproved != null)
+			criteria.add(Restrictions.eq("isApproved", isApproved));
 		
 		criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 		criteria.addOrder(Order.asc("dateStart"));
-			
+		if (max != null) criteria.setMaxResults(max);	
+		
 		List<Event> events = criteria.list();
 		return events;
 	}

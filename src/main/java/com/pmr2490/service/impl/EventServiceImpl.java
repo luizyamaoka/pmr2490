@@ -43,12 +43,6 @@ public class EventServiceImpl implements EventService {
 	public List<Event> getAll() throws Exception {
 		return this.eventDao.getAll();
 	}
-	
-	@Override
-	@Transactional
-	public List<Event> getAll(Integer max) throws Exception {
-		return this.eventDao.getAll(max);
-	}
 
 	@Override
 	@Transactional
@@ -78,10 +72,10 @@ public class EventServiceImpl implements EventService {
 	@Override
 	@Transactional
 	public List<Event> getBySet(Integer id, String date, String name, Integer localId,
-			Integer tagId) throws Exception {
+			Integer tagId, Boolean isApproved, Integer max) throws Exception {
 		DateFormat formatter = new SimpleDateFormat("yyyyMMdd"); // Create formatter
 		Date data = date == null ? null : formatter.parse(date);
-		return this.eventDao.getBySet(id, data, name, localId, tagId);
+		return this.eventDao.getBySet(id, data, name, localId, tagId, isApproved, max);
 	}
 
 	@Override

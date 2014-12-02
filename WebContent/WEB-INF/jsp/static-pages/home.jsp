@@ -30,9 +30,11 @@
         
       </div>
       
-      <div class="page-header">
-		<h2>Próximos eventos</h2>
-	  </div>
+      <c:if test="${not empty events}">
+        <div class="page-header">
+		  <h2>Próximos eventos</h2>
+	    </div>
+	  </c:if>
 	  
 	  <c:import url="/WEB-INF/jsp/event/_events.jsp" />
 	  
