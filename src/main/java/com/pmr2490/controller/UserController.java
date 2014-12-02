@@ -251,7 +251,7 @@ public class UserController {
 			String email = SecurityContextHolder.getContext().getAuthentication().getName();
 			User user = this.userService.getEagerByEmail(email);
 			
-			ModelAndView modelAndView = new ModelAndView("event/index");
+			ModelAndView modelAndView = new ModelAndView("event/new");
 			modelAndView.addObject("events", user.getEvents());
 			modelAndView.addObject("username", user.getEmail());
 	        return modelAndView;
