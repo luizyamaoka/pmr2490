@@ -108,7 +108,7 @@
             </div>
 		  </div>
 		  <div class="form-group">
-		    <div class="col-sm-offset-4">
+		    <div class="col-sm-offset-4 col-sm-8 col-xs-12">
               <a href="destroy" class="form-control btn btn-danger">Deletar Evento</a>
             </div>
 		  </div>

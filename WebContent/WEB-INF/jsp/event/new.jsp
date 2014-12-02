@@ -105,7 +105,7 @@
 		    <form:errors path="tagIds" cssClass="error" />
 		  </div>
 		  <div class="form-group">
-		    <div class="col-sm-offset-4">
+		    <div class="col-sm-offset-4 col-sm-8 col-xs-12">
               <input class="form-control btn btn-primary" type="submit" value="Criar evento" />
             </div>
 		  </div>
