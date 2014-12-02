@@ -19,6 +19,8 @@ public interface EventService {
 	
 	public void delete(int id) throws Exception;
 	
+	public void approve(int id) throws Exception;
+	
 	public List<String> create(EventDto eventDto) throws Exception;
 	
 	public List<String> update(EventDto eventDto) throws Exception;

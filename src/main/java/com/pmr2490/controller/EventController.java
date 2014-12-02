@@ -74,8 +74,18 @@ public class EventController {
 	@RequestMapping(value="")
 	public ModelAndView index() {
 		try {
-			ModelAndView modelAndView = new ModelAndView("event/index");
-			modelAndView.addObject("events", this.eventService.getAll());
+			ModelAndView modelAndView = new ModelAndView("event/indexAdm");
+			List<Event> aprovados = new ArrayList<Event>();
+			List<Event> naprovados = new ArrayList<Event>();
+			for(Event event : this.eventService.getAll()){
+				if(event.isApproved()==true)
+					aprovados.add(event);
+				else
+					naprovados.add(event);
+			}
+			
+			modelAndView.addObject("naprovados", naprovados);
+			modelAndView.addObject("aprovados", aprovados);
 			if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
 				modelAndView.addObject("username", SecurityContextHolder.getContext().getAuthentication().getName());
 			}
@@ -233,6 +243,17 @@ public class EventController {
 		}
 	}
 	
+	@RequestMapping(value="/{id}/approved", method=RequestMethod.POST)
+	public String approved(HttpServletRequest request, HttpServletResponse response, @PathVariable int id) {
+		try {
+			this.eventService.approve(id);
+			return "redirect:/events?approved";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "error/unexpected-error";
+		}
+	}
+	
 	@RequestMapping(value="/search", method=RequestMethod.GET)
 	public ModelAndView search(HttpServletRequest request, HttpServletResponse response) {
 		
@@ -262,13 +283,15 @@ public class EventController {
 			List<Event> eventsSearch = new ArrayList<Event>();
 			Date hoje= new Date();
 			for(Event event :  this.eventService.getBySet(id, data, name, localId, tagId)){
-				if(event.getDateEnd()!=null){
-					if(event.getDateEnd().after(hoje)==true)
-						eventsSearch.add(event);
-				}
-				else {
-					if(event.getDateStart().after(hoje)==true)
-						eventsSearch.add(event);
+				if(event.isApproved()==true){
+					if(event.getDateEnd()!=null){
+						if(event.getDateEnd().after(hoje)==true)
+							eventsSearch.add(event);
+					}
+					else {
+						if(event.getDateStart().after(hoje)==true)
+							eventsSearch.add(event);
+					}
 				}
 			}
 			modelAndView.addObject("events", eventsSearch);

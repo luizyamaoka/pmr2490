@@ -45,6 +45,13 @@ public class EventDao extends GenericDao<Event, Integer> {
 		EventDto eventDto = event.toEventDto();
 		return eventDto;
 	}
+	
+	public void approve(int id) {
+		Session session = null;
+		session = this.sessionFactory.getCurrentSession();
+		Event event = (Event)session.get(Event.class, id);
+		event.setApproved(true);
+	}
 
 	@SuppressWarnings("unchecked")
 	public List<Event> getBySet(Integer id, Date date, String name, Integer localId, Integer tagId) throws Exception {

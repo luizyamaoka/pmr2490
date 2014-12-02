@@ -31,7 +31,7 @@ public class Event {
 	
 	public Event(Integer id, String name, Date dateStart, Date dateEnd, String email,
 			Integer phoneDdd, String phoneNumber, String description, User creator,
-			Local local) {
+			Local local, boolean isApproved) {
 		if(id != null) this.id = id;
 		this.name = name;
 		this.dateStart = dateStart;
@@ -43,6 +43,7 @@ public class Event {
 		this.creator = creator;
 		this.local = local;
 		this.taggings = new ArrayList<Tagging>();
+		this.isApproved = isApproved;
 	}
 	
 	@Id
@@ -70,6 +71,9 @@ public class Event {
 	
 	@Column(name="descricao")
 	private String description;
+	
+	@Column(name="aprovado")
+	private boolean isApproved;
 	
 	@ManyToOne
 	@JoinColumn(name="criado_por")
@@ -181,6 +185,14 @@ public class Event {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	public boolean isApproved() {
+		return isApproved;
+	}
+	
+	public void setApproved(boolean isApproved){
+		this.isApproved=isApproved;
 	}
 	
 	public EventDto toEventDto() {

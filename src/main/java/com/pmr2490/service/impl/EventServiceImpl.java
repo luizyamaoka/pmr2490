@@ -59,6 +59,12 @@ public class EventServiceImpl implements EventService {
 
 	@Override
 	@Transactional
+	public void approve(int id) throws Exception {
+		this.eventDao.approve(id);
+	}
+
+	@Override
+	@Transactional
 	public EventDto getEventDto(int id) throws Exception {
 		return this.eventDao.getEventDto(id);
 	}
@@ -206,6 +212,8 @@ public class EventServiceImpl implements EventService {
 			event.setDescription(eventDto.getDescription());
 		if (eventDto.getEmail() != null)
 			event.setEmail(eventDto.getEmail());
+		event.setApproved(false);
+		
 		
 		User creator = eventDto.getCreatorId() == null ? null : this.userDao.get(eventDto.getCreatorId());
 		Local local = eventDto.getLocalId() == null ? null : this.localDao.get(eventDto.getLocalId());
