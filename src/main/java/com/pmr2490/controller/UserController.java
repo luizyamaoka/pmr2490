@@ -102,6 +102,8 @@ public class UserController {
 			ModelAndView modelAndView = new ModelAndView("user/show");
 			String email = SecurityContextHolder.getContext().getAuthentication().getName();
 			modelAndView.addObject("user", this.userService.getByEmail(email));
+			if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) 
+				modelAndView.addObject("username", SecurityContextHolder.getContext().getAuthentication().getName());
 			return modelAndView;
 		} catch (Exception e) {
 			e.printStackTrace();
