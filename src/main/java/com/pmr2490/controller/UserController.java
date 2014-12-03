@@ -206,7 +206,7 @@ public class UserController {
 			User user = this.userService.getByEmail(email);
 			
 			// if user is trying to access the edit page from another user
-			if (user.getId() != id) 
+			if (user.getId() != id && !user.isPromoter()) 
 				return "error/403";
 			
 			List<String> status = this.userService.update(userDto);
@@ -235,7 +235,7 @@ public class UserController {
 			User user = this.userService.getByEmail(email);
 			
 			// if user is trying to access the edit page from another user
-			if (user.getId() != id) 
+			if (user.getId() != id && !user.isPromoter()) 
 				return new ModelAndView("error/403");
 			
 			ModelAndView modelAndView = new ModelAndView("user/edit");
