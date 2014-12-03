@@ -55,9 +55,11 @@
               
             </tbody>
           </table>
-          <div>
-            <a href="/pmr2490/users/${user.id}/edit" class="btn btn-large btn-warning center-block">Editar perfil</a>
-          </div>
+          <c:if test="${user.email == username}">
+            <div>
+              <a href="/pmr2490/users/${user.id}/edit" class="btn btn-large btn-warning center-block">Editar perfil</a>
+            </div>
+          </c:if>
         </div>
       </div>
     </div>

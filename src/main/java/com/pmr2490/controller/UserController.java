@@ -85,6 +85,8 @@ public class UserController {
 		try {
 			ModelAndView modelAndView = new ModelAndView("user/show");
 			modelAndView.addObject("user", this.userService.get(id));
+			if(SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) 
+				modelAndView.addObject("username", SecurityContextHolder.getContext().getAuthentication().getName());
 			if(request.getParameter("edited") != null)
 				modelAndView.addObject("success_message", "<strong>Sucesso!</strong> Usuário editado com sucesso.");
 			return modelAndView;
@@ -113,7 +115,7 @@ public class UserController {
 			String email = SecurityContextHolder.getContext().getAuthentication().getName();
 			User user = this.userService.getByEmail(email);
 			
-			if (user.getId() != id && !user.isPromoter()) 
+			if (!user.isPromoter()) 
 				return "error/403";
 			else {
 				this.userService.delete(id);
@@ -206,7 +208,7 @@ public class UserController {
 			User user = this.userService.getByEmail(email);
 			
 			// if user is trying to access the edit page from another user
-			if (user.getId() != id && !user.isPromoter()) 
+			if (user.getId() != id) 
 				return "error/403";
 			
 			List<String> status = this.userService.update(userDto);
@@ -235,7 +237,7 @@ public class UserController {
 			User user = this.userService.getByEmail(email);
 			
 			// if user is trying to access the edit page from another user
-			if (user.getId() != id && !user.isPromoter()) 
+			if (user.getId() != id) 
 				return new ModelAndView("error/403");
 			
 			ModelAndView modelAndView = new ModelAndView("user/edit");
